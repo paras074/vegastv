@@ -963,16 +963,16 @@
             if (qn > 0 && !(o.price === 0 && o.priceHidden)) {
               // include $0 lines that represent a real choice, but skip hidden $0 count rows
               if (o.price === 0 && !o.priceHidden && step.anchorPrimary) return;
-              items.push({ group: header, label: o.name, qty: qn, unit: o.price, amount: o.price * qn });
+              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: o.price, amount: o.price * qn });
             } else if (qn > 0 && o.priceHidden) {
-              items.push({ group: header, label: o.name, qty: qn, unit: 0, amount: 0 });
+              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: 0, amount: 0 });
             }
           });
         });
       });
       // coverage
       const cov = this.q('coverage', 'today') + this.q('coverage', 'other');
-      if (cov > 0) items.push({ group: 'Lifetime Removal Coverage', label: 'Lifetime Removal Coverage', qty: cov, unit: COVERAGE_PRICE, amount: COVERAGE_PRICE * cov });
+      if (cov > 0) items.push({ group: 'Lifetime Removal Coverage', step: 'coverage', option: 'coverage', label: 'Lifetime Removal Coverage', qty: cov, unit: COVERAGE_PRICE, amount: COVERAGE_PRICE * cov });
       return items;
     }
 
