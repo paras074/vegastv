@@ -65,9 +65,9 @@
 
 /* step body */
 .bw-body {
-  padding: 12px 40px 8px;
-  flex: 1 1 auto;
-  overflow-y: auto;
+    padding: 20px 40px 25px;
+    flex: 1 1 auto;
+    overflow-y: auto;
 }
 .bw-step { animation: bw-fade .3s ease; }
 @keyframes bw-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
