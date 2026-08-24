@@ -256,7 +256,7 @@
                 "text_THnUHC": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Active-Duty Military <br/>Veterans <br/>Teachers & Educators<br/>Law Enforcement<br/>Firefighters <br/>EMTs & Paramedics <br/>Local & Federal Government Employees</p>",
+                    "text": "<p>Active-Duty Military - Veterans  - Teachers & Educators - Law Enforcement - Firefighters  - EMTs & Paramedics <br/>Local & Federal Government Employees</p>",
                     "width": "fit-content",
                     "max_width": "narrow",
                     "alignment": "left",
@@ -291,6 +291,7 @@
           ]
         }
       },
+      "custom_css": [],
       "name": "t:names.editorial",
       "settings": {
         "media_position": "left",
