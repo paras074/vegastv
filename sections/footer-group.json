@@ -11,17 +11,6 @@
   "type": "footer",
   "name": "Footer",
   "sections": {
-    "community_appreciation_Egif7q": {
-      "type": "community-appreciation",
-      "name": "Community Appreciation",
-      "settings": {
-        "image": "shopify://shop_images/VTM_Community_Appreciation_f6e1ec49-5ec5-40d1-9965-3706c9ee0db9.png",
-        "eyebrow": "Community Appreciation Discount",
-        "heading": "Automatically Save <strong>10%</strong>",
-        "text": "<p>Our way of saying thank you to those who serve our community.</p>",
-        "note": "Valid identification or proof of eligibility required at time of service. Cannot be combined with other offers."
-      }
-    },
     "178620607085ab8cda": {
       "type": "_blocks",
       "blocks": {
@@ -72,6 +61,17 @@
         "gradient_direction": "to top",
         "padding-block-start": 0,
         "padding-block-end": 0
+      }
+    },
+    "community_appreciation_Egif7q": {
+      "type": "community-appreciation",
+      "name": "Community Appreciation",
+      "settings": {
+        "image": "shopify://shop_images/VTM_Community_Appreciation_f6e1ec49-5ec5-40d1-9965-3706c9ee0db9.png",
+        "eyebrow": "Community Appreciation Discount",
+        "heading": "Automatically Save <strong>10%</strong>",
+        "text": "<p>Our way of saying thank you to those who serve our community.</p>",
+        "note": "Proof of eligibility may be required at time of service."
       }
     },
     "section_cstm_footer_74nh3X": {
