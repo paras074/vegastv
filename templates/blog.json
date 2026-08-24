@@ -1,1 +1,220 @@
-{"sections":{"main":{"type":"main-blog","blocks":{"title":{"type":"text","name":"Title","settings":{"text":"<h1>{{ closest.blog.title }}<\/h1>","width":"fit-content","max_width":"narrow","alignment":"left","type_preset":"h2","font":"var(--font-primary--family)","font_size":"","line_height":"normal","letter_spacing":"normal","case":"none","wrap":"pretty","color":"","background":false,"background_color":"#00000026","corner_radius":0,"padding-block-start":48,"padding-block-end":48,"padding-inline-start":0,"padding-inline-end":0},"blocks":{}},"static-blog-post-card":{"type":"_blog-post-card","static":true,"settings":{"alignment":"left"},"blocks":{"image":{"type":"_blog-post-image","static":true,"settings":{"height":"large","border":"none","border_width":1,"border_opacity":100,"border_radius":4},"blocks":{}},"heading":{"type":"_heading","name":"t:names.title","static":true,"settings":{"type_preset":"h4","font":"var(--font-primary--family)","font_size":"","line_height":"normal","letter_spacing":"normal","case":"none","wrap":"pretty","color":"","text":"","read_only":true,"alignment":"left","show_alignment":false,"padding-block-start":0,"padding-block-end":10,"padding-inline-start":0,"padding-inline-end":0},"blocks":{}},"blog-post-details":{"type":"_blog-post-info-text","name":"t:names.details","static":true,"settings":{"show_date":true,"show_author":false,"type_preset":"","alignment":"left","show_alignment":false,"padding-block-start":0,"padding-block-end":0},"blocks":{}},"content":{"type":"_blog-post-description","static":true,"settings":{"type_preset":"rte","font":"var(--font-body--family)","font_size":"1rem","line_height":"normal","letter_spacing":"normal","case":"none","wrap":"pretty","color":"var(--color-foreground)","padding-block-start":16,"padding-block-end":0},"blocks":{}}},"block_order":[]}},"block_order":["title"],"disabled":true,"settings":{"color_scheme":"","padding-block-start":0,"padding-block-end":48}},"hero_section_pws_UQiwUD":{"type":"hero-section-pws","name":"Hero section","settings":{"show_search":true,"cutomclass":"","color_scheme":"scheme-2","image":"shopify:\/\/shop_images\/Vegas_TV_Mounting_Hero_Image.png","image_position":"right","eyebrow":"LEARNING CENTER","heading":"Expert Tips. Smart Solutions.","paragraph":"<p>Welcome to our Learning Center—your go-to resource for expert advice, how-to guides, and helpful insights about TV mounting, home AV, smart home technology, and more.<\/p>","button_1_label":"","button_1_link":"","button_2_label":"","button_2_link":"","padding_top":80,"padding_bottom":80,"padding_top_mobile":40,"padding_bottom_mobile":40}},"blog_tabs_filter_qwDe3U":{"type":"blog-tabs-filter","blocks":{"tab_B49Ttn":{"type":"tab","settings":{"label":"TV Mounting","tag":"TV Mounting"}},"tab_6qpgVL":{"type":"tab","settings":{"label":"Home Theater","tag":"Home Theater"}},"tab_nEDcqV":{"type":"tab","settings":{"label":"Smart Home","tag":"Smart Home"}},"tab_7gWmzr":{"type":"tab","settings":{"label":"Cables & Concealment","tag":"Cables & Concealment"}}},"block_order":["tab_B49Ttn","tab_6qpgVL","tab_nEDcqV","tab_7gWmzr"],"name":"Blog Tabs Section","settings":{"blog_handle":"learning-center"}}},"order":["main","hero_section_pws_UQiwUD","blog_tabs_filter_qwDe3U"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-blog",
+      "blocks": {
+        "title": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>{{ closest.blog.title }}</h1>",
+            "width": "fit-content",
+            "max_width": "narrow",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 48,
+            "padding-block-end": 48,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "static-blog-post-card": {
+          "type": "_blog-post-card",
+          "static": true,
+          "settings": {
+            "alignment": "left"
+          },
+          "blocks": {
+            "image": {
+              "type": "_blog-post-image",
+              "static": true,
+              "settings": {
+                "height": "large",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 4
+              },
+              "blocks": {}
+            },
+            "heading": {
+              "type": "_heading",
+              "name": "t:names.title",
+              "static": true,
+              "settings": {
+                "type_preset": "h4",
+                "font": "var(--font-primary--family)",
+                "font_size": "",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "",
+                "text": "",
+                "read_only": true,
+                "alignment": "left",
+                "show_alignment": false,
+                "padding-block-start": 0,
+                "padding-block-end": 10,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "blog-post-details": {
+              "type": "_blog-post-info-text",
+              "name": "t:names.details",
+              "static": true,
+              "settings": {
+                "show_date": true,
+                "show_author": false,
+                "type_preset": "",
+                "alignment": "left",
+                "show_alignment": false,
+                "padding-block-start": 0,
+                "padding-block-end": 0
+              },
+              "blocks": {}
+            },
+            "content": {
+              "type": "_blog-post-description",
+              "static": true,
+              "settings": {
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 16,
+                "padding-block-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": []
+        }
+      },
+      "block_order": [
+        "title"
+      ],
+      "disabled": true,
+      "settings": {
+        "color_scheme": "",
+        "padding-block-start": 0,
+        "padding-block-end": 48
+      }
+    },
+    "hero_section_pws_UQiwUD": {
+      "type": "hero-section-pws",
+      "name": "Hero section",
+      "settings": {
+        "show_search": true,
+        "cutomclass": "",
+        "color_scheme": "scheme-2",
+        "image": "shopify://shop_images/Vegas_TV_Mounting_Hero_Image.png",
+        "image_position": "right",
+        "eyebrow": "LEARNING CENTER",
+        "heading": "Expert Tips. Smart Solutions.",
+        "paragraph": "<p>Welcome to our Learning Center—your go-to resource for expert advice, how-to guides, and helpful insights about TV mounting, home AV, smart home technology, and more.</p>",
+        "button_1_label": "",
+        "button_1_link": "",
+        "button_2_label": "",
+        "button_2_link": "",
+        "padding_top": 80,
+        "padding_bottom": 80,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
+    "blog_tabs_filter_qwDe3U": {
+      "type": "blog-tabs-filter",
+      "blocks": {
+        "tab_B49Ttn": {
+          "type": "tab",
+          "settings": {
+            "label": "TV Mounting",
+            "tag": "TV Mounting"
+          }
+        },
+        "tab_6qpgVL": {
+          "type": "tab",
+          "settings": {
+            "label": "Home Theater",
+            "tag": "Home Theater"
+          }
+        },
+        "tab_nEDcqV": {
+          "type": "tab",
+          "settings": {
+            "label": "Smart Home",
+            "tag": "Smart Home"
+          }
+        },
+        "tab_7gWmzr": {
+          "type": "tab",
+          "settings": {
+            "label": "Cables & Concealment",
+            "tag": "Cables & Concealment"
+          }
+        }
+      },
+      "block_order": [
+        "tab_B49Ttn",
+        "tab_6qpgVL",
+        "tab_nEDcqV",
+        "tab_7gWmzr"
+      ],
+      "name": "Blog Tabs Section",
+      "settings": {
+        "blog_handle": "learning-center"
+      }
+    },
+    "cta_footer_bar_jAVdQe": {
+      "type": "cta-footer-bar",
+      "name": "CTA footer bar",
+      "settings": {
+        "heading": "Ready to Start Your Project?",
+        "phone_number": "Call or Text",
+        "button_label": "Book Now",
+        "button_link": "/pages/booking-wizard",
+        "background_color": "#000000",
+        "text_color": "#ffffff",
+        "button_background": "#990000",
+        "button_text_color": "#ffffff",
+        "padding_top": 24,
+        "padding_bottom": 24,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20
+      }
+    }
+  },
+  "order": [
+    "main",
+    "hero_section_pws_UQiwUD",
+    "blog_tabs_filter_qwDe3U",
+    "cta_footer_bar_jAVdQe"
+  ]
+}
