@@ -11,45 +11,47 @@
       --banner-padding-bottom-mobile: {{ section.settings.banner_padding_bottom_mobile }}px;
     "
   >
-    <div class="blog-post-banner__inner">
-
-      {%- if section.settings.show_breadcrumbs -%}
-        <nav class="blog-post-breadcrumbs" aria-label="breadcrumb">
-          <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t: default: 'Home' }}</a>
-          <span class="blog-post-breadcrumbs__sep">/</span>
-          <a href="{{ blog.url }}">{{ blog.title }}</a>
-          <span class="blog-post-breadcrumbs__sep">/</span>
-          <span class="blog-post-breadcrumbs__current">{{ article.title }}</span>
-        </nav>
-      {%- endif -%}
-
-      <h1 class="blog-post-banner__title">{{ article.title }}</h1>
-
-      <div class="blog-post-banner__meta">
-        <span class="blog-post-banner__meta-item">
-          <svg class="icon icon-calendar" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M3 9.5H21" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M8 3V6.5M16 3V6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-            {{ article.published_at | time_tag: format: 'date' }}
-          </time>
-        </span>
-
-        <span class="blog-post-banner__meta-item">
-          <svg class="icon icon-clock" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M12 7V12L15.5 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          {%- assign words = article.content | strip_html | split: ' ' | size -%}
-          {%- assign read_time = words | divided_by: 200 -%}
-          {%- if read_time < 1 -%}{%- assign read_time = 1 -%}{%- endif -%}
-          <span>{{ read_time }} {{ 'blogs.article.min_read' | t: default: 'min read' }}</span>
-        </span>
-      </div>
-
-    </div>
+     <div class=page-width">
+       <div class="blog-post-banner__inner">
+   
+         {%- if section.settings.show_breadcrumbs -%}
+           <nav class="blog-post-breadcrumbs" aria-label="breadcrumb">
+             <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t: default: 'Home' }}</a>
+             <span class="blog-post-breadcrumbs__sep">/</span>
+             <a href="{{ blog.url }}">{{ blog.title }}</a>
+             <span class="blog-post-breadcrumbs__sep">/</span>
+             <span class="blog-post-breadcrumbs__current">{{ article.title }}</span>
+           </nav>
+         {%- endif -%}
+   
+         <h1 class="blog-post-banner__title">{{ article.title }}</h1>
+   
+         <div class="blog-post-banner__meta">
+           <span class="blog-post-banner__meta-item">
+             <svg class="icon icon-calendar" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+               <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+               <path d="M3 9.5H21" stroke="currentColor" stroke-width="1.5"/>
+               <path d="M8 3V6.5M16 3V6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+             </svg>
+             <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+               {{ article.published_at | time_tag: format: 'date' }}
+             </time>
+           </span>
+   
+           <span class="blog-post-banner__meta-item">
+             <svg class="icon icon-clock" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+               <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+               <path d="M12 7V12L15.5 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+             </svg>
+             {%- assign words = article.content | strip_html | split: ' ' | size -%}
+             {%- assign read_time = words | divided_by: 200 -%}
+             {%- if read_time < 1 -%}{%- assign read_time = 1 -%}{%- endif -%}
+             <span>{{ read_time }} {{ 'blogs.article.min_read' | t: default: 'min read' }}</span>
+           </span>
+         </div>
+   
+       </div>
+     </div>
   </div>
 
   {%- comment -%} ============ MAIN LAYOUT: content + sidebar ============ {%- endcomment -%}
