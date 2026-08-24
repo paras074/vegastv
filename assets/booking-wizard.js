@@ -487,6 +487,11 @@
           return '';
         case 'appointment':
           if (!this.state.appt.date) return 'Please choose an appointment date.';
+          {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const d = new Date(this.state.appt.date + 'T00:00:00');
+            if (d < today) { this.state.appt.date = null; this.state.appt.slot = null; return 'That date has passed — please choose an upcoming date.'; }
+          }
           if (!this.state.appt.slot) return 'Please choose an appointment time.';
           return '';
         case 'customer': return this.validateCustomer();
