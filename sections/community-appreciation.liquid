@@ -53,12 +53,12 @@
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__heading {
-    color: #fff;
+    color: #ffffff;
     font-size: clamp(36px, 4vw, 52px);
     line-height: 1.04;
     font-weight: 800;
     letter-spacing: -1.2px;
-    margin: 0 0 18px;
+    margin: 0 0 16px;
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__heading strong {
@@ -66,49 +66,57 @@
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__text {
-    color: #e8e8e8;
-    font-size: 17px;
-    line-height: 1.65;
-    margin-bottom: 18px;
+    color: #ededed;
+    margin: 0 0 26px;
+  }
+
+  #shopify-section-{{ section.id }} .community-appreciation__text p {
+    margin: 0;
+    font-family: "Segoe Script", "Apple Chancery", "URW Chancery L", cursive;
+    font-size: 23px;
+    line-height: 1.4;
+    font-weight: 500;
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__groups {
-    color: #fff;
-    font-size: 15px;
-    line-height: 1.75;
-    font-weight: 600;
-    margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px 28px;
+    margin-bottom: 26px;
   }
 
+  #shopify-section-{{ section.id }} .community-appreciation__group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 600;
+  }
 
-
-#shopify-section-{{ section.id }} .community-appreciation__groups p {
-  margin: 0;
-}
-
-#shopify-section-{{ section.id }} .community-appreciation__groups p + p {
-  margin-top: 4px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  #shopify-section-{{ section.id }} .community-appreciation__check {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border-radius: 50%;
+    background: #d71920;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    margin-top: 1px;
+  }
 
   #shopify-section-{{ section.id }} .community-appreciation__note {
-    color: #a8a8a8;
+    color: #999999;
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.55;
     margin: 0;
+    padding-top: 18px;
+    border-top: 1px solid #252525;
   }
 
   @media screen and (max-width: 900px) {
@@ -138,10 +146,20 @@
     #shopify-section-{{ section.id }} .community-appreciation__heading {
       font-size: 36px;
     }
+
+    #shopify-section-{{ section.id }} .community-appreciation__text p {
+      font-size: 20px;
+    }
+
+    #shopify-section-{{ section.id }} .community-appreciation__groups {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
   }
 {% endstyle %}
 
 <div class="community-appreciation">
+
   <div class="community-appreciation__image">
     {% if section.settings.image != blank %}
       {{
@@ -159,6 +177,7 @@
   </div>
 
   <div class="community-appreciation__content">
+
     {% if section.settings.eyebrow != blank %}
       <p class="community-appreciation__eyebrow">
         {{ section.settings.eyebrow }}
@@ -177,17 +196,46 @@
       </div>
     {% endif %}
 
-    {% if section.settings.groups != blank %}
-      <div class="community-appreciation__groups">
-        {{ section.settings.groups }}
+    <div class="community-appreciation__groups">
+
+      <div class="community-appreciation__group">
+        <span class="community-appreciation__check">✓</span>
+        <span>Active-Duty Military & Veterans</span>
       </div>
-    {% endif %}
+
+      <div class="community-appreciation__group">
+        <span class="community-appreciation__check">✓</span>
+        <span>Law Enforcement</span>
+      </div>
+
+      <div class="community-appreciation__group">
+        <span class="community-appreciation__check">✓</span>
+        <span>Teachers & Educators</span>
+      </div>
+
+      <div class="community-appreciation__group">
+        <span class="community-appreciation__check">✓</span>
+        <span>Firefighters</span>
+      </div>
+
+      <div class="community-appreciation__group">
+        <span class="community-appreciation__check">✓</span>
+        <span>Local, State & Federal Government Employees</span>
+      </div>
+
+      <div class="community-appreciation__group">
+        <span class="community-appreciation__check">✓</span>
+        <span>EMTs & Paramedics</span>
+      </div>
+
+    </div>
 
     {% if section.settings.note != blank %}
       <p class="community-appreciation__note">
         {{ section.settings.note }}
       </p>
     {% endif %}
+
   </div>
 </div>
 
@@ -210,19 +258,13 @@
       "type": "inline_richtext",
       "id": "heading",
       "label": "Heading",
-      "default": "Save <strong>10%</strong> on Your Service"
+      "default": "Automatically Save <strong>10%</strong>"
     },
     {
       "type": "richtext",
       "id": "text",
       "label": "Description",
       "default": "<p>Our way of saying thank you to those who serve our community.</p>"
-    },
-    {
-      "type": "richtext",
-      "id": "groups",
-      "label": "Eligible groups",
-      "default": "<p>Active-Duty Military • Veterans • Teachers & Educators • Law Enforcement</p><p>Firefighters • EMTs & Paramedics • Local, State & Federal Government Employees</p>"
     },
     {
       "type": "text",
