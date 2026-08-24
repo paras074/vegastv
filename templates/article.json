@@ -44,7 +44,7 @@
         "content_direction": "column",
         "gap": 32,
         "color_scheme": "",
-        "padding-block-start": 40,
+        "padding-block-start": 80,
         "padding-block-end": 80,
         "show_breadcrumbs": true,
         "banner_padding_top": 80,
