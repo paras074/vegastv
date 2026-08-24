@@ -1,17 +1,30 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "booking_wizard": {
       "type": "booking-wizard",
       "settings": {
-        "api_endpoint": "",
-        "allowed_zips": "",
-        "tax_rate": 8.38,
+        "api_endpoint": "https://api.vegastvmounting.com/booking-endpoint.php",
+        "allowed_zips": "12345",
+        "tax_rate": 8.4,
+        "promo_codes": "",
         "brand_name": "Vegas TV Mounting",
         "phone": "(702) 720-1109",
+        "terms_url": "",
         "padding_top": 40,
         "padding_bottom": 60
       }
     }
   },
-  "order": ["booking_wizard"]
+  "order": [
+    "booking_wizard"
+  ]
 }
