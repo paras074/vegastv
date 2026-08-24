@@ -58,7 +58,7 @@
     line-height: 1.04;
     font-weight: 800;
     letter-spacing: -1.2px;
-    margin: 0 0 16px;
+    margin: 0 0 18px;
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__heading strong {
@@ -66,16 +66,32 @@
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__text {
-    color: #ededed;
-    margin: 0 0 26px;
+    margin: 0 0 28px;
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__text p {
     margin: 0;
-    font-family: "Segoe Script", "Apple Chancery", "URW Chancery L", cursive;
+    font-family: Georgia, "Times New Roman", serif;
     font-size: 23px;
-    line-height: 1.4;
+    line-height: 1.42;
     font-weight: 500;
+    font-style: italic;
+    letter-spacing: 0.1px;
+
+    background: linear-gradient(
+      90deg,
+      #bcbcbc 0%,
+      #f7f7f7 30%,
+      #ffffff 50%,
+      #d2d2d2 72%,
+      #a9a9a9 100%
+    );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.18));
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__groups {
@@ -148,7 +164,7 @@
     }
 
     #shopify-section-{{ section.id }} .community-appreciation__text p {
-      font-size: 20px;
+      font-size: 21px;
     }
 
     #shopify-section-{{ section.id }} .community-appreciation__groups {
