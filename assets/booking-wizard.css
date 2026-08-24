@@ -168,7 +168,9 @@
     margin-left: 5px;
 }
 .bw-choice__price { font-weight: 800; color: var(--bw-ink); }
-
+button.bw-btn {
+    font-family: 'Montserrat';
+}
 /* ---------- ZIP ---------- */
 .bw-field { display: grid; gap: 7px; margin-bottom: 14px; }
 .bw-field label { font-size: 13px; font-weight: 700; color: var(--bw-ink-soft); }
