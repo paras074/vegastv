@@ -1,0 +1,242 @@
+{%- liquid
+  assign section_id = section.id
+-%}
+
+<div
+  class="installation-gallery color-{{ section.settings.color_scheme }}"
+  style="
+    --pt-desktop: {{ section.settings.padding_top }}px;
+    --pb-desktop: {{ section.settings.padding_bottom }}px;
+    --pt-mobile: {{ section.settings.padding_top_mobile }}px;
+    --pb-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="installation-gallery__container page-width">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="installation-gallery__heading">
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+
+    {%- if section.settings.sub_heading != blank -%}
+      <div class="installation-gallery__sub-heading">
+        {{ section.settings.sub_heading }}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="installation-gallery__carousel-wrap">
+
+        <button type="button" class="installation-gallery__nav installation-gallery__nav--prev" data-gallery-prev="{{ section_id }}" aria-label="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="16" viewBox="0 0 11 18" fill="none">
+            <path d="M7.98387 0.519231L0.532258 7.78846C-0.177419 8.48077 -0.177419 9.51923 0.532258 10.2115L7.98387 17.4808C8.69355 18.1731 9.75806 18.1731 10.4677 17.4808C11.1774 16.7885 11.1774 15.75 10.4677 15.0577L4.25806 9L10.4677 2.94231C10.8226 2.59615 11 2.25 11 1.73077C11 1.21154 10.8226 0.865385 10.4677 0.519231C9.75806 -0.173077 8.69355 -0.173077 7.98387 0.519231Z" fill="currentColor"/>
+          </svg>
+        </button>
+
+        <ul class="installation-gallery__track" id="gallery-track-{{ section_id }}" role="list">
+          {%- for block in section.blocks -%}
+            <li class="installation-gallery__slide" {{ block.shopify_attributes }}>
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 900
+                  | image_tag:
+                    loading: 'lazy',
+                    sizes: '(min-width: 990px) 33vw, 80vw',
+                    class: 'installation-gallery__image',
+                    alt: section.settings.heading
+                  
+                }}
+              {%- else -%}
+                <div class="installation-gallery__image installation-gallery__image--placeholder">{{ 'image' | placeholder_svg_tag }}</div>
+              {%- endif -%}
+
+              {%- if block.settings.caption != blank -%}
+                <p class="installation-gallery__caption">{{ block.settings.caption }}</p>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <button type="button" class="installation-gallery__nav installation-gallery__nav--next" data-gallery-next="{{ section_id }}" aria-label="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="16" viewBox="0 0 11 18" fill="none">
+            <path d="M3.01613 17.4808L10.4677 10.2115C11.1774 9.51923 11.1774 8.48077 10.4677 7.78846L3.01613 0.519231C2.30645 -0.173077 1.24194 -0.173077 0.532259 0.519231C-0.177419 1.21154 -0.177419 2.25 0.532259 2.94231L6.74194 9L0.532259 15.0577C0.17742 15.4038 0 15.75 0 16.2692C0 16.7885 0.17742 17.1346 0.532259 17.4808C1.24194 18.1731 2.30645 18.1731 3.01613 17.4808Z" fill="currentColor"/>
+          </svg>
+        </button>
+
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+      <div class="installation-gallery__cta">
+        <a href="{{ section.settings.button_link }}" class="installation-gallery__button">
+          {{ section.settings.button_label }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<style>
+  
+
+
+</style>
+
+<script>
+  (function () {
+    var trackId = 'gallery-track-{{ section_id }}';
+    var track = document.getElementById(trackId);
+    if (!track) return;
+
+    var prevBtn = document.querySelector('[data-gallery-prev="{{ section_id }}"]');
+    var nextBtn = document.querySelector('[data-gallery-next="{{ section_id }}"]');
+
+    function scrollByAmount(direction) {
+      var slide = track.querySelector('.installation-gallery__slide');
+      if (!slide) return;
+      var amount = slide.getBoundingClientRect().width + 16;
+      track.scrollBy({ left: direction * amount, behavior: 'smooth' });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        scrollByAmount(-1);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        scrollByAmount(1);
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Installation Gallery",
+  "tag": "section",
+  "class": "section-installation-gallery",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Installation Gallery"
+    },
+    {
+      "type": "richtext",
+      "id": "sub_heading",
+      "label": "Sub heading",
+      "default": "<p>Take a look at some of our recent installations across the Las Vegas Valley.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "See More Installations"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "info": "Link to your portfolio page"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top (mobile)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom (mobile)",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Installation Gallery",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

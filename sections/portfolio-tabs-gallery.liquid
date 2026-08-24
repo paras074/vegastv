@@ -1,0 +1,384 @@
+{{ 'portfolio-tabs.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign padding_top_mobile = section.settings.padding_top_mobile
+  assign padding_bottom_mobile = section.settings.padding_bottom_mobile
+-%}
+
+<div
+  class="portfolio-tabs-section color-{{ section.settings.color_scheme }}"
+  style="
+    --pt-desktop: {{ padding_top }}px;
+    --pb-desktop: {{ padding_bottom }}px;
+    --pt-mobile: {{ padding_top_mobile }}px;
+    --pb-mobile: {{ padding_bottom_mobile }}px;
+  "
+  id="portfolio-tabs-{{ section.id }}"
+>
+  <div class="portfolio-tabs__inner page-width">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="portfolio-tabs__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="portfolio-tabs__tablist" role="tablist" aria-label="Portfolio categories">
+        <button
+          type="button"
+          class="portfolio-tab is-active"
+          data-tab-target="all"
+          role="tab"
+          aria-selected="true"
+        >
+          <span class="portfolio-tab__icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
+          </span>
+          <span>All Projects</span>
+        </button>
+
+        {%- for block in section.blocks -%}
+          <button
+            type="button"
+            class="portfolio-tab"
+            data-tab-target="category-{{ forloop.index0 }}"
+            role="tab"
+            aria-selected="false"
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.icon != blank -%}
+              <span class="portfolio-tab__icon" aria-hidden="true">
+                {{ block.settings.icon | image_url: width: 32 | image_tag: loading: 'lazy', alt: '' }}
+              </span>
+            {%- endif -%}
+            <span>{{ block.settings.title | default: 'Category' }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
+
+      <div class="portfolio-tabs__categories">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign images = ''
+            assign img_count = 0
+            for i in (1..8)
+              assign img_key = 'image_' | append: i
+              assign img_val = block.settings[img_key]
+              if img_val != blank
+                assign img_count = img_count | plus: 1
+              endif
+            endfor
+          -%}
+          <div
+            class="portfolio-category"
+            data-category-id="category-{{ forloop.index0 }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="portfolio-category__header">
+              <div class="portfolio-category__title">
+                {%- if block.settings.icon != blank -%}
+                  <span class="portfolio-category__icon" aria-hidden="true">
+                    {{ block.settings.icon | image_url: width: 32 | image_tag: loading: 'lazy', alt: '' }}
+                  </span>
+                {%- endif -%}
+                <h3>{{ block.settings.title | default: 'Category' }}</h3>
+              </div>
+              {%- if block.settings.view_all_link != blank -%}
+                <a href="{{ block.settings.view_all_link }}" class="portfolio-category__view-all">
+                  View All
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+
+            <div class="portfolio-carousel">
+              <button type="button" class="portfolio-carousel__arrow portfolio-carousel__arrow--prev" aria-label="Previous images">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+
+              <div class="portfolio-carousel__track" tabindex="0">
+                {%- for i in (1..8) -%}
+                  {%- assign img_key = 'image_' | append: i -%}
+                  {%- assign link_key = 'image_' | append: i | append: '_link' -%}
+                  {%- assign img_val = block.settings[img_key] -%}
+                  {%- assign link_val = block.settings[link_key] -%}
+                  {%- if img_val != blank -%}
+                    <div class="portfolio-carousel__slide">
+                      {%- if link_val != blank -%}<a href="{{ link_val }}">{%- endif -%}
+                        {{ img_val | image_url: width: 700 | image_tag:
+                          loading: 'lazy',
+                          alt: img_val.alt | default: block.settings.title,
+                          class: 'portfolio-carousel__image',
+                          widths: '350, 500, 700'
+                        }}
+                      {%- if link_val != blank -%}</a>{%- endif -%}
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+
+              <button type="button" class="portfolio-carousel__arrow portfolio-carousel__arrow--next" aria-label="Next images">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            {%- if img_count > 1 -%}
+              <div class="portfolio-carousel__dots" role="tablist" aria-label="Image pages"></div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="portfolio-tabs__empty">
+        {{ 'onboarding_content.svg' | placeholder_svg_tag: 'portfolio-tabs__placeholder' }}
+        <p>Add categories from the section blocks to build your gallery.</p>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+    (function () {
+  'use strict';
+
+  function initTabs(root) {
+    var tabs = root.querySelectorAll('.portfolio-tab');
+    var categories = root.querySelectorAll('.portfolio-category');
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var target = tab.getAttribute('data-tab-target');
+
+        tabs.forEach(function (t) {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+
+        categories.forEach(function (cat) {
+          if (target === 'all' || cat.getAttribute('data-category-id') === target) {
+            cat.hidden = false;
+          } else {
+            cat.hidden = true;
+          }
+        });
+      });
+    });
+  }
+
+  function initCarousel(carouselEl) {
+    var track = carouselEl.querySelector('.portfolio-carousel__track');
+    var prevBtn = carouselEl.querySelector('.portfolio-carousel__arrow--prev');
+    var nextBtn = carouselEl.querySelector('.portfolio-carousel__arrow--next');
+    var dotsWrap = carouselEl.parentElement.querySelector('.portfolio-carousel__dots');
+    if (!track) return;
+
+    var slides = track.querySelectorAll('.portfolio-carousel__slide');
+    if (!slides.length) return;
+
+    function visibleCount() {
+      var w = window.innerWidth;
+      if (w >= 990) return 4;
+      if (w >= 600) return 2;
+      return 1;
+    }
+
+    function pageCount() {
+      return Math.max(1, Math.ceil(slides.length / visibleCount()));
+    }
+
+    function buildDots() {
+      if (!dotsWrap) return;
+      dotsWrap.innerHTML = '';
+      var pages = pageCount();
+      for (var i = 0; i < pages; i++) {
+        var dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'dot' + (i === 0 ? ' is-active' : '');
+        dot.setAttribute('aria-label', 'Go to page ' + (i + 1));
+        dot.addEventListener('click', function (idx) {
+          return function () {
+            var slideWidth = slides[0].getBoundingClientRect().width + 14;
+            track.scrollTo({ left: idx * slideWidth * visibleCount(), behavior: 'smooth' });
+          };
+        }(i));
+        dotsWrap.appendChild(dot);
+      }
+    }
+
+    function updateActiveDot() {
+      if (!dotsWrap) return;
+      var dots = dotsWrap.querySelectorAll('.dot');
+      if (!dots.length) return;
+      var slideWidth = slides[0].getBoundingClientRect().width + 14;
+      var pageWidth = slideWidth * visibleCount();
+      var current = Math.round(track.scrollLeft / pageWidth);
+      dots.forEach(function (d, i) {
+        d.classList.toggle('is-active', i === current);
+      });
+      if (prevBtn) prevBtn.disabled = track.scrollLeft <= 4;
+      if (nextBtn) {
+        nextBtn.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+      }
+    }
+
+    function scrollByPage(direction) {
+      var slideWidth = slides[0].getBoundingClientRect().width + 14;
+      var pageWidth = slideWidth * visibleCount();
+      track.scrollBy({ left: direction * pageWidth, behavior: 'smooth' });
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', function () { scrollByPage(-1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { scrollByPage(1); });
+
+    track.addEventListener('scroll', function () {
+      window.requestAnimationFrame(updateActiveDot);
+    });
+
+    window.addEventListener('resize', function () {
+      buildDots();
+      updateActiveDot();
+    });
+
+    buildDots();
+    updateActiveDot();
+  }
+
+  function initSection(section) {
+    initTabs(section);
+    section.querySelectorAll('.portfolio-carousel').forEach(initCarousel);
+  }
+
+  document.querySelectorAll('.portfolio-tabs-section').forEach(initSection);
+
+  document.addEventListener('shopify:section:load', function (event) {
+    var section = event.target.querySelector('.portfolio-tabs-section');
+    if (section) initSection(section);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Portfolio tabs gallery",
+  "tag": "section",
+  "class": "portfolio-tabs-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Work"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top (desktop)",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom (desktop)",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top (mobile)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom (mobile)",
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category title",
+          "default": "TV Mounting"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Tab icon (optional)"
+        },
+        {
+          "type": "url",
+          "id": "view_all_link",
+          "label": "\"View All\" link"
+        },
+        { "type": "header", "content": "Images (up to 8)" },
+        { "type": "image_picker", "id": "image_1", "label": "Image 1" },
+        { "type": "url", "id": "image_1_link", "label": "Image 1 link" },
+        { "type": "image_picker", "id": "image_2", "label": "Image 2" },
+        { "type": "url", "id": "image_2_link", "label": "Image 2 link" },
+        { "type": "image_picker", "id": "image_3", "label": "Image 3" },
+        { "type": "url", "id": "image_3_link", "label": "Image 3 link" },
+        { "type": "image_picker", "id": "image_4", "label": "Image 4" },
+        { "type": "url", "id": "image_4_link", "label": "Image 4 link" },
+        { "type": "image_picker", "id": "image_5", "label": "Image 5" },
+        { "type": "url", "id": "image_5_link", "label": "Image 5 link" },
+        { "type": "image_picker", "id": "image_6", "label": "Image 6" },
+        { "type": "url", "id": "image_6_link", "label": "Image 6 link" },
+        { "type": "image_picker", "id": "image_7", "label": "Image 7" },
+        { "type": "url", "id": "image_7_link", "label": "Image 7 link" },
+        { "type": "image_picker", "id": "image_8", "label": "Image 8" },
+        { "type": "url", "id": "image_8_link", "label": "Image 8 link" }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Portfolio tabs gallery",
+      "blocks": [
+        { "type": "category", "settings": { "title": "TV Mounting" } },
+        { "type": "category", "settings": { "title": "Home Theater" } },
+        { "type": "category", "settings": { "title": "Outdoor TV" } },
+        { "type": "category", "settings": { "title": "Smart Home & Low Voltage" } },
+        { "type": "category", "settings": { "title": "Commercial" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+

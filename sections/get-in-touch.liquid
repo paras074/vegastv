@@ -1,0 +1,370 @@
+{%- style -%}
+  #shopify-section-{{ section.id }} .git-section {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} .git-section {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="git-section color-{{ section.settings.color_scheme }}">
+  <div class="git-container page-width">
+
+    <!-- LEFT: Info -->
+    <div class="git-left">
+      {%- if section.settings.label != blank -%}
+        <p class="git-label">{{ section.settings.label }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="git-heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <div class="git-description">{{ section.settings.description }}</div>
+      {%- endif -%}
+
+      <div class="git-methods-grid">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'contact_method' -%}
+            <div class="git-method-card" {{ block.shopify_attributes }}>
+              <div class="git-method-icon">
+                {%- case block.settings.icon -%}
+                  {%- when 'call' -%}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8c1.4 2.9 3.7 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z" fill="currentColor"/></svg>
+                  {%- when 'calendar' -%}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  {%- when 'email' -%}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5L12 13l8.5-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  {%- when 'location' -%}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s7-6.6 7-12A7 7 0 105 10c0 5.4 7 12 7 12z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/></svg>
+                {%- endcase -%}
+              </div>
+
+              {%- if block.settings.title != blank -%}
+                <h3 class="git-method-title">{{ block.settings.title }}</h3>
+              {%- endif -%}
+
+              {%- if block.settings.link_text != blank -%}
+                <a href="{{ block.settings.link_url }}" class="git-method-link">{{ block.settings.link_text }}</a>
+              {%- endif -%}
+
+              {%- if block.settings.description != blank -%}
+                <p class="git-method-desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.show_button and block.settings.button_text != blank -%}
+                <a href="{{ block.settings.button_url }}" class="git-method-btn">{{ block.settings.button_text }}</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <!-- RIGHT: Form -->
+    <div class="git-right">
+      <div class="git-form-card">
+        {%- if section.settings.form_heading != blank -%}
+          <h3 class="git-form-heading">{{ section.settings.form_heading }}</h3>
+        {%- endif -%}
+        {%- if section.settings.form_subheading != blank -%}
+          <p class="git-form-subheading">{{ section.settings.form_subheading }}</p>
+        {%- endif -%}
+
+        {%- assign form_id = 'GitContactForm-' | append: section.id -%}
+
+            {%- form 'contact', id: form_id, class: 'git-form' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="git-form-message git-form-message--success">Thanks! We'll get back to you shortly.</p>
+          {%- endif -%}
+          {%- if form.errors -%}
+            <p class="git-form-message git-form-message--error">
+              {{ form.errors | default_errors }}
+            </p>
+          {%- endif -%}
+
+          <div class="git-form-row">
+            <div class="git-form-field">
+              <label for="GitName-{{ section.id }}">Full Name <span>*</span></label>
+              <input type="text" id="GitName-{{ section.id }}" name="contact[name]" value="{{ form.name }}" required>
+            </div>
+            <div class="git-form-field">
+              <label for="GitEmail-{{ section.id }}">Email Address <span>*</span></label>
+              <input type="email" id="GitEmail-{{ section.id }}" name="contact[email]" value="{{ form.email }}" required>
+            </div>
+          </div>
+
+          <div class="git-form-field">
+            <label for="GitPhone-{{ section.id }}">Phone Number <span>*</span></label>
+            <input type="tel" id="GitPhone-{{ section.id }}" name="contact[phone]" value="{{ form.phone }}" placeholder="{{ section.settings.phone_placeholder }}" required>
+          </div>
+
+          <div class="git-form-field">
+            <label for="GitService-{{ section.id }}">Service You're Interested In <span>*</span></label>
+            <select id="GitService-{{ section.id }}" name="contact[Service]" required>
+              <option value="">Select a service</option>
+              {%- assign services = section.settings.services | newline_to_br | split: '<br />' -%}
+              {%- for service in services -%}
+                {%- assign trimmed = service | strip -%}
+                {%- if trimmed != blank -%}
+                  <option value="{{ trimmed }}">{{ trimmed }}</option>
+                {%- endif -%}
+              {%- endfor -%}
+            </select>
+          </div>
+
+          <div class="git-form-field">
+            <label for="GitMessage-{{ section.id }}">Message <span>*</span></label>
+            <textarea id="GitMessage-{{ section.id }}" name="contact[body]" rows="4" placeholder="Tell us more about your project..." required>{{ form.body }}</textarea>
+          </div>
+
+          <button type="submit" class="git-form-submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 11l18-8-8 18-2-8-8-2z" fill="currentColor"/></svg>
+            Send Message
+          </button>
+
+          {%- if section.settings.privacy_text != blank -%}
+            <p class="git-form-privacy">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.5"/></svg>
+              {{ section.settings.privacy_text }}
+            </p>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Get in Touch",
+  "tag": "section",
+  "class": "section-get-in-touch",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Left content"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "GET IN TOUCH"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<p>Multiple Ways to Reach Us</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Choose the option that works best for you. We're just a call, text or message away — and we respond quickly.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Right content - Form"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "Form heading",
+      "default": "Send Us a Message"
+    },
+    {
+      "type": "text",
+      "id": "form_subheading",
+      "label": "Form subheading",
+      "default": "We'd love to hear from you! Fill out the form below and we'll get back to you as soon as possible."
+    },
+    {
+      "type": "text",
+      "id": "phone_placeholder",
+      "label": "Phone placeholder",
+      "default": "(702) 555-0123"
+    },
+    {
+      "type": "textarea",
+      "id": "services",
+      "label": "Services list (one per line)",
+      "default": "Boat Lift Installation\nDock Repair\nCustom Fabrication\nMaintenance\nOther"
+    },
+    {
+      "type": "text",
+      "id": "privacy_text",
+      "label": "Privacy text",
+      "default": "Your information is safe with us. We respect your privacy."
+    },
+    {
+      "type": "header",
+      "content": "Padding - Desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Padding - Mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "contact_method",
+      "name": "Contact Method",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "call", "label": "Phone" },
+            { "value": "calendar", "label": "Calendar" },
+            { "value": "email", "label": "Email" },
+            { "value": "location", "label": "Location" }
+          ],
+          "default": "call"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Call or Text"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link text (e.g. phone number or email)",
+          "default": "(702) 720-1109"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "We're available 8:00 a.m. - 8:00 p.m. daily."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button",
+          "label": "Show button instead of description",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "BOOK NOW"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Get in Touch",
+      "blocks": [
+        {
+          "type": "contact_method",
+          "settings": {
+            "icon": "call",
+            "title": "Call or Text",
+            "link_text": "(702) 720-1109",
+            "description": "We're available 8:00 a.m. - 8:00 p.m. daily.",
+            "show_button": false
+          }
+        },
+        {
+          "type": "contact_method",
+          "settings": {
+            "icon": "calendar",
+            "title": "Book Online",
+            "description": "Schedule your residential or commercial service in just a few clicks.",
+            "show_button": true,
+            "button_text": "BOOK NOW"
+          }
+        },
+        {
+          "type": "contact_method",
+          "settings": {
+            "icon": "email",
+            "title": "Email Us",
+            "link_text": "info@vegastvmounting.com",
+            "link_url": "mailto:info@vegastvmounting.com",
+            "description": "We typically reply within a few hours.",
+            "show_button": false
+          }
+        },
+        {
+          "type": "contact_method",
+          "settings": {
+            "icon": "location",
+            "title": "Visit Our Office",
+            "link_text": "Las Vegas, NV 89117",
+            "description": "We're locally based and happy to help.",
+            "show_button": false
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

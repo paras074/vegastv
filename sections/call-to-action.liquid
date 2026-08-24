@@ -1,0 +1,391 @@
+<section
+  class="project-cta"
+  style="
+    --cta-background: {{ section.settings.background_color }};
+    --cta-text-color: {{ section.settings.text_color }};
+    --cta-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --cta-padding-top: {{ section.settings.padding_top }}px;
+    --cta-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  {% if section.settings.background_image != blank %}
+    <div class="project-cta__background">
+      {{
+        section.settings.background_image
+        | image_url: width: 2400
+        | image_tag:
+          loading: 'lazy',
+          widths: '750, 1100, 1500, 2000, 2400',
+          sizes: '100vw',
+          class: 'project-cta__background-image',
+          alt: section.settings.background_image.alt
+      }}
+    </div>
+
+    <div class="project-cta__overlay"></div>
+  {% endif %}
+
+  <div class="project-cta__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="project-cta__heading">
+        {{ section.settings.heading }}
+      </h2>
+    {% endif %}
+
+    {% if section.settings.description != blank %}
+      <div class="project-cta__description">
+        {{ section.settings.description }}
+      </div>
+    {% endif %}
+
+    <div class="project-cta__buttons">
+      {% if section.settings.call_number != blank %}
+        <a
+          href="tel:{{ section.settings.call_number | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '.' }}"
+          class="project-cta__button project-cta__button--call"
+          aria-label="Call {{ section.settings.call_button_text | escape }}"
+        >
+          <span class="project-cta__button-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </span>
+
+          <span class="project-cta__button-label">
+            {{ section.settings.call_button_text }}
+          </span>
+        </a>
+      {% endif %}
+
+      {% if section.settings.text_number != blank %}
+        <a
+          href="sms:{{ section.settings.text_number | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '.' }}"
+          class="project-cta__button project-cta__button--text"
+          aria-label="Text {{ section.settings.text_button_text | escape }}"
+        >
+          <span class="project-cta__button-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </span>
+
+          <span class="project-cta__button-label">
+            {{ section.settings.text_button_text }}
+          </span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .project-cta {
+    position: relative;
+    width: 100%;
+    padding-top: var(--cta-padding-top);
+    padding-bottom: var(--cta-padding-bottom);
+    background: var(--cta-background);
+    color: var(--cta-text-color);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .project-cta__background,
+  .project-cta__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .project-cta__background {
+    z-index: 0;
+  }
+
+  .project-cta__background-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .project-cta__overlay {
+    z-index: 1;
+    background: rgba(0, 0, 0, var(--cta-overlay-opacity));
+  }
+
+  .project-cta__inner {
+    position: relative;
+    z-index: 2;
+    width: min(100% - 32px, 900px);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .project-cta__heading {
+    margin: 0;
+    color: inherit;
+    font-size: clamp(32px, 4vw, 54px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+  }
+
+  .project-cta__description {
+    max-width: 760px;
+    margin: 20px auto 0;
+    color: inherit;
+    font-size: 18px;
+    line-height: 1.65;
+  }
+
+  .project-cta__description p {
+    margin: 0;
+  }
+
+  .project-cta__buttons {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .project-cta__button {
+    min-width: 240px;
+    min-height: 54px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 24px 10px 12px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    text-align: center;
+    box-sizing: border-box;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      filter 180ms ease,
+      background-color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .project-cta__button--call {
+    border: 1px solid #d6aa42;
+    background: linear-gradient(
+      135deg,
+      #f4d477 0%,
+      #c8952e 55%,
+      #f0ca64 100%
+    );
+    color: #111111;
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  }
+
+  .project-cta__button--call:hover {
+    color: #111111;
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    box-shadow:
+      0 11px 28px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  .project-cta__button--text {
+    border: 2px solid #d6aa42;
+    background: #ffffff;
+    color: #111111;
+    box-shadow: none;
+  }
+
+  .project-cta__button--text:hover {
+    color: #111111;
+    background: #f8f1df;
+    border-color: #c8952e;
+    transform: translateY(-1px);
+  }
+
+  .project-cta__button:focus-visible {
+    outline: 3px solid rgba(214, 170, 66, 0.45);
+    outline-offset: 3px;
+  }
+
+  .project-cta__button-icon {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #111111;
+    color: #e8bd57;
+  }
+
+  .project-cta__button-label {
+    white-space: nowrap;
+  }
+
+  @media screen and (max-width: 749px) {
+    .project-cta__inner {
+      width: min(100% - 24px, 900px);
+    }
+
+    .project-cta__heading {
+      font-size: clamp(30px, 9vw, 42px);
+    }
+
+    .project-cta__description {
+      margin-top: 16px;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .project-cta__buttons {
+      margin-top: 24px;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .project-cta__button {
+      width: 100%;
+      max-width: 360px;
+      min-width: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Project call to action",
+  "tag": "section",
+  "class": "section-project-cta",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Ready to Get Your Project Started?"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Get a fast, free estimate for your residential or commercial project. Same-day and next-day appointments are often available throughout the Las Vegas Valley.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Call button"
+    },
+    {
+      "type": "text",
+      "id": "call_button_text",
+      "label": "Call button text",
+      "default": "Call (702) 720-1109"
+    },
+    {
+      "type": "text",
+      "id": "call_number",
+      "label": "Call phone number",
+      "default": "+17027201109",
+      "info": "Enter the number without extra text."
+    },
+    {
+      "type": "header",
+      "content": "Text button"
+    },
+    {
+      "type": "text",
+      "id": "text_button_text",
+      "label": "Text button text",
+      "default": "Text Us"
+    },
+    {
+      "type": "text",
+      "id": "text_number",
+      "label": "Text phone number",
+      "default": "+17027201109",
+      "info": "Enter the number without extra text."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "Image overlay opacity",
+      "default": 55
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 40,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 88
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 40,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 88
+    }
+  ],
+  "presets": [
+    {
+      "name": "Project call to action"
+    }
+  ]
+}
+{% endschema %}

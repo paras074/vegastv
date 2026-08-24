@@ -1,0 +1,245 @@
+
+{%- liquid
+  assign section_id = section.id
+-%}
+
+<div
+  class="services-section color-{{ section.settings.color_scheme }}"
+  style="
+    --pt-desktop: {{ section.settings.padding_top }}px;
+    --pb-desktop: {{ section.settings.padding_bottom }}px;
+    --pt-mobile: {{ section.settings.padding_top_mobile }}px;
+    --pb-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="services-section__container page-width">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="services-section__heading">
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+
+    {%- if section.settings.sub_heading != blank -%}
+      <div class="services-section__sub-heading">
+        {{ section.settings.sub_heading }}
+      </div>
+    {%- endif -%}
+
+    {%- for block in section.blocks -%}
+      {%- assign selected_collection = block.settings.collection -%}
+
+      {%- if selected_collection != blank and selected_collection.products.size > 0 -%}
+
+        <div class="collection-outer" {{ block.shopify_attributes }}>
+
+          <h3 class="services-section__collection-heading">
+            {{ selected_collection.title }}
+          </h3>
+
+          <ul class="services-section__grid" role="list">
+            {%- for product in selected_collection.products limit: 6 -%}
+              <li class="services-section__card">
+
+                {%- if product.featured_image != blank -%}
+                  <a href="{{ product.url }}" class="services-section__image-link">
+                    {{
+                      product.featured_image
+                      | image_url: width: 600
+                      | image_tag:
+                        loading: 'lazy',
+                        sizes: '(min-width: 990px) 25vw, 50vw',
+                        class: 'services-section__image'
+                    }}
+                  </a>
+                {%- endif -%}
+                <div class="card-body-srvice">
+                  <h4 class="services-section__title">
+                    <a href="{{ product.url }}">
+                      {{ product.title }}
+                    </a>
+                  </h4>
+
+                    {% if product.tags contains 'commercial' %}
+                  <a href="/pages/contact" class="book-service">
+                    Get a Free Quote
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="18" viewBox="0 0 11 18" fill="none">
+                      <path d="M3.01613 17.4808L10.4677 10.2115C11.1774 9.51923 11.1774 8.48077 10.4677 7.78846L3.01613 0.519231C2.30645 -0.173077 1.24194 -0.173077 0.532259 0.519231C-0.177419 1.21154 -0.177419 2.25 0.532259 2.94231L6.74194 9L0.532259 15.0577C0.17742 15.4038 2.67644e-07 15.75 2.67644e-07 16.2692C2.67644e-07 16.7885 0.17742 17.1346 0.532259 17.4808C1.24194 18.1731 2.30645 18.1731 3.01613 17.4808Z" fill="black"/>
+                    </svg>
+                  </a>
+                {% else %}
+                  {% if product.tags contains 'Quote' %}
+                    <a href="/pages/contact" class="book-service">
+                      Request a Quote
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="18" viewBox="0 0 11 18" fill="none">
+                        <path d="M3.01613 17.4808L10.4677 10.2115C11.1774 9.51923 11.1774 8.48077 10.4677 7.78846L3.01613 0.519231C2.30645 -0.173077 1.24194 -0.173077 0.532259 0.519231C-0.177419 1.21154 -0.177419 2.25 0.532259 2.94231L6.74194 9L0.532259 15.0577C0.17742 15.4038 2.67644e-07 15.75 2.67644e-07 16.2692C2.67644e-07 16.7885 0.17742 17.1346 0.532259 17.4808C1.24194 18.1731 2.30645 18.1731 3.01613 17.4808Z" fill="black"/>
+                      </svg>
+                    </a>
+                  {% else %}
+                    <a href="{{ product.url }}" class="book-service">
+                      Book Now
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="18" viewBox="0 0 11 18" fill="none">
+                        <path d="M3.01613 17.4808L10.4677 10.2115C11.1774 9.51923 11.1774 8.48077 10.4677 7.78846L3.01613 0.519231C2.30645 -0.173077 1.24194 -0.173077 0.532259 0.519231C-0.177419 1.21154 -0.177419 2.25 0.532259 2.94231L6.74194 9L0.532259 15.0577C0.17742 15.4038 2.67644e-07 15.75 2.67644e-07 16.2692C2.67644e-07 16.7885 0.17742 17.1346 0.532259 17.4808C1.24194 18.1731 2.30645 18.1731 3.01613 17.4808Z" fill="black"/>
+                      </svg>
+                    </a>
+                  {% endif %}
+
+                  <a href="" class="book-service  js-connect-popup">
+                    Call or Text <svg xmlns="http://www.w3.org/2000/svg" width="11" height="18" viewBox="0 0 11 18" fill="none">
+                        <path d="M3.01613 17.4808L10.4677 10.2115C11.1774 9.51923 11.1774 8.48077 10.4677 7.78846L3.01613 0.519231C2.30645 -0.173077 1.24194 -0.173077 0.532259 0.519231C-0.177419 1.21154 -0.177419 2.25 0.532259 2.94231L6.74194 9L0.532259 15.0577C0.17742 15.4038 2.67644e-07 15.75 2.67644e-07 16.2692C2.67644e-07 16.7885 0.17742 17.1346 0.532259 17.4808C1.24194 18.1731 2.30645 18.1731 3.01613 17.4808Z" fill="black"/>
+                      </svg>
+                  </a>
+                {% endif %}
+
+                  {% comment %} <a
+                    href="{{ product.url }}"
+                    class="book-service"
+                  >
+                    {{ section.settings.button_label | default: 'Book Service' }} <svg xmlns="http://www.w3.org/2000/svg" width="11" height="18" viewBox="0 0 11 18" fill="none">
+                      <path d="M3.01613 17.4808L10.4677 10.2115C11.1774 9.51923 11.1774 8.48077 10.4677 7.78846L3.01613 0.519231C2.30645 -0.173077 1.24194 -0.173077 0.532259 0.519231C-0.177419 1.21154 -0.177419 2.25 0.532259 2.94231L6.74194 9L0.532259 15.0577C0.17742 15.4038 2.67644e-07 15.75 2.67644e-07 16.2692C2.67644e-07 16.7885 0.17742 17.1346 0.532259 17.4808C1.24194 18.1731 2.30645 18.1731 3.01613 17.4808Z" fill="black"/>
+                    </svg>
+                  </a> {% endcomment %}
+                </div>
+
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          {%- assign view_all_url = selected_collection.url -%}
+          {%- if selected_collection.handle == 'residential' -%}
+            {%- assign view_all_url = '/pages/residential-services' -%}
+          {%- elsif selected_collection.handle == 'commercial' -%}
+            {%- assign view_all_url = '/pages/commercial-services' -%}
+          {%- endif -%}
+
+          <div class="services-section__view-all">
+            <a href="{{ view_all_url }}" class="view-all-service">
+              {%- if block.settings.view_all_label != blank -%}
+                {{ block.settings.view_all_label }}
+              {%- else -%}
+                View All {{ selected_collection.title }}
+              {%- endif -%}
+            </a>
+          </div>
+
+        </div>
+
+      {%- endif -%}
+    {%- endfor -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Services",
+  "tag": "section",
+  "class": "section-ser",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Professional Installation Services"
+    },
+    {
+      "type": "richtext",
+      "id": "sub_heading",
+      "label": "Sub heading",
+      "default": "<p>From TVs to smart homes and commercial AV, we install it all across the Las Vegas Valley.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Product button label",
+      "default": "Book Service"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top (mobile)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom (mobile)",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "view_all_label",
+          "label": "View all button label",
+          "info": "Leave blank to auto-generate as \"View All [Collection Name]\""
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Services",
+      "blocks": [
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,487 @@
+{%- liquid
+  assign section_id = section.id
+-%}
+
+<style>
+  #shopify-section-{{ section_id }} .bar-section {
+    position: relative;
+    padding-top: var(--pt-mobile);
+    padding-bottom: var(--pb-mobile);
+    overflow: hidden;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section_id }} .bar-section {
+      padding-top: var(--pt-desktop);
+      padding-bottom: var(--pb-desktop);
+    }
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__image-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* FIX: overflow:hidden instead of overflow-x:auto — we no longer rely on
+     native scrollLeft for the animation, so no scrollbar / momentum-scroll
+     behavior is needed at all. This is what removes the iOS bug where
+     JS-driven scrollLeft changes silently stop repainting. */
+  #shopify-section-{{ section_id }} .bar-section__viewport {
+    width: 100%;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: pan-y;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__viewport.is-dragging {
+    cursor: grabbing;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__viewport:focus-visible {
+    outline: 2px solid #900000;
+    outline-offset: 2px;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__list {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: max-content;
+    will-change: transform;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__icon svg {
+    width: 100%;
+    height: 100%;
+    color: #900000;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section_id }} .bar-section__text {
+    color: #000;
+    pointer-events: none;
+  }
+</style>
+
+<div class="bar-section color-{{ section.settings.color_scheme }}"
+  style="
+    --pt-desktop: {{ section.settings.padding_top }}px;
+    --pb-desktop: {{ section.settings.padding_bottom }}px;
+    --pt-mobile: {{ section.settings.padding_top_mobile }}px;
+    --pb-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="bar-section__container page-width">
+
+    {%- if section.settings.image != blank -%}
+      <div class="bar-section__image">
+        {{
+          section.settings.image
+          | image_url: width: 400
+          | image_tag: loading: 'lazy', class: 'bar-section__image-img'
+        }}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div
+        class="bar-section__viewport"
+        id="bar-viewport-{{ section_id }}"
+        data-bar-viewport
+        data-speed="{{ section.settings.scroll_speed }}"
+        tabindex="0"
+        role="region"
+        aria-label="Trust badges"
+      >
+        <ul class="bar-section__list bar-section__list--track" role="list" data-bar-track>
+          {%- comment -%} Base set — JS dynamically clones this enough times for a true infinite loop, regardless of screen width or block count {%- endcomment -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'icon_text' -%}
+              <li class="bar-section__item" {{ block.shopify_attributes }}>
+                <span class="bar-section__icon">
+                  {%- if block.settings.icon_type == 'svg' -%}
+                    {{ block.settings.svg_code }}
+                  {%- else -%}
+                    {%- if block.settings.icon_image != blank -%}
+                      {{
+                        block.settings.icon_image
+                        | image_url: width: 80
+                        | image_tag: loading: 'lazy', class: 'bar-section__icon-img'
+                      }}
+                    {%- endif -%}
+                  {%- endif -%}
+                </span>
+                {%- if block.settings.text != blank -%}
+                  <span class="bar-section__text">{{ block.settings.text }}</span>
+                {%- endif -%}
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    function initBarSection() {
+      var viewport = document.getElementById('bar-viewport-{{ section_id }}');
+      if (!viewport || viewport.dataset.barInitialized) return;
+      viewport.dataset.barInitialized = 'true';
+
+      var track = viewport.querySelector('[data-bar-track]');
+      var speedSeconds = parseFloat(viewport.dataset.speed) || 25;
+
+      var baseItemsHTML = track.innerHTML; // original single set
+      var setWidth = 0;   // width of ONE set
+      var offset = 0;     // FIX: current translateX offset in px — this
+                           // replaces scrollLeft entirely as the source of
+                           // truth for animation position.
+
+      var isDown = false;
+      var autoplayPaused = false;
+      var startX = 0;
+      var dragStartOffset = 0;
+      var lastTimestamp = null;
+      var rafId = null;
+      var activePointerId = null;
+
+      function applyTransform() {
+        track.style.transform = 'translateX(' + offset + 'px)';
+      }
+
+      // Keep offset within a single set-width range so it never grows
+      // unbounded, whichever direction it's moving.
+      function wrapOffset() {
+        if (setWidth <= 0) return;
+        while (offset <= -setWidth) offset += setWidth;
+        while (offset > 0) offset -= setWidth;
+      }
+
+      function buildLoop() {
+        track.innerHTML = baseItemsHTML;
+        setWidth = track.scrollWidth;
+
+        if (setWidth <= 0) {
+          setTimeout(buildLoop, 150);
+          return;
+        }
+
+        var viewportWidth = viewport.clientWidth || window.innerWidth;
+        // Enough copies so the track is always wider than viewport + one
+        // extra set, guaranteeing no visible gap while wrapping.
+        var setsNeeded = Math.max(3, Math.ceil((viewportWidth + setWidth) / setWidth) + 1);
+
+        var html = '';
+        for (var i = 0; i < setsNeeded; i++) {
+          html += baseItemsHTML;
+        }
+        track.innerHTML = html;
+
+        var allItems = track.children;
+        var itemsPerSet = allItems.length / setsNeeded;
+        for (var j = itemsPerSet; j < allItems.length; j++) {
+          allItems[j].setAttribute('aria-hidden', 'true');
+        }
+
+        offset = 0;
+        applyTransform();
+      }
+
+      function pause() {
+        isDown = true;
+        autoplayPaused = true;
+        viewport.classList.add('is-dragging');
+      }
+
+      function forceResume() {
+        isDown = false;
+        autoplayPaused = false;
+        activePointerId = null;
+        viewport.classList.remove('is-dragging');
+        lastTimestamp = null;
+      }
+
+      function tick(timestamp) {
+        if (lastTimestamp === null) lastTimestamp = timestamp;
+        var delta = timestamp - lastTimestamp;
+        lastTimestamp = timestamp;
+
+        if (!autoplayPaused && setWidth > 0 && speedSeconds > 0) {
+          var pxPerMs = setWidth / (speedSeconds * 1000);
+          offset -= pxPerMs * delta;
+          wrapOffset();
+          applyTransform();
+        }
+        rafId = requestAnimationFrame(tick);
+      }
+
+      function fullInit() {
+        buildLoop();
+      }
+
+      if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function () {
+          if (viewport.clientWidth > 0) buildLoop();
+        });
+        ro.observe(viewport);
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(buildLoop);
+      }
+
+      if (document.readyState === 'complete') {
+        fullInit();
+      } else {
+        window.addEventListener('load', fullInit);
+      }
+      setTimeout(fullInit, 300);
+
+      window.addEventListener('pageshow', function (e) {
+        if (e.persisted) {
+          forceResume();
+          buildLoop();
+          if (!rafId) rafId = requestAnimationFrame(tick);
+        }
+      });
+
+      var resizeTimeout;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(buildLoop, 200);
+      });
+
+      rafId = requestAnimationFrame(tick);
+
+      // ---- Unified pointer drag (mouse + touch + pen) ----
+      // FIX: drag now directly manipulates `offset`/transform instead of
+      // scrollLeft, so it's completely independent of the browser's native
+      // touch-scroll/momentum handling — no more stuck-paused states.
+      viewport.addEventListener('pointerdown', function (e) {
+        activePointerId = e.pointerId;
+        pause();
+        startX = e.clientX;
+        dragStartOffset = offset;
+      });
+
+      viewport.addEventListener('pointermove', function (e) {
+        if (!isDown || e.pointerId !== activePointerId) return;
+        var walk = e.clientX - startX;
+        offset = dragStartOffset + walk;
+        wrapOffset();
+        applyTransform();
+      });
+
+      function endDrag(e) {
+        if (activePointerId !== null && e && e.pointerId !== undefined && e.pointerId !== activePointerId) return;
+        forceResume();
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      viewport.addEventListener('pointerleave', function (e) {
+        if (isDown && e.buttons === 0) endDrag(e);
+      });
+
+      // Extra safety net for mobile browsers that don't reliably fire
+      // pointerup/pointercancel after a touch gesture.
+      viewport.addEventListener('touchend', forceResume, { passive: true });
+      viewport.addEventListener('touchcancel', forceResume, { passive: true });
+
+      window.addEventListener('blur', forceResume);
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) lastTimestamp = null;
+      });
+
+      document.addEventListener('shopify:section:load', function (e) {
+        if (e.detail && e.detail.sectionId === '{{ section_id }}') {
+          viewport.dataset.barInitialized = '';
+          fullInit();
+        }
+      });
+
+      document.addEventListener('shopify:section:unload', function (e) {
+        if (e.detail && e.detail.sectionId === '{{ section_id }}' && rafId) {
+          cancelAnimationFrame(rafId);
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initBarSection);
+    } else {
+      initBarSection();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Bar",
+  "class": "section-bar",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Auto-scroll carousel"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 8,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "label": "Scroll speed (seconds per set)",
+      "info": "Lower = faster scroll. Users can drag/swipe anytime; autoplay never pauses on hover.",
+      "default": 25
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top (desktop)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom (desktop)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top (mobile)",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom (mobile)",
+      "default": 25
+    }
+  ],
+  "blocks": [
+    {
+      "type": "icon_text",
+      "name": "Icon with text",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon type",
+          "options": [
+            { "value": "image", "label": "Image" },
+            { "value": "svg", "label": "SVG code" }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image"
+        },
+        {
+          "type": "html",
+          "id": "svg_code",
+          "label": "SVG code",
+          "info": "Paste raw SVG code here. Used only when icon type is set to SVG code."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free shipping"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bar",
+      "blocks": [
+        { "type": "icon_text" },
+        { "type": "icon_text" },
+        { "type": "icon_text" },
+        { "type": "icon_text" }
+      ]
+    }
+  ]
+}
+{% endschema %}

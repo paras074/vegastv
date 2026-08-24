@@ -1,0 +1,369 @@
+{% assign blog = blogs[section.settings.blog_handle] %}
+{% assign all_articles = blog.articles %}
+
+<section class="blog-tabs-section" id="blog-tabs-{{ section.id }}">
+  <div class="bts-tabs-wrapper">
+    <div class="bts-tabs-inner page-width">
+      <button type="button" class="bts-tab active" data-tag="all" aria-pressed="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/>
+          <rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        All Articles
+      </button>
+
+      {% for block in section.blocks %}
+        {% assign tab_label = block.settings.label %}
+        {% assign tab_tag = block.settings.tag | strip | downcase %}
+
+        <button type="button" class="bts-tab" data-tag="{{ tab_tag | escape }}" aria-pressed="false" {{ block.shopify_attributes }}>
+          {% case tab_label %}
+            {% when 'TV Mounting' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            {% when 'Home Theater' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 18v-6a9 9 0 0118 0v6"/>
+                <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3z"/>
+                <path d="M3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/>
+              </svg>
+            {% when 'Smart Home' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            {% when 'Cables & Concealment' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+                <polyline points="13 2 13 9 20 9"/>
+              </svg>
+            {% when 'Product Guides' %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            {% else %}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+          {% endcase %}
+          {{ tab_label }}
+        </button>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if all_articles.size > 0 %}
+    <div class="page-width">
+      {% assign featured_article = all_articles.first %}
+
+      <div class="bts-featured" id="bts-featured-{{ section.id }}">
+        <div class="bts-featured-content">
+          <span class="bts-eyebrow">Featured Article</span>
+          <h2 class="bts-featured-title">{{ featured_article.title }}</h2>
+          <p class="bts-featured-excerpt">
+            {% if featured_article.excerpt != blank %}
+              {{ featured_article.excerpt | strip_html | truncatewords: 25 }}
+            {% else %}
+              {{ featured_article.content | strip_html | truncatewords: 25 }}
+            {% endif %}
+          </p>
+          <a href="{{ featured_article.url }}" class="btn-primary">
+            Read Article
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="bts-featured-img">
+          {% if featured_article.image %}
+            <img src="{{ featured_article.image | image_url: width: 800 }}" alt="{{ featured_article.image.alt | default: featured_article.title | escape }}" loading="lazy">
+          {% else %}
+            <div class="bts-img-placeholder">No Image</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="bts-latest-header">
+        <h3 class="bts-latest-title">Latest Articles</h3>
+        <a href="{{ blog.url }}" class="bts-view-all">
+          View All Articles
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="bts-grid" id="bts-grid-{{ section.id }}">
+        {% for article in all_articles limit: 8 %}
+          <article
+            class="bts-card"
+            data-tags="{% for tag in article.tags %}{{ tag | strip | downcase }}|{% endfor %}"
+            data-title="{{ article.title | escape }}"
+            data-url="{{ article.url }}"
+            data-excerpt="{% if article.excerpt != blank %}{{ article.excerpt | strip_html | truncatewords: 25 | escape }}{% else %}{{ article.content | strip_html | truncatewords: 25 | escape }}{% endif %}"
+            data-image="{% if article.image %}{{ article.image | image_url: width: 800 }}{% endif %}"
+            data-image-alt="{{ article.image.alt | default: article.title | escape }}"
+          >
+            <a href="{{ article.url }}" class="bts-card-img-link">
+              {% if article.image %}
+                <img src="{{ article.image | image_url: width: 400 }}" alt="{{ article.image.alt | default: article.title | escape }}" class="bts-card-img" loading="lazy">
+              {% else %}
+                <div class="bts-card-img bts-img-placeholder">No Image</div>
+              {% endif %}
+            </a>
+
+            <div class="bts-card-body">
+           
+              {% if article.tags.size > 0 %}
+                <span class="bts-card-tag">{{ article.tags.first }}</span>
+              {% endif %}
+
+              <h4 class="bts-card-title">
+                <a href="{{ article.url }}">{{ article.title }}</a>
+              </h4>
+
+              <p class="bts-card-excerpt">
+                {% if article.excerpt != blank %}
+                  {{ article.excerpt | strip_html | truncatewords: 18 }}
+                {% else %}
+                  {{ article.content | strip_html | truncatewords: 18 }}
+                {% endif %}
+              </p>
+
+              <div class="bts-card-meta">
+                <span class="bts-card-date">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  {{ article.published_at | date: "%b %-d, %Y" }}
+                </span>
+
+                {% assign words = article.content | strip_html | number_of_words %}
+                {% assign reading_time = words | divided_by: 200 | plus: 1 %}
+
+                <span class="bts-card-read">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  {{ reading_time }} min read
+                </span>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <div class="bts-no-results" id="bts-no-results-{{ section.id }}" style="display:none;">
+        <p>No articles found in this category yet.</p>
+      </div>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+</style>
+
+<script>
+(function () {
+  var section = document.getElementById('blog-tabs-{{ section.id }}');
+  if (!section) {
+    return;
+  }
+
+  var tabs = section.querySelectorAll('.bts-tab');
+  var cards = section.querySelectorAll('.bts-card');
+  var noResults = section.querySelector('.bts-no-results');
+  var featured = section.querySelector('.bts-featured');
+
+  function normalizeTag(value) {
+    if (!value) {
+      return '';
+    }
+    return value.trim().toLowerCase();
+  }
+
+  function updateFeatured(card) {
+    if (!card || !featured) {
+      return;
+    }
+
+    var title = card.getAttribute('data-title') || '';
+    var url = card.getAttribute('data-url') || '#';
+    var excerpt = card.getAttribute('data-excerpt') || '';
+    var image = card.getAttribute('data-image') || '';
+    var imageAlt = card.getAttribute('data-image-alt') || title;
+
+    var titleElement = featured.querySelector('.bts-featured-title');
+    if (titleElement) {
+      titleElement.textContent = title;
+    }
+
+    var excerptElement = featured.querySelector('.bts-featured-excerpt');
+    if (excerptElement) {
+      excerptElement.textContent = excerpt;
+    }
+
+    var buttonElement = featured.querySelector('.bts-btn');
+    if (buttonElement) {
+      buttonElement.setAttribute('href', url);
+    }
+
+    var imageContainer = featured.querySelector('.bts-featured-img');
+    if (imageContainer) {
+      if (image) {
+        imageContainer.innerHTML = '<img ' + 'src="' + image + '" ' + 'alt="' + imageAlt + '" ' + 'loading="lazy">';
+      } else {
+        imageContainer.innerHTML = '<div class="bts-img-placeholder">' + 'No Image' + '</div>';
+      }
+    }
+  }
+
+  function filterArticles(selectedTag) {
+    var visibleCards = [];
+
+    cards.forEach(function (card) {
+      var tagString = card.getAttribute('data-tags') || '';
+      var cardTags = tagString.split('|').map(function (tag) {
+        return normalizeTag(tag);
+      }).filter(function (tag) {
+        return tag !== '';
+      });
+
+      var isMatch = selectedTag === 'all' || cardTags.indexOf(selectedTag) !== -1;
+
+      if (isMatch) {
+        card.classList.remove('hidden');
+        visibleCards.push(card);
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    if (visibleCards.length === 0) {
+      if (noResults) {
+        noResults.style.display = 'block';
+      }
+      if (featured) {
+        featured.style.display = 'none';
+      }
+      return;
+    }
+
+    if (noResults) {
+      noResults.style.display = 'none';
+    }
+    if (featured) {
+      featured.style.display = 'grid';
+    }
+
+    updateFeatured(visibleCards[0]);
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var selectedTag = normalizeTag(tab.getAttribute('data-tag'));
+
+      tabs.forEach(function (item) {
+        item.classList.remove('active');
+        item.setAttribute('aria-pressed', 'false');
+      });
+
+      tab.classList.add('active');
+      tab.setAttribute('aria-pressed', 'true');
+
+      filterArticles(selectedTag);
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Blog Tabs Section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "blog_handle",
+      "label": "Blog Handle",
+      "default": "news",
+      "info": "Enter the Shopify blog handle."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Blog Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab Label",
+          "default": "TV Mounting"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Article Tag",
+          "default": "TV Mounting",
+          "info": "Enter the Shopify article tag used on the blog article."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Tabs Section",
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": {
+            "label": "TV Mounting",
+            "tag": "TV Mounting"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Home Theater",
+            "tag": "Home Theater"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Smart Home",
+            "tag": "Smart Home"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Cables & Concealment",
+            "tag": "Cables & Concealment"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Product Guides",
+            "tag": "Product Guides"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

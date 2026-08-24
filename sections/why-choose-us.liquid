@@ -1,0 +1,196 @@
+
+<div
+  class="why-choose-section color-{{ section.settings.color_scheme }}"
+  style="
+    --pt-desktop: {{ section.settings.padding_top }}px;
+    --pb-desktop: {{ section.settings.padding_bottom }}px;
+    --pt-mobile: {{ section.settings.padding_top_mobile }}px;
+    --pb-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="why-choose-section__container page-width">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="why-choose-section__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.sub_heading != blank -%}
+      <div class="why-choose-section__sub-heading">{{ section.settings.sub_heading }}</div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="why-choose-section__grid" role="list">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'feature_card' -%}
+            <li class="why-choose-section__card" {{ block.shopify_attributes }}>
+
+              {%- if block.settings.icon_type == 'svg' and block.settings.svg_code != blank -%}
+                <span class="why-choose-section__icon">{{ block.settings.svg_code }}</span>
+              {%- elsif block.settings.icon_type == 'image' and block.settings.icon_image != blank -%}
+                <span class="why-choose-section__icon">
+                  {{
+                    block.settings.icon_image
+                    | image_url: width: 80
+                    | image_tag: loading: 'lazy', class: 'why-choose-section__icon-img'
+                  }}
+                </span>
+              {%- endif -%}
+
+              {%- if block.settings.title != blank -%}
+                <h3 class="why-choose-section__title">{{ block.settings.title }}</h3>
+              {%- endif -%}
+
+              {%- if block.settings.description != blank -%}
+                <p class="why-choose-section__description">{{ block.settings.description }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.badge_text != blank -%}
+                <span class="why-choose-section__badge">{{ block.settings.badge_text }}</span>
+              {%- endif -%}
+
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Why Choose Vegas",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Choose Vegas TV Mounting?"
+    },
+    {
+      "type": "text",
+      "id": "sub_heading",
+      "label": "Sub heading",
+      "default": "Setting the standard for expert installation."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top (mobile)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom (mobile)",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_card",
+      "name": "Feature card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon type",
+          "options": [
+            { "value": "image", "label": "Image" },
+            { "value": "svg", "label": "SVG code" }
+          ],
+          "default": "svg"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image"
+        },
+        {
+          "type": "html",
+          "id": "svg_code",
+          "label": "SVG code",
+          "info": "Used only when icon type is set to SVG code."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "CEDIA Certified"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "CEDIA IST & CIT credentials."
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge text",
+          "default": "AV Professionals"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Why Choose Vegas",
+      "blocks": [
+        { "type": "feature_card" },
+        { "type": "feature_card" },
+        { "type": "feature_card" },
+        { "type": "feature_card" },
+        { "type": "feature_card" },
+        { "type": "feature_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

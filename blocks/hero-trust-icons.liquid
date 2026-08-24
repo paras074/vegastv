@@ -1,0 +1,189 @@
+<div
+  class="hero-trust-icons"
+  {{ block.shopify_attributes }}
+>
+  <div class="hero-trust-icons__item">
+    <span class="hero-trust-icons__icon" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        width="32"
+        height="32"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    </span>
+
+    <span class="hero-trust-icons__label">
+      Licensed &amp; Insured
+    </span>
+  </div>
+
+  <div class="hero-trust-icons__item">
+    <span class="hero-trust-icons__icon" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        width="32"
+        height="32"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="8" r="5"/>
+        <path d="M8.5 12 7 22l5-3 5 3-1.5-10"/>
+      </svg>
+    </span>
+
+    <span class="hero-trust-icons__label">
+      5-Year Workmanship Warranty
+    </span>
+  </div>
+
+  <div class="hero-trust-icons__item">
+    <span class="hero-trust-icons__icon" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        width="32"
+        height="32"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M13 2 5 13h5l-1 9 8-11h-5z"/>
+      </svg>
+    </span>
+
+    <span class="hero-trust-icons__label">
+      Same-Day Service
+    </span>
+  </div>
+
+ <div class="hero-trust-icons__item">
+  <span class="hero-trust-icons__icon" aria-hidden="true">
+    <svg
+      vviewBox="0 0 24 24"
+  width="32"
+  height="32"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 10.5 12 3l9 7.5"/>
+  <path d="M5 9.5V21h14V9.5"/>
+  <path d="M10 21v-6h4v6"/>
+    </svg>
+  </span>
+
+  <span class="hero-trust-icons__label">
+    Residential &amp; Commercial
+  </span>
+</div>
+</div>
+
+{% stylesheet %}
+  .hero-trust-icons {
+    width: 100%;
+    max-width: 510px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+    row-gap: 18px;
+    margin-top: 14px;
+    box-sizing: border-box;
+  }
+
+  .hero-trust-icons__item {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .hero-trust-icons__icon {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #d5a52c;
+  }
+
+  .hero-trust-icons__icon svg {
+    width: 32px;
+    height: 32px;
+    display: block;
+  }
+
+  .hero-trust-icons__label {
+    color: #111111;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero-trust-icons {
+      max-width: 100%;
+      column-gap: 18px;
+      row-gap: 15px;
+      margin-top: 12px;
+    }
+
+    .hero-trust-icons__item {
+      gap: 10px;
+    }
+
+    .hero-trust-icons__icon {
+      width: 30px;
+      height: 30px;
+      flex-basis: 30px;
+    }
+
+    .hero-trust-icons__icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .hero-trust-icons__label {
+      font-size: 12px;
+      line-height: 1.25;
+    }
+  }
+
+  @media screen and (max-width: 390px) {
+    .hero-trust-icons {
+      grid-template-columns: 1fr;
+      row-gap: 13px;
+    }
+
+    .hero-trust-icons__label {
+      font-size: 13px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero trust icons",
+  "tag": null,
+  "settings": [],
+  "presets": [
+    {
+      "name": "Hero trust icons",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

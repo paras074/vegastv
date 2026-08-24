@@ -1,0 +1,153 @@
+<div
+  class="tv-projects color-{{ section.settings.color_scheme }}"
+  style="
+    --padding-top-desktop: {{ section.settings.padding_top }}px;
+    --padding-bottom-desktop: {{ section.settings.padding_bottom }}px;
+    --padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="tv-projects__wrapper page-width">
+    {% if section.settings.heading != blank %}
+      <h2 class="tv-projects__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="tv-projects__grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'project' %}
+            <div class="tv-projects__card" {{ block.shopify_attributes }}>
+              <div class="tv-projects__image">
+                {% if block.settings.image != blank %}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 600 }}"
+                    srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 800 }} 800w"
+                    sizes="(min-width: 750px) 20vw, 90vw"
+                    alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <div class="tv-projects__image-placeholder">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+                {% endif %}
+              </div>
+              <div class="tv-projects__content">
+                <h3 class="tv-projects__card-heading">{{ block.settings.heading }}</h3>
+                {% if block.settings.text != blank %}
+                  <p class="tv-projects__text">{{ block.settings.text }}</p>
+                {% endif %}
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "TV installation projects",
+  "class": "section-installation",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Common TV Installation Projects"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Desktop padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Mobile padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "project",
+      "name": "Project",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Living Room"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Subtext",
+          "default": "Premium Fireplace Mounts"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "TV installation projects",
+      "blocks": [
+        { "type": "project", "settings": { "heading": "Living Room", "text": "Premium Fireplace Mounts" } },
+        { "type": "project", "settings": { "heading": "Bedroom", "text": "Sleek Corner Mounting" } },
+        { "type": "project", "settings": { "heading": "Outdoor", "text": "Weatherproof Installations" } },
+        { "type": "project", "settings": { "heading": "Home Theater", "text": "Surround Sound Setup" } },
+        { "type": "project", "settings": { "heading": "Commercial", "text": "Conference & Retail Displays" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

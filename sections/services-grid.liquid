@@ -1,0 +1,210 @@
+<div
+  class="services-grid color-{{ section.settings.color_scheme }}"
+  style="
+    --padding-top-desktop: {{ section.settings.padding_top }}px;
+    --padding-bottom-desktop: {{ section.settings.padding_bottom }}px;
+    --padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="services-grid__wrapper page-width">
+    {% if section.settings.heading != blank %}
+      <h2 class="services-grid__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="services-grid__grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'service' %}
+            {% assign card_image = block.settings.image %}
+            {% assign card_title = block.settings.heading %}
+            {% assign card_text = block.settings.text %}
+            {% assign card_url = null %}
+
+            {% if block.settings.product != blank %}
+              {% assign card_url = block.settings.product.url %}
+              {% if card_image == blank %}
+                {% assign card_image = block.settings.product.featured_image %}
+              {% endif %}
+              {% if card_title == blank %}
+                {% assign card_title = block.settings.product.title %}
+              {% endif %}
+              {% if card_text == blank %}
+                {% assign card_text = block.settings.product.description | strip_html | truncate: 110 %}
+              {% endif %}
+            {% endif %}
+
+            <a
+              href="{{ card_url | default: '#' }}"
+              class="services-grid__card {% if card_url == blank %}services-grid__card--static{% endif %}"
+              {{ block.shopify_attributes }}
+            >
+              <div class="services-grid__image">
+                {% if card_image != blank %}
+                  <img
+                    src="{{ card_image | image_url: width: 200 }}"
+                    srcset="{{ card_image | image_url: width: 100 }} 100w, {{ card_image | image_url: width: 200 }} 200w, {{ card_image | image_url: width: 300 }} 300w"
+                    sizes="80px"
+                    alt="{{ card_title | escape }}"
+                    width="{{ card_image.width }}"
+                    height="{{ card_image.height }}"
+                    loading="lazy"
+                  >
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              </div>
+              <div class="services-grid__content">
+                <h3 class="services-grid__card-heading">{{ card_title }}</h3>
+                {% if card_text != blank %}
+                  <p class="services-grid__text">{{ card_text }}</p>
+                {% endif %}
+              </div>
+            </a>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.button_label != blank %}
+      <div class="services-grid__button-wrap">
+        <a href="{{ section.settings.button_link | default: '#' }}" class="services-grid__button">
+          {{ section.settings.button_label }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Services grid",
+  "class": "section-grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our TV Mounting Services"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "View All Services"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Desktop padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Mobile padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service",
+      "name": "Service",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select product",
+          "info": "Image, title & description auto-pull from this product unless overridden below"
+        },
+        {
+          "type": "header",
+          "content": "Manual override (optional)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Custom title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Custom description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Services grid",
+      "blocks": [
+        { "type": "service", "settings": { "heading": "Drywall TV Mounting", "text": "Secure mounting on drywall with correct stud placement." } },
+        { "type": "service", "settings": { "heading": "Fireplace TV Mounting", "text": "Precision mounting over brick or stone fireplaces." } },
+        { "type": "service", "settings": { "heading": "Brick & Stone Mounting", "text": "Expert drill installations on tough masonry surfaces." } },
+        { "type": "service", "settings": { "heading": "Soundbar Installation", "text": "Seamless audio bar mount matched directly to TV height." } },
+        { "type": "service", "settings": { "heading": "Wire Concealment", "text": "Clean in-wall cord tucking or clean track routing." } },
+        { "type": "service", "settings": { "heading": "Home Theater Setup", "text": "Complete immersive media room setups and configuration." } },
+        { "type": "service", "settings": { "heading": "Surveillance Camera", "text": "Smart safety camera mounting for smart home grids." } },
+        { "type": "service", "settings": { "heading": "LED Accent Lighting", "text": "Modern smart LED backlight additions for ambient design." } },
+        { "type": "service", "settings": { "heading": "Art & Mirror Hanging", "text": "Heavy picture frame, canvas, and layout mounting." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

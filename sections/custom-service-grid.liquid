@@ -1,0 +1,988 @@
+{% comment %}
+  Vegas TV Mounting — Residential + Commercial Services Grid
+{% endcomment %}
+
+<section
+  id="service-grid-{{ section.id }}"
+  class="vtm-service-grid color-{{ section.settings.color_scheme }}"
+>
+  <div class="vtm-service-grid__container">
+
+    {% if section.settings.main_heading != blank %}
+      <div class="vtm-service-grid__main-header">
+        <h2 class="vtm-service-grid__main-heading">
+          {{ section.settings.main_heading | escape }}
+        </h2>
+
+        {% if section.settings.main_description != blank %}
+          <div class="vtm-service-grid__main-description">
+            {{ section.settings.main_description }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% assign residential_count = 0 %}
+
+    {% for block in section.blocks %}
+      {% if block.settings.category == 'residential' %}
+        {% assign residential_count = residential_count | plus: 1 %}
+      {% endif %}
+    {% endfor %}
+
+    {% if residential_count > 0 %}
+      <div class="vtm-service-group vtm-service-group--residential">
+
+        <div class="vtm-service-group__header">
+          <h3 class="vtm-service-group__heading">
+            {{ section.settings.residential_heading | escape }}
+          </h3>
+
+          {% if section.settings.residential_description != blank %}
+            <div class="vtm-service-group__description">
+              {{ section.settings.residential_description }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="vtm-service-grid__cards">
+          {% for block in section.blocks %}
+            {% if block.settings.category == 'residential' %}
+              <article
+                class="vtm-service-card"
+                {{ block.shopify_attributes }}
+              >
+                <div class="vtm-service-card__image-wrapper">
+                  {% if block.settings.image != blank %}
+                    {{
+                      block.settings.image
+                      | image_url: width: 1200
+                      | image_tag:
+                        class: 'vtm-service-card__image',
+                        loading: 'lazy',
+                        widths: '320, 480, 640, 800, 1000, 1200',
+                        sizes: '(min-width: 990px) 25vw, 50vw',
+                        alt: block.settings.title
+                    }}
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag: 'vtm-service-card__placeholder' }}
+                  {% endif %}
+                </div>
+
+                <div class="vtm-service-card__content">
+                  {% if block.settings.title != blank %}
+                    <h4 class="vtm-service-card__title">
+                      {{ block.settings.title | escape }}
+                    </h4>
+                  {% endif %}
+
+                  <div class="vtm-service-card__links">
+                    {% if block.settings.book_link != blank %}
+                      <a
+                        href="{{ block.settings.book_link }}"
+                        class="vtm-service-card__link"
+                      >
+                        {{ block.settings.book_label | default: 'Book Service' | escape }}
+                      </a>
+                    {% endif %}
+
+                    {% if block.settings.learn_link != blank %}
+                      <a
+                        href="{{ block.settings.learn_link }}"
+                        class="vtm-service-card__link"
+                      >
+                        {{ block.settings.learn_label | default: 'Learn More' | escape }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% assign commercial_count = 0 %}
+
+    {% for block in section.blocks %}
+      {% if block.settings.category == 'commercial' %}
+        {% assign commercial_count = commercial_count | plus: 1 %}
+      {% endif %}
+    {% endfor %}
+
+    {% if commercial_count > 0 %}
+      <div class="vtm-service-group vtm-service-group--commercial">
+
+        {% if section.settings.show_divider %}
+          <div class="vtm-service-group__divider"></div>
+        {% endif %}
+
+        <div class="vtm-service-group__header">
+          <h3 class="vtm-service-group__heading">
+            {{ section.settings.commercial_heading | escape }}
+          </h3>
+
+          {% if section.settings.commercial_description != blank %}
+            <div class="vtm-service-group__description">
+              {{ section.settings.commercial_description }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="vtm-service-grid__cards">
+          {% for block in section.blocks %}
+            {% if block.settings.category == 'commercial' %}
+              <article
+                class="vtm-service-card"
+                {{ block.shopify_attributes }}
+              >
+                <div class="vtm-service-card__image-wrapper">
+                  {% if block.settings.image != blank %}
+                    {{
+                      block.settings.image
+                      | image_url: width: 1200
+                      | image_tag:
+                        class: 'vtm-service-card__image',
+                        loading: 'lazy',
+                        widths: '320, 480, 640, 800, 1000, 1200',
+                        sizes: '(min-width: 990px) 25vw, 50vw',
+                        alt: block.settings.title
+                    }}
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag: 'vtm-service-card__placeholder' }}
+                  {% endif %}
+                </div>
+
+                <div class="vtm-service-card__content">
+                  {% if block.settings.title != blank %}
+                    <h4 class="vtm-service-card__title">
+                      {{ block.settings.title | escape }}
+                    </h4>
+                  {% endif %}
+
+                  <div class="vtm-service-card__links">
+                    {% if block.settings.book_link != blank %}
+                      <a
+                        href="{{ block.settings.book_link }}"
+                        class="vtm-service-card__link"
+                      >
+                        {{ block.settings.book_label | default: 'Book Service' | escape }}
+                      </a>
+                    {% endif %}
+
+                    {% if block.settings.learn_link != blank %}
+                      <a
+                        href="{{ block.settings.learn_link }}"
+                        class="vtm-service-card__link"
+                      >
+                        {{ block.settings.learn_label | default: 'Learn More' | escape }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% style %}
+  #service-grid-{{ section.id }} {
+    --vtm-section-width: {{ section.settings.section_width }}px;
+    --vtm-card-gap: {{ section.settings.card_gap }}px;
+    --vtm-row-gap: {{ section.settings.row_gap }}px;
+    --vtm-image-radius: {{ section.settings.image_radius }}px;
+    --vtm-image-ratio: {{ section.settings.image_ratio }};
+    --vtm-title-size: {{ section.settings.title_size }}px;
+    --vtm-link-size: {{ section.settings.link_size }}px;
+    --vtm-heading-size: {{ section.settings.heading_size }}px;
+    --vtm-group-gap: {{ section.settings.group_gap }}px;
+
+    width: 100%;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  #service-grid-{{ section.id }} *,
+  #service-grid-{{ section.id }} *::before,
+  #service-grid-{{ section.id }} *::after {
+    box-sizing: border-box;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-grid__container {
+    width: min(
+      calc(100% - {{ section.settings.mobile_side_padding | times: 2 }}px),
+      var(--vtm-section-width)
+    );
+    margin-inline: auto;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-grid__main-header {
+    max-width: 760px;
+    margin: 0 auto {{ section.settings.main_heading_bottom_spacing }}px;
+    text-align: center;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-grid__main-heading {
+    margin: 0;
+    font-size: clamp(
+      30px,
+      4vw,
+      {{ section.settings.main_heading_size }}px
+    );
+    line-height: 1.1;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-grid__main-description,
+  #service-grid-{{ section.id }} .vtm-service-group__description {
+    margin-top: 12px;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-grid__main-description p,
+  #service-grid-{{ section.id }} .vtm-service-group__description p {
+    margin: 0;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-group + .vtm-service-group {
+    margin-top: var(--vtm-group-gap);
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-group__header {
+    margin-bottom: {{ section.settings.heading_bottom_spacing }}px;
+    text-align: center;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-group__heading {
+    margin: 0;
+    font-size: clamp(25px, 3vw, var(--vtm-heading-size));
+    line-height: 1.15;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-group__description {
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-group__divider {
+    width: 100%;
+    height: 1px;
+    margin-bottom: {{ section.settings.divider_bottom_spacing }}px;
+    background: rgba(var(--color-foreground), 0.18);
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-grid__cards {
+    display: grid;
+    grid-template-columns: repeat(
+      {{ section.settings.desktop_columns }},
+      minmax(0, 1fr)
+    );
+    column-gap: var(--vtm-card-gap);
+    row-gap: var(--vtm-row-gap);
+    align-items: stretch;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-width: 0;
+    height: 100%;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--vtm-image-ratio);
+    overflow: hidden;
+    border-radius: var(--vtm-image-radius);
+    background: rgba(var(--color-foreground), 0.06);
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__image,
+  #service-grid-{{ section.id }} .vtm-service-card__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__image {
+    object-fit: cover;
+    transition: transform 300ms ease;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__placeholder {
+    object-fit: cover;
+    fill: rgba(var(--color-foreground), 0.18);
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__content {
+    display: grid;
+    grid-template-rows: minmax(
+      {{ section.settings.title_min_height }}px,
+      auto
+    ) auto;
+    align-content: start;
+    padding-top: {{ section.settings.text_top_spacing }}px;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__title {
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    font-size: var(--vtm-title-size);
+    line-height: 1.28;
+    font-weight: 600;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    margin-top: {{ section.settings.link_top_spacing }}px;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__link {
+    display: inline;
+    width: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: rgb(var(--color-foreground));
+    font-size: var(--vtm-link-size);
+    line-height: 1.35;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition:
+      opacity 160ms ease,
+      text-decoration-thickness 160ms ease;
+  }
+
+  #service-grid-{{ section.id }} .vtm-service-card__link:hover {
+    opacity: 0.7;
+    text-decoration-thickness: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #service-grid-{{ section.id }} .vtm-service-card:hover
+      .vtm-service-card__image {
+      transform: scale(1.035);
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    #service-grid-{{ section.id }} .vtm-service-grid__cards {
+      grid-template-columns: repeat(
+        {{ section.settings.tablet_columns }},
+        minmax(0, 1fr)
+      );
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    #service-grid-{{ section.id }} {
+      padding-top: {{ section.settings.mobile_padding_top }}px;
+      padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+    }
+
+    #service-grid-{{ section.id }} .vtm-service-grid__cards {
+      grid-template-columns: repeat(
+        {{ section.settings.mobile_columns }},
+        minmax(0, 1fr)
+      );
+      column-gap: {{ section.settings.mobile_card_gap }}px;
+      row-gap: {{ section.settings.mobile_row_gap }}px;
+    }
+
+    #service-grid-{{ section.id }} .vtm-service-group + .vtm-service-group {
+      margin-top: {{ section.settings.mobile_group_gap }}px;
+    }
+
+    #service-grid-{{ section.id }} .vtm-service-card__content {
+      grid-template-rows: minmax(
+        {{ section.settings.mobile_title_min_height }}px,
+        auto
+      ) auto;
+      padding-top: {{ section.settings.mobile_text_top_spacing }}px;
+    }
+
+    #service-grid-{{ section.id }} .vtm-service-card__title {
+      font-size: {{ section.settings.mobile_title_size }}px;
+    }
+
+    #service-grid-{{ section.id }} .vtm-service-card__link {
+      font-size: {{ section.settings.mobile_link_size }}px;
+    }
+
+    #service-grid-{{ section.id }} .vtm-service-card__links {
+      gap: 3px 8px;
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+    {% if section.settings.stack_on_small_mobile %}
+      #service-grid-{{ section.id }} .vtm-service-grid__cards {
+        grid-template-columns: 1fr;
+      }
+    {% endif %}
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #service-grid-{{ section.id }} .vtm-service-card__image,
+    #service-grid-{{ section.id }} .vtm-service-card__link {
+      transition: none;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Residential + commercial",
+  "tag": "section",
+  "class": "section-vtm-service-grid",
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Main heading"
+    },
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Main heading",
+      "default": "Our Services"
+    },
+    {
+      "type": "richtext",
+      "id": "main_description",
+      "label": "Main description"
+    },
+    {
+      "type": "range",
+      "id": "main_heading_size",
+      "label": "Main heading size",
+      "min": 32,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "main_heading_bottom_spacing",
+      "label": "Space below main heading",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "header",
+      "content": "Residential group"
+    },
+    {
+      "type": "text",
+      "id": "residential_heading",
+      "label": "Residential heading",
+      "default": "Residential Services"
+    },
+    {
+      "type": "richtext",
+      "id": "residential_description",
+      "label": "Residential description"
+    },
+    {
+      "type": "header",
+      "content": "Commercial group"
+    },
+    {
+      "type": "text",
+      "id": "commercial_heading",
+      "label": "Commercial heading",
+      "default": "Commercial Services"
+    },
+    {
+      "type": "richtext",
+      "id": "commercial_description",
+      "label": "Commercial description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "label": "Show divider above commercial services",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "divider_bottom_spacing",
+      "label": "Space below divider",
+      "min": 10,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "header",
+      "content": "Grid layout"
+    },
+    {
+      "type": "range",
+      "id": "section_width",
+      "label": "Maximum section width",
+      "min": 1000,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1440
+    },
+    {
+      "type": "range",
+      "id": "desktop_columns",
+      "label": "Desktop columns",
+      "min": 3,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "tablet_columns",
+      "label": "Tablet columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "Mobile columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "stack_on_small_mobile",
+      "label": "Use 1 column below 420px",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Desktop horizontal gap",
+      "min": 8,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Desktop vertical gap",
+      "min": 16,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_gap",
+      "label": "Mobile horizontal gap",
+      "min": 6,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_row_gap",
+      "label": "Mobile vertical gap",
+      "min": 14,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "group_gap",
+      "label": "Space between service groups",
+      "min": 40,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "range",
+      "id": "mobile_group_gap",
+      "label": "Mobile group spacing",
+      "min": 30,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        {
+          "value": "1 / 1",
+          "label": "Square"
+        },
+        {
+          "value": "4 / 3",
+          "label": "Landscape"
+        },
+        {
+          "value": "3 / 4",
+          "label": "Portrait"
+        },
+        {
+          "value": "5 / 4",
+          "label": "Wide landscape"
+        }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Card text"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Group heading size",
+      "min": 24,
+      "max": 52,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "heading_bottom_spacing",
+      "label": "Space below group heading",
+      "min": 14,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Desktop service title size",
+      "min": 13,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "Mobile service title size",
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "link_size",
+      "label": "Desktop link size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "mobile_link_size",
+      "label": "Mobile link size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "title_min_height",
+      "label": "Desktop title area height",
+      "min": 24,
+      "max": 90,
+      "step": 2,
+      "unit": "px",
+      "default": 46
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_min_height",
+      "label": "Mobile title area height",
+      "min": 28,
+      "max": 90,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "text_top_spacing",
+      "label": "Space above card text",
+      "min": 6,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_top_spacing",
+      "label": "Mobile space above card text",
+      "min": 5,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 9
+    },
+    {
+      "type": "range",
+      "id": "link_top_spacing",
+      "label": "Space above links",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_side_padding",
+      "label": "Side padding",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service",
+      "name": "Service",
+      "settings": [
+        {
+          "type": "select",
+          "id": "category",
+          "label": "Service category",
+          "options": [
+            {
+              "value": "residential",
+              "label": "Residential"
+            },
+            {
+              "value": "commercial",
+              "label": "Commercial"
+            }
+          ],
+          "default": "residential"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Service image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Service title",
+          "default": "Service title"
+        },
+        {
+          "type": "header",
+          "content": "Book Service link"
+        },
+        {
+          "type": "text",
+          "id": "book_label",
+          "label": "Book link text",
+          "default": "Book Service"
+        },
+        {
+          "type": "url",
+          "id": "book_link",
+          "label": "Book Service page or link"
+        },
+        {
+          "type": "header",
+          "content": "Learn More link"
+        },
+        {
+          "type": "text",
+          "id": "learn_label",
+          "label": "Learn More link text",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "learn_link",
+          "label": "Learn More page or link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Residential + commercial",
+      "blocks": [
+        {
+          "type": "service",
+          "settings": {
+            "category": "residential",
+            "title": "Residential TV Mounting"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "category": "residential",
+            "title": "Fireplace TV Mounting"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "category": "residential",
+            "title": "Home Theater Installation"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "category": "residential",
+            "title": "Wire Concealment"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "category": "commercial",
+            "title": "Commercial TV Mounting"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "category": "commercial",
+            "title": "Conference Room Display"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "category": "commercial",
+            "title": "Digital Signage Installation"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "category": "commercial",
+            "title": "Multi-Display Installation"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

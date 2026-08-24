@@ -1,0 +1,152 @@
+{{ 'booking-wizard.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  Residential Booking Wizard
+  --------------------------
+  Config-driven wizard. Runtime settings below are passed to the JS engine as
+  JSON. The SERVICE CATALOG (steps + pricing) currently lives in booking-wizard.js
+  and comes straight from the approved TV Mounting & Soundbar specs.
+
+  To drive services from a Shopify metaobject later: render the metaobject entries
+  into the same JSON shape the engine expects and set `config.catalog`. See README.
+{%- endcomment -%}
+
+<div
+  class="booking-wizard-section"
+  style="padding-top:{{ section.settings.padding_top }}px;padding-bottom:{{ section.settings.padding_bottom }}px;"
+>
+  <div
+    data-booking-wizard
+    data-config-id="bw-config-{{ section.id }}"
+  ></div>
+
+  {%- comment -%} ZIPs: strip spaces, split on commas, let | json handle quoting/commas {%- endcomment -%}
+  {%- assign zip_arr = section.settings.allowed_zips | remove: ' ' | remove: "\n" | remove: "\r" | split: ',' | compact -%}
+
+  {%- comment -%} Promo codes: leading-comma join avoids any trailing comma {%- endcomment -%}
+  {%- capture promo_json -%}{
+    {%- assign promo_first = true -%}
+    {%- assign promo_rows = section.settings.promo_codes | newline_to_br | split: '<br />' -%}
+    {%- for row in promo_rows -%}
+      {%- assign parts = row | strip | split: ':' -%}
+      {%- if parts.size == 2 -%}
+        {%- unless promo_first %},{% endunless -%}"{{ parts[0] | strip | upcase }}": {{ parts[1] | strip | times: 1.0 }}
+        {%- assign promo_first = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  }{%- endcapture -%}
+
+  {%- assign logo_url = '' -%}
+  {%- if section.settings.logo != blank -%}
+    {%- assign logo_url = section.settings.logo | image_url: width: 200 -%}
+  {%- endif -%}
+
+  <script type="application/json" id="bw-config-{{ section.id }}" data-booking-config>
+    {
+      "apiEndpoint": {{ section.settings.api_endpoint | default: '' | json }},
+      "allowedZips": {{ zip_arr | json }},
+      "taxRate": {{ section.settings.tax_rate | default: 0 | divided_by: 100.0 }},
+      "brandName": {{ section.settings.brand_name | default: shop.name | json }},
+      "phone": {{ section.settings.phone | default: '' | json }},
+      "termsUrl": {{ section.settings.terms_url | default: '' | json }},
+      "logo": {{ logo_url | json }},
+      "promoCodes": {{ promo_json }}
+    }
+  </script>
+</div>
+
+{{ 'booking-wizard.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "Booking Wizard",
+  "tag": "section",
+  "class": "section-booking-wizard",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Integration"
+    },
+    {
+      "type": "url",
+      "id": "api_endpoint",
+      "label": "Booking API endpoint (Housecall Pro bridge)",
+      "info": "Your PHP endpoint on api.vegastvmounting.com that forwards bookings & quotes to Housecall Pro. Leave blank to preview without submitting."
+    },
+    {
+      "type": "text",
+      "id": "allowed_zips",
+      "label": "Serviced ZIP codes",
+      "info": "Comma-separated list (e.g. 89101, 89102, 89052). Leave blank to accept any ZIP and let the backend confirm."
+    },
+    {
+      "type": "number",
+      "id": "tax_rate",
+      "label": "Tax rate (%)",
+      "info": "Applied on the Review & Book screen only. Example: 8.38",
+      "default": 0
+    },
+    {
+      "type": "textarea",
+      "id": "promo_codes",
+      "label": "Promo codes",
+      "info": "One per line as CODE: amount — e.g. WELCOME25: 25"
+    },
+    {
+      "type": "header",
+      "content": "Branding"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name",
+      "default": "Vegas TV Mounting"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo (optional)"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone number",
+      "default": "(702) 720-1109"
+    },
+    {
+      "type": "url",
+      "id": "terms_url",
+      "label": "Full Terms of Service page"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Booking Wizard"
+    }
+  ]
+}
+{% endschema %}

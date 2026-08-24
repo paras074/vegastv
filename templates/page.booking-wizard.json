@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "booking_wizard": {
+      "type": "booking-wizard",
+      "settings": {
+        "api_endpoint": "",
+        "allowed_zips": "",
+        "tax_rate": 8.38,
+        "brand_name": "Vegas TV Mounting",
+        "phone": "(702) 720-1109",
+        "padding_top": 40,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": ["booking_wizard"]
+}

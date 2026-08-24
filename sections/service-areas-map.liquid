@@ -1,0 +1,213 @@
+{%- style -%}
+  #shopify-section-{{ section.id }} .service-areas {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} .service-areas {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="service-areas color-{{ section.settings.color_scheme }}">
+  <div class="service-areas__container page-width">
+
+    <!-- LEFT: Content -->
+    <div class="service-areas__left">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="service-areas__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="service-areas__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <div class="service-areas__subheading">{{ section.settings.subheading }}</div>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="service-areas__list">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'service_area' -%}
+              <li class="service-areas__item" {{ block.shopify_attributes }}>
+                <a href="{{ block.settings.url }}" class="service-areas__link">
+                  <svg class="service-areas__pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"></path>
+                  </svg>
+                  <span>{{ block.settings.title }}</span>
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    <!-- RIGHT: Map -->
+    <div class="service-areas__right">
+      <div class="service-areas__map-wrap">
+        <iframe
+          class="service-areas__map"
+          src="https://www.google.com/maps?q={{ section.settings.map_address | url_encode }}&z={{ section.settings.map_zoom }}&output=embed"
+          width="100%"
+          height="100%"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="{{ section.settings.map_address }}">
+        </iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Service Areas map",
+  "tag": "section",
+  "class": "section-service-areas",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "SERVICE AREAS"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<p>Areas We Proudly Serve</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Based in Las Vegas, we provide fast and reliable service across the entire valley.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Map"
+    },
+    {
+      "type": "text",
+      "id": "map_address",
+      "label": "Map address / location",
+      "default": "Las Vegas, NV"
+    },
+    {
+      "type": "range",
+      "id": "map_zoom",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "label": "Map zoom",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Padding - Desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Padding - Mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service_area",
+      "name": "Service Area",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Area name",
+          "default": "City Name"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Service Areas map",
+      "blocks": [
+        { "type": "service_area", "settings": { "title": "Boulder City", "url": "/pages/boulder-city" } },
+        { "type": "service_area", "settings": { "title": "Centennial Hills", "url": "/pages/centennial-hills" } },
+        { "type": "service_area", "settings": { "title": "Enterprise", "url": "/pages/enterprise" } },
+        { "type": "service_area", "settings": { "title": "Green Valley", "url": "/pages/green-valley" } },
+        { "type": "service_area", "settings": { "title": "Henderson", "url": "/pages/henderson" } },
+        { "type": "service_area", "settings": { "title": "Inspirada", "url": "/pages/inspirada" } },
+        { "type": "service_area", "settings": { "title": "Las Vegas", "url": "/pages/las-vegas" } },
+        { "type": "service_area", "settings": { "title": "Mountains Edge", "url": "/pages/mountains-edge" } },
+        { "type": "service_area", "settings": { "title": "North Las Vegas", "url": "/pages/north-las-vegas" } },
+        { "type": "service_area", "settings": { "title": "Paradise", "url": "/pages/paradise" } },
+        { "type": "service_area", "settings": { "title": "Silverado Ranch", "url": "/pages/silverado-ranch" } },
+        { "type": "service_area", "settings": { "title": "Southern Highlands", "url": "/pages/southern-highlands" } },
+        { "type": "service_area", "settings": { "title": "Spring Valley", "url": "/pages/spring-valley" } },
+        { "type": "service_area", "settings": { "title": "Summerlin", "url": "/pages/summerlin" } },
+        { "type": "service_area", "settings": { "title": "Winchester", "url": "/pages/winchester" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

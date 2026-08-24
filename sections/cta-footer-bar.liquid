@@ -1,0 +1,226 @@
+<div
+  class="cta-bar"
+  style="
+    --cta-bg: {{ section.settings.background_color }};
+    --cta-text: {{ section.settings.text_color }};
+    --cta-btn-bg: {{ section.settings.button_background }};
+    --cta-btn-text: {{ section.settings.button_text_color }};
+    --padding-top-desktop: {{ section.settings.padding_top }}px;
+    --padding-bottom-desktop: {{ section.settings.padding_bottom }}px;
+    --padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="cta-bar__wrapper page-width">
+    {% if section.settings.heading != blank %}
+      <p class="cta-bar__heading">{{ section.settings.heading }}</p>
+    {% endif %}
+
+    <div class="cta-bar__right">
+      {% if section.settings.button_label != blank %}
+        <a href="{{ section.settings.button_link }}" class="cta-bar__button ">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+      {% if section.settings.phone_number != blank %}
+        <a class="cta-bar__phone js-connect-popup" href="tel:{{ section.settings.phone_number | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">
+          <span>{{ section.settings.phone_number }}</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .cta-bar {
+    background-color: var(--cta-bg);
+    padding-top: var(--padding-top-mobile);
+    padding-bottom: var(--padding-bottom-mobile);
+  }
+
+  .cta-bar__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .cta-bar__heading {
+    color: var(--cta-text);
+    font-weight: 700;
+    font-size: 18px;
+    margin: 0;
+  }
+
+  .cta-bar__right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .cta-bar__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--cta-text);
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .cta-bar__phone-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .cta-bar__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cta-btn-bg);
+    color: var(--cta-btn-text);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  @media screen and (min-width: 750px) {
+    .cta-bar {
+      padding-top: var(--padding-top-desktop);
+      padding-bottom: var(--padding-bottom-desktop);
+    }
+
+    .cta-bar__heading {
+      font-size: 20px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "CTA footer bar",
+  "class": "section-cta-bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Ready to Start Your Project?"
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Phone number",
+      "default": "(702) 600-3294"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Book Appointment"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#E13B3B"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading & phone text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Desktop padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Mobile padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA footer bar",
+      "settings": {
+        "heading": "Ready to Start Your Project?",
+        "phone_number": "(702) 720-1109",
+        "button_label": "Book Now",
+        "background_color": "#E13B3B",
+        "text_color": "#FFFFFF",
+        "button_background": "#111111",
+        "button_text_color": "#FFFFFF"
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,421 @@
+{%- comment -%}
+  Single Product Section (Horizon-style) + extras:
+  - Multiple Badge blocks (icon + text + color)
+  - Icon + Text blocks (feature bullets)
+  - Dual CTA buttons: Call button (tel: link) + Get Free Quote button
+  Drop this file into: sections/single-product.liquid
+{%- endcomment -%}
+
+
+{%- assign product = section.settings.product -%}
+
+<div class="single-product-section color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+     style="--gap:{{ section.settings.column_gap }}px;">
+  <div class="page-width single-product-grid single-product-grid--{{ section.settings.media_position }}">
+
+    {%- comment -%} MEDIA COLUMN {%- endcomment -%}
+    <div class="single-product__media {% if section.settings.enable_sticky_info %}single-product__media--sticky{% endif %}">
+      {%- if product.media.size > 0 -%}
+        <div class="single-product__media-list" data-layout="{{ section.settings.gallery_layout }}">
+          {%- for media in product.media -%}
+            <div class="single-product__media-item">
+              {%- if media.media_type == 'image' -%}
+                {{ media | image_url: width: 1600 | image_tag: loading: 'lazy', sizes: '(min-width: 750px) 50vw, 100vw' }}
+              {%- elsif media.media_type == 'video' or media.media_type == 'external_video' -%}
+                {{ media | media_tag }}
+              {%- else -%}
+                {{ media | media_tag }}
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="single-product__media-placeholder">
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} INFO COLUMN {%- endcomment -%}
+    <div class="single-product__info">
+      {%- form 'product', product, id: 'product-form-{{ section.id }}', class: 'single-product__form' -%}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+
+            {%- when 'text' -%}
+              <div class="single-product__text single-product__text--{{ block.settings.style }}" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </div>
+
+            {%- when 'price' -%}
+              <div class="single-product__price" {{ block.shopify_attributes }}>
+                {%- render 'price', product: product, use_variant: true -%}
+              </div>
+
+            {%- when 'sku' -%}
+              {%- if product.selected_or_first_available_variant.sku != blank -%}
+                <div class="single-product__sku" {{ block.shopify_attributes }}>
+                  {{ 'products.product.sku' | t }}: {{ product.selected_or_first_available_variant.sku }}
+                </div>
+              {%- endif -%}
+
+            {%- when 'rating' -%}
+              {%- if product.metafields.reviews.rating.value != blank -%}
+                <div class="single-product__rating" {{ block.shopify_attributes }}>
+                  {{ product.metafields.reviews.rating }}
+                </div>
+              {%- endif -%}
+
+            {%- when 'variant_picker' -%}
+              <div class="single-product__variant-picker" {{ block.shopify_attributes }}>
+                {%- render 'product-variant-picker', product: product, block: block -%}
+              </div>
+
+            {%- when 'quantity_selector' -%}
+              <div class="single-product__quantity" {{ block.shopify_attributes }}>
+                <label for="Quantity-{{ section.id }}">{{ 'products.product.quantity.label' | t }}</label>
+                <input type="number" id="Quantity-{{ section.id }}" name="quantity" value="1" min="1">
+              </div>
+
+            {%- when 'buy_buttons' -%}
+              <div class="single-product__buy-buttons" {{ block.shopify_attributes }}>
+                <button type="submit" name="add" class="button button--primary">
+                  {{ 'products.product.add_to_cart' | t }}
+                </button>
+                {%- if block.settings.show_dynamic_checkout -%}
+                  {{ form | payment_button }}
+                {%- endif -%}
+              </div>
+
+            {%- when 'description' -%}
+              <div class="single-product__description rte" {{ block.shopify_attributes }}>
+                {{ product.description }}
+              </div>
+
+            {%- when 'share' -%}
+              <div class="single-product__share" {{ block.shopify_attributes }}>
+                {%- render 'share-button', share_link: product.url -%}
+              </div>
+
+            {%- when 'collapsible_tab' -%}
+              <details class="single-product__collapsible" {{ block.shopify_attributes }}>
+                <summary>
+                  {%- if block.settings.icon != 'none' -%}
+                    <span class="icon icon-{{ block.settings.icon }}"></span>
+                  {%- endif -%}
+                  {{ block.settings.heading }}
+                </summary>
+                <div class="single-product__collapsible-content rte">
+                  {{ block.settings.content }}
+                  {{ block.settings.page.content }}
+                </div>
+              </details>
+
+            {%- when 'popup' -%}
+              <div class="single-product__popup" {{ block.shopify_attributes }}>
+                <button type="button" class="link" data-popup="popup-{{ block.id }}">{{ block.settings.link_label }}</button>
+                <div id="popup-{{ block.id }}" class="single-product__popup-modal" hidden>
+                  {{ block.settings.content }}
+                </div>
+              </div>
+
+            {%- when 'custom_liquid' -%}
+              <div class="single-product__custom-liquid" {{ block.shopify_attributes }}>
+                {{ block.settings.custom_liquid }}
+              </div>
+
+            {%- when 'badge' -%}
+              {%- comment -%} Repeat this block to get multiple badges {%- endcomment -%}
+              <span class="single-product__badge single-product__badge--{{ block.settings.badge_style }}"
+                    style="--badge-color:{{ block.settings.badge_color }}; --badge-text-color:{{ block.settings.badge_text_color }};"
+                    {{ block.shopify_attributes }}>
+                {%- if block.settings.icon != 'none' -%}
+                  <span class="single-product__badge-icon icon icon-{{ block.settings.icon }}"></span>
+                {%- endif -%}
+                {%- if block.settings.badge_text != blank -%}
+                  <span class="single-product__badge-text">{{ block.settings.badge_text }}</span>
+                {%- endif -%}
+              </span>
+
+            {%- when 'icon_text' -%}
+              {%- comment -%} Repeat this block for multiple icon + text rows (e.g. Free shipping, Warranty) {%- endcomment -%}
+              <div class="single-product__icon-text" {{ block.shopify_attributes }}>
+                {%- if block.settings.icon != 'none' -%}
+                  <span class="single-product__icon-text-icon icon icon-{{ block.settings.icon }}"></span>
+                {%- elsif block.settings.custom_icon -%}
+                  <span class="single-product__icon-text-icon">
+                    {{ block.settings.custom_icon | image_url: width: 40 | image_tag: loading: 'lazy' }}
+                  </span>
+                {%- endif -%}
+                <span class="single-product__icon-text-text">{{ block.settings.text }}</span>
+              </div>
+
+            {%- when 'cta_buttons' -%}
+              {%- comment -%} Call + Get Free Quote dual button block {%- endcomment -%}
+              <div class="single-product__cta-buttons" {{ block.shopify_attributes }}>
+                {%- if block.settings.show_call_button -%}
+                  <a href="tel:{{ block.settings.phone_number | remove: ' ' }}"
+                     class="button button--{{ block.settings.call_button_style }} single-product__cta-call">
+                    {%- if block.settings.call_icon != 'none' -%}
+                      <span class="icon icon-{{ block.settings.call_icon }}"></span>
+                    {%- endif -%}
+                    {{ block.settings.call_button_label }}
+                  </a>
+                {%- endif -%}
+                {%- if block.settings.show_quote_button -%}
+                  <a href="{{ block.settings.quote_button_link }}"
+                     class="button button--{{ block.settings.quote_button_style }} single-product__cta-quote">
+                    {%- if block.settings.quote_icon != 'none' -%}
+                      <span class="icon icon-{{ block.settings.quote_icon }}"></span>
+                    {%- endif -%}
+                    {{ block.settings.quote_button_label }}
+                  </a>
+                {%- endif -%}
+              </div>
+
+          {%- endcase -%}
+        {%- endfor -%}
+      {%- endform -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Single product",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product" },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Media position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "label": "Gallery layout",
+      "options": [
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "thumbnail_slider", "label": "Thumbnail carousel" },
+        { "value": "grid", "label": "Grid" }
+      ],
+      "default": "stacked"
+    },
+    { "type": "checkbox", "id": "enable_sticky_info", "label": "Enable sticky content on desktop", "default": true },
+    { "type": "range", "id": "column_gap", "label": "Column gap", "min": 0, "max": 100, "step": 4, "default": 40, "unit": "px" },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "scheme-1", "label": "Scheme 1" },
+        { "value": "scheme-2", "label": "Scheme 2" },
+        { "value": "scheme-3", "label": "Scheme 3" }
+      ],
+      "default": "scheme-1"
+    },
+    { "type": "header", "content": "Section padding" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 40 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 40 }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "select", "id": "style", "label": "Style", "options": [
+          { "value": "heading", "label": "Heading" },
+          { "value": "subheading", "label": "Subheading" },
+          { "value": "body", "label": "Body" },
+          { "value": "caption", "label": "Caption" }
+        ], "default": "heading" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Product title</p>" }
+      ]
+    },
+    { "type": "price", "name": "Price", "settings": [] },
+    { "type": "sku", "name": "SKU", "settings": [] },
+    { "type": "rating", "name": "Rating", "settings": [] },
+    {
+      "type": "variant_picker",
+      "name": "Variant picker",
+      "settings": [
+        { "type": "select", "id": "picker_type", "label": "Type", "options": [
+          { "value": "dropdown", "label": "Dropdown" },
+          { "value": "swatch", "label": "Swatches / buttons" }
+        ], "default": "dropdown" }
+      ]
+    },
+    { "type": "quantity_selector", "name": "Quantity selector", "settings": [] },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "settings": [
+        { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show dynamic checkout buttons", "default": true }
+      ]
+    },
+    { "type": "description", "name": "Description", "settings": [] },
+    { "type": "share", "name": "Share", "settings": [] },
+    {
+      "type": "collapsible_tab",
+      "name": "Collapsible row",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Shipping & returns" },
+        { "type": "select", "id": "icon", "label": "Icon", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "truck", "label": "Truck" },
+          { "value": "return", "label": "Return" },
+          { "value": "shield", "label": "Shield" },
+          { "value": "info", "label": "Info" }
+        ], "default": "none" },
+        { "type": "richtext", "id": "content", "label": "Content" },
+        { "type": "page", "id": "page", "label": "Page content (optional)" }
+      ]
+    },
+    {
+      "type": "popup",
+      "name": "Popup",
+      "settings": [
+        { "type": "text", "id": "link_label", "label": "Link label", "default": "Size guide" },
+        { "type": "richtext", "id": "content", "label": "Popup content" }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Custom liquid",
+      "settings": [
+        { "type": "liquid", "id": "custom_liquid", "label": "Custom liquid" }
+      ]
+    },
+    {
+      "type": "badge",
+      "name": "Badge",
+      "settings": [
+        { "type": "text", "id": "badge_text", "label": "Badge text", "default": "Best seller" },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "star", "label": "Star" },
+            { "value": "check", "label": "Check" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "fire", "label": "Fire" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "tag", "label": "Tag" },
+            { "value": "award", "label": "Award" }
+          ],
+          "default": "star"
+        },
+        {
+          "type": "select",
+          "id": "badge_style",
+          "label": "Badge style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "soft", "label": "Soft fill" }
+          ],
+          "default": "solid"
+        },
+        { "type": "color", "id": "badge_color", "label": "Badge background color", "default": "#111111" },
+        { "type": "color", "id": "badge_text_color", "label": "Badge text color", "default": "#ffffff" }
+      ]
+    },
+    {
+      "type": "icon_text",
+      "name": "Icon + text",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None (use custom icon below)" },
+            { "value": "truck", "label": "Truck / shipping" },
+            { "value": "return", "label": "Return" },
+            { "value": "shield", "label": "Warranty / shield" },
+            { "value": "check", "label": "Check" },
+            { "value": "lock", "label": "Secure payment" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Fast delivery" },
+            { "value": "star", "label": "Star" }
+          ],
+          "default": "truck"
+        },
+        { "type": "image_picker", "id": "custom_icon", "label": "Custom icon (used if icon above is None)" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Free shipping over $50" }
+      ]
+    },
+    {
+      "type": "cta_buttons",
+      "name": "Call + Quote buttons",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Call button" },
+        { "type": "checkbox", "id": "show_call_button", "label": "Show call button", "default": true },
+        { "type": "text", "id": "call_button_label", "label": "Call button label", "default": "Call (702) 600-3294" },
+        { "type": "text", "id": "phone_number", "label": "Phone number", "default": "(702) 600-3294", "info": "Used for the tel: link" },
+        { "type": "select", "id": "call_icon", "label": "Call button icon", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "phone", "label": "Phone" }
+        ], "default": "phone" },
+        { "type": "select", "id": "call_button_style", "label": "Call button style", "options": [
+          { "value": "primary", "label": "Primary" },
+          { "value": "secondary", "label": "Secondary" },
+          { "value": "outline", "label": "Outline" }
+        ], "default": "secondary" },
+
+        { "type": "header", "content": "Get Free Quote button" },
+        { "type": "checkbox", "id": "show_quote_button", "label": "Show quote button", "default": true },
+        { "type": "text", "id": "quote_button_label", "label": "Quote button label", "default": "Get Free Quote" },
+        { "type": "url", "id": "quote_button_link", "label": "Quote button link" },
+        { "type": "select", "id": "quote_icon", "label": "Quote button icon", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "quote", "label": "Quote" }
+        ], "default": "none" },
+        { "type": "select", "id": "quote_button_style", "label": "Quote button style", "options": [
+          { "value": "primary", "label": "Primary" },
+          { "value": "secondary", "label": "Secondary" },
+          { "value": "outline", "label": "Outline" }
+        ], "default": "primary" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Single product",
+      "blocks": [
+        { "type": "text", "settings": { "style": "heading" } },
+        { "type": "badge", "settings": { "badge_text": "Best seller", "icon": "star" } },
+        { "type": "badge", "settings": { "badge_text": "In stock", "icon": "check" } },
+        { "type": "price" },
+        { "type": "sku" },
+        { "type": "variant_picker" },
+        { "type": "quantity_selector" },
+        { "type": "buy_buttons" },
+        { "type": "cta_buttons" },
+        { "type": "icon_text", "settings": { "icon": "truck", "text": "Free shipping over $50" } },
+        { "type": "icon_text", "settings": { "icon": "return", "text": "30-day free returns" } },
+        { "type": "icon_text", "settings": { "icon": "shield", "text": "2-year warranty" } },
+        { "type": "description" },
+        { "type": "collapsible_tab", "settings": { "heading": "Shipping & returns", "icon": "truck" } },
+        { "type": "collapsible_tab", "settings": { "heading": "Care instructions", "icon": "info" } },
+        { "type": "share" }
+      ]
+    }
+  ]
+}
+{% endschema %}
