@@ -55,104 +55,105 @@
   </div>
 
   {%- comment -%} ============ MAIN LAYOUT: content + sidebar ============ {%- endcomment -%}
-  <div
-    class="
-      spacing-style
-      section-content-wrapper
-      blog-post-layout
-      mobile-column
-    "
-    style="
-      {% render 'layout-panel-style', settings: section.settings %}
-      {% render 'spacing-style', settings: section.settings %}
-    "
-  >
-    <div class="blog-post-layout__main">
-      {%- if article.image -%}
-        {%- content_for 'block', id: 'blog-post-image', type: '_blog-post-featured-image' %}
-      {%- endif -%}
-
-      <div id="blog-post-content-wrapper">
-        {%- content_for 'block', id: 'blog-post-content', type: '_blog-post-content' %}
-      </div>
-    </div>
-
-    <aside class="blog-post-layout__sidebar">
-      <div class="blog-post-sidebar-inner">
-
-        {%- if section.settings.show_toc -%}
-          <div class="blog-post-toc" id="blog-post-toc">
-            <h2 class="blog-post-toc__title">{{ section.settings.toc_heading | default: 'Table of Contents' }}</h2>
-            <ul class="blog-post-toc__list" id="blog-post-toc-list">
-              {%- comment -%} populated by JS from headings inside the article content {%- endcomment -%}
-            </ul>
-          </div>
+  <div class="page-width">
+    <div
+      class="
+        spacing-style
+        section-content-wrapper
+        blog-post-layout
+        mobile-column
+      "
+      style="
+        {% render 'layout-panel-style', settings: section.settings %}
+        {% render 'spacing-style', settings: section.settings %}
+      "
+    >
+      <div class="blog-post-layout__main">
+        {%- if article.image -%}
+          {%- content_for 'block', id: 'blog-post-image', type: '_blog-post-featured-image' %}
         {%- endif -%}
 
-        {%- if section.settings.show_related -%}
-          <div class="blog-post-related">
-            <h2 class="blog-post-related__title">{{ section.settings.related_heading | default: 'Related Posts' }}</h2>
-            <div class="blog-post-related__list">
-              {%- assign related_count = 0 -%}
-              {%- for related_article in blog.articles -%}
-                {%- if related_article.id != article.id and related_count < section.settings.related_count -%}
-                  {%- assign related_count = related_count | plus: 1 -%}
-                  <a href="{{ related_article.url }}" class="blog-post-related__item">
-                    {%- if related_article.image -%}
-                      <div class="blog-post-related__image">
-                        {{ related_article.image | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100,200' }}
-                      </div>
-                    {%- endif -%}
-                    <div class="blog-post-related__content">
-                      <span class="blog-post-related__item-title">{{ related_article.title }}</span>
-                      <time class="blog-post-related__item-date" datetime="{{ related_article.published_at | date: '%Y-%m-%d' }}">
-                        {{ related_article.published_at | time_tag: format: 'date' }}
-                      </time>
-                    </div>
-                  </a>
-                {%- endif -%}
-              {%- endfor -%}
+        <div id="blog-post-content-wrapper">
+          {%- content_for 'block', id: 'blog-post-content', type: '_blog-post-content' %}
+        </div>
+      </div>
+
+      <aside class="blog-post-layout__sidebar">
+        <div class="blog-post-sidebar-inner">
+
+          {%- if section.settings.show_toc -%}
+            <div class="blog-post-toc" id="blog-post-toc">
+              <h2 class="blog-post-toc__title">{{ section.settings.toc_heading | default: 'Table of Contents' }}</h2>
+              <ul class="blog-post-toc__list" id="blog-post-toc-list">
+                {%- comment -%} populated by JS from headings inside the article content {%- endcomment -%}
+              </ul>
             </div>
-          </div>
-        {%- endif -%}
+          {%- endif -%}
 
-      </div>
-    </aside>
-  </div>
-
-  {% comment %} Dynamic area for @app blocks only, at the bottom {% endcomment %}
-  {% content_for 'blocks' %}
-
-  {% if blog.comments_enabled? %}
-    <div class="blog-post-comments-container">
-      <h2 class="h3">{{- 'blogs.article.comments_heading' | t: count: article.comments_count -}}</h2>
-
-      <div class="blog-post-comments">
-        {% paginate article.comments by 10 %}
-          {% for comment in article.comments %}
-            <div class="blog-post-comment">
-              {{ comment.content }}
-              <div class="blog-post-comment__author">
-                <span class="blog-post-comment__author-name">{{- comment.author -}}</span>
-                <span>{{- 'blogs.article.comment_author_separator' | t -}}</span>
-                <span class="blog-post-comment__date">
-                  {{- comment.created_at | time_tag: format: 'date' -}}
-                </span>
+          {%- if section.settings.show_related -%}
+            <div class="blog-post-related">
+              <h2 class="blog-post-related__title">{{ section.settings.related_heading | default: 'Related Posts' }}</h2>
+              <div class="blog-post-related__list">
+                {%- assign related_count = 0 -%}
+                {%- for related_article in blog.articles -%}
+                  {%- if related_article.id != article.id and related_count < section.settings.related_count -%}
+                    {%- assign related_count = related_count | plus: 1 -%}
+                    <a href="{{ related_article.url }}" class="blog-post-related__item">
+                      {%- if related_article.image -%}
+                        <div class="blog-post-related__image">
+                          {{ related_article.image | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100,200' }}
+                        </div>
+                      {%- endif -%}
+                      <div class="blog-post-related__content">
+                        <span class="blog-post-related__item-title">{{ related_article.title }}</span>
+                        <time class="blog-post-related__item-date" datetime="{{ related_article.published_at | date: '%Y-%m-%d' }}">
+                          {{ related_article.published_at | time_tag: format: 'date' }}
+                        </time>
+                      </div>
+                    </a>
+                  {%- endif -%}
+                {%- endfor -%}
               </div>
             </div>
-          {% endfor %}
+          {%- endif -%}
 
-          <div class="blog-post-comments-pagination">
-            {{- paginate | default_pagination -}}
-          </div>
-        {% endpaginate %}
-      </div>
-
-      {% render 'blog-comment-form', article: article, section_id: section.id %}
+        </div>
+      </aside>
     </div>
-  {% endif %}
-</div>
 
+    {% comment %} Dynamic area for @app blocks only, at the bottom {% endcomment %}
+    {% content_for 'blocks' %}
+
+    {% if blog.comments_enabled? %}
+      <div class="blog-post-comments-container">
+        <h2 class="h3">{{- 'blogs.article.comments_heading' | t: count: article.comments_count -}}</h2>
+
+        <div class="blog-post-comments">
+          {% paginate article.comments by 10 %}
+            {% for comment in article.comments %}
+              <div class="blog-post-comment">
+                {{ comment.content }}
+                <div class="blog-post-comment__author">
+                  <span class="blog-post-comment__author-name">{{- comment.author -}}</span>
+                  <span>{{- 'blogs.article.comment_author_separator' | t -}}</span>
+                  <span class="blog-post-comment__date">
+                    {{- comment.created_at | time_tag: format: 'date' -}}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+
+            <div class="blog-post-comments-pagination">
+              {{- paginate | default_pagination -}}
+            </div>
+          {% endpaginate %}
+        </div>
+
+        {% render 'blog-comment-form', article: article, section_id: section.id %}
+      </div>
+    {% endif %}
+  </div>
+</div>
 <script type="application/ld+json">
   {{ article | structured_data }}
 </script>
