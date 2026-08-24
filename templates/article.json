@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "section": {
       "type": "main-blog-post",
@@ -54,11 +55,10 @@
           "blocks": {}
         },
         "blog-post-image": {
-          "type": "image",
-          "name": "Featured image",
+          "type": "_blog-post-featured-image",
           "static": true,
           "settings": {
-            "image_ratio": "landscape",
+            "image_ratio": "adapt",
             "width": "fill",
             "custom_width": 100,
             "width_mobile": "fill",
@@ -89,9 +89,28 @@
         "padding-block-start": 40,
         "padding-block-end": 80
       }
+    },
+    "cta_footer_bar_3Ja4ge": {
+      "type": "cta-footer-bar",
+      "name": "CTA footer bar",
+      "settings": {
+        "heading": "Ready to Start Your Project?",
+        "phone_number": "Call or Text",
+        "button_label": "Book Now",
+        "button_link": "/pages/booking-wizard",
+        "background_color": "#000000",
+        "text_color": "#ffffff",
+        "button_background": "#990000",
+        "button_text_color": "#ffffff",
+        "padding_top": 24,
+        "padding_bottom": 24,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20
+      }
     }
   },
   "order": [
-    "section"
+    "section",
+    "cta_footer_bar_3Ja4ge"
   ]
 }
