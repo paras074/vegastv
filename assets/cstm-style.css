@@ -3104,3 +3104,6 @@ h2.service-areas__heading p {
 .template-booking-wizard div#shopify-section-sections--28879181119854__178620607085ab8cda {
     display: none;
 }
+.announcement-bar {
+    background: #000 !important;
+}
