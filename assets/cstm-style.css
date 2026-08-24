@@ -3100,3 +3100,7 @@ h2.service-areas__heading p {
 .Avada-Faqs_Button.bottom {
     display: none;
 }
+
+.template-booking-wizard div#shopify-section-sections--28879181119854__178620607085ab8cda {
+    display: none;
+}
