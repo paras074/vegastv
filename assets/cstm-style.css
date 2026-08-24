@@ -3107,3 +3107,13 @@ h2.service-areas__heading p {
 .announcement-bar {
     background: #000 !important;
 }
+
+h2.blog-post-toc__title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.blog-post-content h2 {
+    font-size: 30px;
+    font-weight: 600;
+}
