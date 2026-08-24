@@ -12,48 +12,6 @@
     "section": {
       "type": "main-blog-post",
       "blocks": {
-        "blog-post-title": {
-          "type": "text",
-          "name": "Title",
-          "static": true,
-          "settings": {
-            "text": "<h1>{{ article.title }}</h1>",
-            "width": "100%",
-            "max_width": "normal",
-            "alignment": "center",
-            "type_preset": "h2",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "blog-post-details": {
-          "type": "_blog-post-info-text",
-          "name": "Details",
-          "static": true,
-          "settings": {
-            "show_date": true,
-            "show_author": false,
-            "type_preset": "",
-            "alignment": "center",
-            "show_alignment": true,
-            "padding-block-start": 24,
-            "padding-block-end": 0
-          },
-          "blocks": {}
-        },
         "blog-post-image": {
           "type": "_blog-post-featured-image",
           "static": true,
@@ -87,7 +45,18 @@
         "gap": 32,
         "color_scheme": "",
         "padding-block-start": 40,
-        "padding-block-end": 80
+        "padding-block-end": 80,
+        "show_breadcrumbs": true,
+        "banner_padding_top": 80,
+        "banner_padding_bottom": 80,
+        "banner_padding_mobile": false,
+        "banner_padding_top_mobile": 24,
+        "banner_padding_bottom_mobile": 24,
+        "show_toc": true,
+        "toc_heading": "Table of Contents",
+        "show_related": true,
+        "related_heading": "Related Posts",
+        "related_count": 3
       }
     },
     "cta_footer_bar_3Ja4ge": {
