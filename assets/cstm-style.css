@@ -3112,8 +3112,8 @@ h2.blog-post-toc__title {
     font-size: 20px;
     font-weight: 600;
 }
-
 .blog-post-content h2 {
     font-size: 30px;
     font-weight: 600;
+    scroll-margin-top: 120px;
 }
