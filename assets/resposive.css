@@ -105,7 +105,9 @@
   header a.call-now-btn {
     padding: 10px;
   }
-
+  header {
+      padding: 5px 20px;
+  }
   .Avada-Faqs_Button.bottom.right {
     bottom: 90px;
   }
