@@ -51,7 +51,9 @@
       "termsUrl": {{ section.settings.terms_url | default: '' | json }},
       "logo": {{ logo_url | json }},
       "sharedSecret": {{ section.settings.shared_secret | default: '' | json }},
-      "promoCodes": {{ promo_json }}
+      "promoCodes": {{ promo_json }}{%- if section.settings.services_json != blank -%}
+      ,"services": {{ section.settings.services_json }}{%- endif -%}{%- if section.settings.module_order_json != blank -%}
+      ,"moduleOrder": {{ section.settings.module_order_json }}{%- endif -%}
     }
   </script>
 </div>
@@ -98,6 +100,22 @@
       "id": "promo_codes",
       "label": "Promo codes (unused)",
       "info": "Deprecated — discounts are automatic now."
+    },
+    {
+      "type": "header",
+      "content": "Services Catalog"
+    },
+    {
+      "type": "textarea",
+      "id": "services_json",
+      "label": "Services catalog (JSON)",
+      "info": "JSON array of service objects. Leave blank to use built-in defaults. Each object needs: id, name, group, booking ('instant'|'quote'). Optional: ready, ownedBy. Example:\n[{\"group\":\"TV & Entertainment\",\"id\":\"tv-mounting\",\"name\":\"TV Mounting\",\"booking\":\"instant\",\"ready\":true}]"
+    },
+    {
+      "type": "textarea",
+      "id": "module_order_json",
+      "label": "Module order (JSON array)",
+      "info": "JSON array of service IDs that define which instant-booking modules render and their order. Leave blank for defaults. Example:\n[\"tv-mounting\",\"wire-concealment\",\"smart-tv-setup\",\"soundbar\"]"
     },
     {
       "type": "header",

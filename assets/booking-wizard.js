@@ -27,11 +27,9 @@
    * SERVICE CATALOG  (source of truth = approved service specs)
    * ============================================================ */
 
-  // Master service inventory (Step 2). booking: instant | quote | commercial.
-  // ready:true  => an instant module exists below.
-  // ownedBy     => this service is configured & priced inside another module
-  //                (dedup rule); satisfied when that owner is also selected.
-  const SERVICES = [
+  // Default services — used when no services are provided via config/metafields.
+  // When services are passed in config, these defaults are overridden entirely.
+  const DEFAULT_SERVICES = [
     { group: 'TV & Entertainment', id: 'tv-mounting',        name: 'TV Mounting',                 booking: 'instant', ready: true },
     { group: 'TV & Entertainment', id: 'soundbar',           name: 'Soundbar Installation',       booking: 'instant', ready: true },
     { group: 'TV & Entertainment', id: 'wire-concealment',   name: 'Wire Concealment',            booking: 'instant', ready: false, ownedBy: 'tv-mounting' },
@@ -48,8 +46,8 @@
     { group: 'Custom Projects',    id: 'led-accent',         name: 'LED Accent Lighting Installation', booking: 'quote' }
   ];
 
-  // Module order (master spec §5). Only modules present here render.
-  const MODULE_ORDER = ['tv-mounting', 'wire-concealment', 'smart-tv-setup', 'soundbar'];
+  // Default module order (master spec §5). Only modules present here render.
+  const DEFAULT_MODULE_ORDER = ['tv-mounting', 'wire-concealment', 'smart-tv-setup', 'soundbar'];
 
   /* ---------- TV MOUNTING module (spec v1.0, steps 4–10) ---------- */
   const MOD_TV = {
@@ -199,7 +197,9 @@
     ]
   };
 
-  const MODULES = { 'tv-mounting': MOD_TV, 'soundbar': MOD_SB };
+  // Default module definitions — used when no custom modules are provided via config.
+  // Keys match service IDs. Only services with a module entry here can use instant booking.
+  const DEFAULT_MODULES = { 'tv-mounting': MOD_TV, 'soundbar': MOD_SB };
 
   /* ---------- Shared ending screens (master spec §9) ---------- */
   const COVERAGE_STEP = {
@@ -251,8 +251,14 @@
         phone: '',
         termsUrl: '',
         logo: '',
-        sharedSecret: ''      // sent as X-Booking-Secret header to the endpoint
+        sharedSecret: '',     // sent as X-Booking-Secret header to the endpoint
+        services: null,       // JSON array of service objects from metafields; null = use defaults
+        moduleOrder: null     // JSON array of module IDs from metafields; null = use defaults
       }, config || {});
+
+      // Use config-provided services or fall back to hardcoded defaults
+      this.services = (Array.isArray(this.cfg.services) && this.cfg.services.length > 0) ? this.cfg.services : DEFAULT_SERVICES;
+      this.moduleOrder = (Array.isArray(this.cfg.moduleOrder) && this.cfg.moduleOrder.length > 0) ? this.cfg.moduleOrder : DEFAULT_MODULE_ORDER;
 
       this.state = {
         zip: '', zipValid: false,
@@ -266,7 +272,7 @@
         appt: { date: null, slot: null },
         customer: {},
         card: {},           // { number, exp, cvc, brand } — never sent raw
-        community: false,  // Community Appreciation Discount opt-in
+        community: false,   // Community Appreciation Discount opt-in
         sms: false,
         quoteNotes: ''
       };
@@ -274,8 +280,20 @@
       this.index = 0;
       this.calMonth = null; // Date pointing to first of displayed month
       this.submitting = false;
-      this.build();
-      this.render();
+      this.showLoader();
+    }
+
+    /* ---------- loader ---------- */
+    showLoader() {
+      this.root.classList.add('bw-root');
+      this.root.innerHTML = `<div class="bw-loader">
+        <div class="bw-loader__spinner"></div>
+        <p class="bw-loader__text">Loading booking wizard...</p>
+      </div>`;
+      setTimeout(() => {
+        this.build();
+        this.render();
+      }, 1500);
     }
 
     /* ---------- key helpers ---------- */
@@ -284,9 +302,12 @@
     stepTotal(step) { return step.options.reduce((s, o) => s + this.q(step.id, o.id), 0); }
 
     activeModules() {
-      return MODULE_ORDER
-        .filter((id) => MODULES[id] && this.state.services.includes(id))
-        .map((id) => MODULES[id]);
+      return this.moduleOrder
+        .filter((id) => this.getModule(id) && this.state.services.includes(id))
+        .map((id) => this.getModule(id));
+    }
+    getModule(id) {
+      return DEFAULT_MODULES[id] || null;
     }
     modulePrimary(mod) {
       const anchor = mod.steps.find((s) => s.anchorPrimary);
@@ -320,7 +341,7 @@
       const sel = this.state.services;
       let needsQuote = false;
       sel.forEach((id) => {
-        const svc = SERVICES.find((s) => s.id === id);
+        const svc = this.services.find((s) => s.id === id);
         if (!svc) return;
         if (svc.booking === 'quote') needsQuote = true;
         else if (svc.booking === 'instant' && !svc.ready) {
@@ -638,7 +659,7 @@
     view_services(step) {
       const st = this.state;
       const groups = {};
-      SERVICES.forEach((s) => { (groups[s.group] = groups[s.group] || []).push(s); });
+      this.services.forEach((s) => { (groups[s.group] = groups[s.group] || []).push(s); });
       let html = `<div class="bw-step">${this.head(step)}<div class="bw-options">`;
       Object.keys(groups).forEach((g) => {
         html += `<div class="bw-group-label">${esc(g)}</div>`;
@@ -985,7 +1006,7 @@
     view_quote(step) {
       const st = this.state; const c = st.customer;
       if (!c.zip && st.zip) c.zip = st.zip;
-      const svcNames = st.services.map((id) => (SERVICES.find((s) => s.id === id) || {}).name).filter(Boolean);
+      const svcNames = st.services.map((id) => (this.services.find((s) => s.id === id) || {}).name).filter(Boolean);
       const fe = this.fieldErrors || {};
       const node = el(`<div class="bw-step">${this.head(step)}
         <div class="bw-included"><b>Selected services:</b> ${esc(svcNames.join(', ') || '—')}<br><b>Property:</b> ${esc(st.propertyType || '—')} &nbsp;·&nbsp; <b>ZIP:</b> ${esc(st.zip || '—')}</div>
@@ -1009,7 +1030,7 @@
     view_quote_review(step) { return this.view_quoteReview(step); }
     view_quoteReview(step) {
       const st = this.state; const c = st.customer;
-      const svcNames = st.services.map((id) => (SERVICES.find((s) => s.id === id) || {}).name).filter(Boolean);
+      const svcNames = st.services.map((id) => (this.services.find((s) => s.id === id) || {}).name).filter(Boolean);
       return el(`<div class="bw-step">${this.head(step)}
         <div class="bw-review-sec">
           <div class="bw-review-sec__h">Request Details</div>
@@ -1193,7 +1214,7 @@
         idempotencyKey: this._idem || (this._idem = 'bw_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10)),
         zip: st.zip,
         propertyType: st.propertyType,
-        services: st.services.map((id) => { const s = SERVICES.find((x) => x.id === id) || {}; return { id, name: s.name }; }),
+        services: st.services.map((id) => { const s = this.services.find((x) => x.id === id) || {}; return { id, name: s.name }; }),
         customer: {
           firstName: st.customer.firstName, lastName: st.customer.lastName,
           email: st.customer.email, phone: st.customer.phone,
