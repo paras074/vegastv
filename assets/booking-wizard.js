@@ -88,9 +88,9 @@
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'own', name: 'I have my own TV Mount', price: 0 },
-          { id: 'fixed', name: 'Heavy Duty Fixed / Flat TV Mount', price: 59 },
-          { id: 'tilt', name: 'Heavy Duty Tilting TV Mount', price: 79 },
-          { id: 'full', name: 'Heavy Duty Full-Motion TV Mount', price: 189 }
+          { id: 'fixed', name: 'Heavy Duty Fixed / Flat TV Mount', price: 59, product: true },
+          { id: 'tilt', name: 'Heavy Duty Tilting TV Mount', price: 79, product: true },
+          { id: 'full', name: 'Heavy Duty Full-Motion TV Mount', price: 189, product: true }
         ]
       },
       {
@@ -171,7 +171,7 @@
         validate: { mode: 'equal', ref: 'mounted' },
         options: [
           { id: 'own', name: 'I Have My Own Soundbar Mount', price: 0 },
-          { id: 'provide', name: 'Vegas TV Mounting Provides Heavy Duty Soundbar Mount', price: 69 }
+          { id: 'provide', name: 'Vegas TV Mounting Provides Heavy Duty Soundbar Mount', price: 69, product: true }
         ]
       },
       {
@@ -257,7 +257,7 @@
         appt: { date: null, slot: null },
         customer: {},
         card: {},           // { number, exp, cvc, brand } — never sent raw
-        promo: '', promoApplied: null,
+        community: false,  // Community Appreciation Discount opt-in
         sms: false,
         quoteNotes: ''
       };
@@ -766,15 +766,13 @@
         <div class="bw-included" style="max-height:220px;overflow:auto">
           Appointments may be canceled or rescheduled at no charge if you let us know at least <b>24 hours</b> before your appointment. Changes made less than 24 hours before your appointment may be subject to a <b>$25 fee</b>. By continuing, you agree to our Terms of Service.
         </div>
-        ${this.cfg.termsUrl ? `<button class="bw-help-link" data-terms>View Full Terms of Service</button>` : ''}
+        ${this.cfg.termsUrl ? `<a class="bw-help-link" href="${esc(this.cfg.termsUrl)}" target="_blank" rel="noopener">View Full Terms of Service</a>` : ''}
         <label class="bw-choice ${st.terms ? 'is-active' : ''}" style="margin-top:14px;cursor:pointer" data-agree>
           <span class="bw-choice__box">${ICON_CHECK}</span>
           <span class="bw-choice__text"><span class="bw-choice__name">I agree to the Terms of Service</span></span>
         </label>
       </div>`);
       node.querySelector('[data-agree]').addEventListener('click', () => { st.terms = !st.terms; this.setError(''); this.render(); });
-      const t = node.querySelector('[data-terms]');
-      if (t) t.addEventListener('click', () => this.openHelp({ title: 'Terms of Service', url: this.cfg.termsUrl }));
       return node;
     }
 
@@ -963,9 +961,9 @@
             if (qn > 0 && !(o.price === 0 && o.priceHidden)) {
               // include $0 lines that represent a real choice, but skip hidden $0 count rows
               if (o.price === 0 && !o.priceHidden && step.anchorPrimary) return;
-              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: o.price, amount: o.price * qn });
+              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: o.price, amount: o.price * qn, product: !!o.product });
             } else if (qn > 0 && o.priceHidden) {
-              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: 0, amount: 0 });
+              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: 0, amount: 0, product: !!o.product });
             }
           });
         });
@@ -981,16 +979,45 @@
       return slot && slot.afterHours;
     }
 
+    tvCount() {
+      const mod = this.activeModules().find((m) => m.id === 'tv-mounting');
+      return mod ? this.modulePrimary(mod) : 0;
+    }
+
+    /* All discounts + product-only tax. Discounts apply to the whole subtotal
+       (all items incl. after-hours fee). Tax applies only to physical products. */
     totals() {
       const items = this.computeLineItems();
-      let subtotal = items.reduce((s, i) => s + i.amount, 0);
+      const itemsSum = items.reduce((s, i) => s + i.amount, 0);
       const fee = this.afterHours() ? AFTER_HOURS_FEE : 0;
-      subtotal += fee;
-      const discount = this.state.promoApplied ? this.state.promoApplied.amount : 0;
-      const taxed = Math.max(0, subtotal - discount);
-      const tax = Math.round(taxed * (this.cfg.taxRate || 0) * 100) / 100;
-      const total = taxed + tax;
-      return { items, subtotal, fee, discount, tax, total };
+      const base = itemsSum + fee;                       // discount base = everything
+      const round2 = (n) => Math.round(n * 100) / 100;
+
+      // ---- discounts ----
+      const bookOnline = base > 0 ? Math.min(10, base) : 0;         // −$10 automatic
+      const multiTV = this.tvCount() >= 2 ? round2(base * 0.10) : 0; // −10% for 2+ TVs
+      const autoTotal = bookOnline + multiTV;
+      const community = this.state.community ? round2(base * 0.10) : 0; // −10% opt-in
+
+      let discounts = [];
+      if (this.state.community && community >= autoTotal) {
+        // Community is exclusive; wins only when it's the greater discount.
+        discounts = [{ label: 'Community Appreciation Discount (10%)', amount: community }];
+      } else {
+        if (bookOnline) discounts.push({ label: 'Book Online Discount', amount: bookOnline });
+        if (multiTV) discounts.push({ label: 'Multiple TV Discount (10%)', amount: multiTV });
+      }
+      let discountTotal = round2(discounts.reduce((s, d) => s + d.amount, 0));
+      discountTotal = Math.min(discountTotal, base);
+
+      // ---- tax: products only, on the post-discount product portion ----
+      const productSubtotal = items.filter((i) => i.product).reduce((s, i) => s + i.amount, 0);
+      const productShare = base > 0 ? productSubtotal / base : 0;
+      const productTaxable = Math.max(0, productSubtotal - discountTotal * productShare);
+      const tax = round2(productTaxable * (this.cfg.taxRate || 0));
+
+      const total = round2(base - discountTotal + tax);
+      return { items, subtotal: base, fee, discounts, discountTotal, productSubtotal, tax, total };
     }
 
     view_review(step) {
@@ -1032,16 +1059,21 @@
           <div class="bw-line"><span class="bw-line__label">${esc([c.address, c.apt, c.city, c.region, c.zip].filter(Boolean).join(', '))}</span><span class="bw-line__val"></span></div>
         </div>
 
-        <div class="bw-promo">
-          <input class="bw-input" placeholder="Promo code" value="${esc(st.promo)}" data-promo>
-          <button data-apply>Apply</button>
+        <div class="bw-review-sec">
+          <div class="bw-review-sec__h">Discounts &amp; Savings</div>
+          <label class="bw-consent" style="padding:14px 16px;cursor:pointer">
+            <input type="checkbox" data-community ${st.community ? 'checked' : ''}>
+            <span><b>Community Appreciation Discount — 10% off</b><br>
+            For active-duty military, veterans, teachers &amp; educators, law enforcement, firefighters, EMTs &amp; paramedics, and local/state/federal government employees.<br>
+            <small>Valid employment or agency ID required at time of service. Cannot be combined with other offers.</small></span>
+          </label>
         </div>
 
         <div class="bw-totals">
           <div class="bw-line"><span class="bw-line__label">Subtotal</span><span class="bw-line__val">${money(t.subtotal - t.fee)}</span></div>
           ${t.fee ? `<div class="bw-line"><span class="bw-line__label">After-Hours Fee</span><span class="bw-line__val">${money(t.fee)}</span></div>` : ''}
-          ${t.discount ? `<div class="bw-line"><span class="bw-line__label">Discount${st.promoApplied ? ' (' + esc(st.promoApplied.code) + ')' : ''}</span><span class="bw-line__val">−${money(t.discount)}</span></div>` : ''}
-          <div class="bw-line"><span class="bw-line__label">Tax${this.cfg.taxRate ? ' (' + (this.cfg.taxRate * 100).toFixed(2).replace(/\.00$/, '') + '%)' : ''}</span><span class="bw-line__val">${money(t.tax)}</span></div>
+          ${t.discounts.map((d) => `<div class="bw-line"><span class="bw-line__label" style="color:var(--bw-ok)">${esc(d.label)}</span><span class="bw-line__val" style="color:var(--bw-ok)">−${money(d.amount)}</span></div>`).join('')}
+          ${t.tax ? `<div class="bw-line"><span class="bw-line__label">Sales Tax (products)</span><span class="bw-line__val">${money(t.tax)}</span></div>` : ''}
           <div class="bw-line bw-totals__grand"><span class="bw-line__label">Total</span><span class="bw-line__val">${money(t.total)}</span></div>
         </div>
 
@@ -1054,15 +1086,7 @@
       node.querySelector('[data-edit-appt]').addEventListener('click', () => jump('appointment'));
       node.querySelector('[data-edit-cust]').addEventListener('click', () => jump('customer'));
       node.querySelector('[data-sms]').addEventListener('change', (e) => { st.sms = e.target.checked; this.setError(''); });
-      const promo = node.querySelector('[data-promo]');
-      node.querySelector('[data-apply]').addEventListener('click', () => {
-        st.promo = promo.value.trim();
-        const code = st.promo.toUpperCase();
-        const table = this.cfg.promoCodes || {};
-        if (table[code]) { st.promoApplied = { code, amount: table[code] }; }
-        else { st.promoApplied = null; this.setError(st.promo ? 'That promo code isn’t valid.' : ''); }
-        this.render();
-      });
+      node.querySelector('[data-community]').addEventListener('change', (e) => { st.community = e.target.checked; this.render(); });
       return node;
     }
 
@@ -1102,8 +1126,9 @@
       if (isQuote) { base.notes = st.quoteNotes; return base; }
 
       const t = this.totals();
-      base.lineItems = t.items;
-      base.pricing = { subtotal: t.subtotal, afterHoursFee: t.fee, discount: t.discount, promoCode: st.promoApplied ? st.promoApplied.code : null, tax: t.tax, taxRate: this.cfg.taxRate || 0, total: t.total };
+      base.lineItems = t.items; // each carries step/option/product for server re-pricing & tax
+      base.communityDiscount = st.community;
+      base.pricing = { subtotal: t.subtotal, afterHoursFee: t.fee, discounts: t.discounts, discountTotal: t.discountTotal, tax: t.tax, taxRate: this.cfg.taxRate || 0, total: t.total };
       base.appointment = { date: st.appt.date, slot: st.appt.slot, afterHours: this.afterHours() };
       base.consent = { terms: st.terms, sms: st.sms };
       // NOTE: the raw card number and CVC are intentionally NEVER included.
