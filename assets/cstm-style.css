@@ -3117,3 +3117,7 @@ h2.blog-post-toc__title {
     font-weight: 600;
     scroll-margin-top: 120px;
 }
+.header-section {
+    background: #fff !important;
+    box-shadow: 0 0 7px 0px #ccc !important;
+}
