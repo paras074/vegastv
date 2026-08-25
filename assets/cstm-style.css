@@ -1543,12 +1543,11 @@ summary:hover {
   font-size: 12px;
   text-align: center;
 }
-
 .sticky-mobile-bar__btn span {
-  color: #fff;
-  font-weight: 500;
+    color: #fff;
+    font-weight: 500;
+    line-height: 1;
 }
-
 .sticky-mobile-bar__btn {
   flex: 1;
   display: flex;
