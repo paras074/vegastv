@@ -218,13 +218,21 @@
 
   /* Appointment slots (mirrors approved mockup). Real deployments
      should source availability from HCP; see README. */
+  // Fallback slots used only if HCP availability can't be loaded.
   const SLOTS = [
-    { id: 'am1', label: '8:00 AM – 10:00 AM' },
-    { id: 'am2', label: '11:00 AM – 1:00 PM' },
-    { id: 'pm1', label: '2:00 PM – 4:00 PM' },
-    { id: 'pm2', label: '5:00 PM – 8:00 PM' },
-    { id: 'ah',  label: '8:00 PM – 10:00 PM', afterHours: true }
+    { id: '08:00', start: '08:00', end: '10:00', label: '8:00 AM – 10:00 AM' },
+    { id: '11:00', start: '11:00', end: '13:00', label: '11:00 AM – 1:00 PM' },
+    { id: '14:00', start: '14:00', end: '16:00', label: '2:00 PM – 4:00 PM' },
+    { id: '17:00', start: '17:00', end: '20:00', label: '5:00 PM – 8:00 PM' },
+    { id: '20:00', start: '20:00', end: '22:00', label: '8:00 PM – 10:00 PM', afterHours: true }
   ];
+
+  const AFTER_HOURS_START_MIN = 20 * 60; // 8:00 PM
+  const SLOT_LEN_MIN = 120;              // 2-hour arrival windows
+  const DAY_IDX = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+  const timeToMin = (t) => { const [h, m] = String(t).split(':').map(Number); return (h || 0) * 60 + (m || 0); };
+  const minToHHMM = (n) => String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(n % 60).padStart(2, '0');
+  const minToLabel = (n) => { let h = Math.floor(n / 60), m = n % 60; const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + (m ? ':' + String(m).padStart(2, '0') : ':00') + ' ' + ap; };
 
   const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -787,22 +795,59 @@
         .then((r) => r.json())
         .then((d) => {
           this.availability = (d && d.availability) || d;
-          // Exposed for inspection while we wire the calendar to the real shape.
           window.__bwAvailability = this.availability;
-          console.log('[BookingWizard] HCP schedule_availability:', this.availability);
+          // Refresh the calendar now that real availability is loaded.
+          if (this.currentStep() && this.currentStep().kind === 'appointment') this.render();
         })
         .catch((e) => console.warn('[BookingWizard] availability fetch failed', e));
+    }
+
+    /* Parse HCP schedule_availability into { buffer, byDay: {weekdayIdx: [{start,end}]} } */
+    parseAvailability() {
+      const a = this.availability;
+      if (!a || !a.daily_availabilities) return null;
+      const rows = (a.daily_availabilities.data) || [];
+      const byDay = {};
+      rows.forEach((d) => {
+        const idx = DAY_IDX[String(d.day_name || '').toLowerCase()];
+        if (idx == null) return;
+        const wins = ((d.schedule_windows || {}).data) || [];
+        byDay[idx] = wins.map((w) => ({ start: w.start_time, end: w.end_time }));
+      });
+      return { buffer: a.availability_buffer_in_days || 0, byDay };
+    }
+
+    /* Bookable arrival slots for a given date, generated from HCP windows. */
+    slotsForDate(date) {
+      const av = this.parseAvailability();
+      if (!av) return SLOTS.slice();                 // availability not loaded -> fallback
+      const wins = av.byDay[date.getDay()];
+      if (!wins || !wins.length) return [];          // day closed
+      const slots = [];
+      wins.forEach((w) => {
+        const s = timeToMin(w.start), e = timeToMin(w.end);
+        for (let t = s; t < e; t += SLOT_LEN_MIN) {
+          const end = Math.min(t + SLOT_LEN_MIN, e);
+          slots.push({ id: minToHHMM(t), start: minToHHMM(t), end: minToHHMM(end), startMin: t,
+            label: minToLabel(t) + ' – ' + minToLabel(end), afterHours: t >= AFTER_HOURS_START_MIN });
+        }
+      });
+      return slots;
     }
 
     view_appointment(step) {
       const st = this.state;
       this.fetchAvailability();
+      const av = this.parseAvailability();
       const today = new Date(); today.setHours(0, 0, 0, 0);
+      const earliest = new Date(today); earliest.setDate(earliest.getDate() + (av ? av.buffer : 0));
+      const nowMin = (new Date()).getHours() * 60 + (new Date()).getMinutes();
       if (!this.calMonth) this.calMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const node = el(`<div class="bw-step">${this.head(step)}
         <div class="bw-cal" data-cal></div>
         <div data-slots></div>
       </div>`);
+      const dayOpen = (date) => !av ? true : !!(av.byDay[date.getDay()] && av.byDay[date.getDay()].length);
       const renderCal = () => {
         const cal = node.querySelector('[data-cal]');
         const y = this.calMonth.getFullYear(), m = this.calMonth.getMonth();
@@ -817,30 +862,42 @@
         for (let i = 0; i < first; i++) g += `<div></div>`;
         for (let d = 1; d <= days; d++) {
           const date = new Date(y, m, d);
-          const past = date < today;
+          const disabled = date < earliest || !dayOpen(date);
           const iso = date.toISOString().slice(0, 10);
           const sel = st.appt.date === iso;
           const isToday = date.getTime() === today.getTime();
-          g += `<button class="bw-cal__day ${sel ? 'is-selected' : ''} ${isToday ? 'is-today' : ''}" data-day="${iso}" ${past ? 'disabled' : ''}>${d}</button>`;
+          g += `<button class="bw-cal__day ${sel ? 'is-selected' : ''} ${isToday ? 'is-today' : ''}" data-day="${iso}" ${disabled ? 'disabled' : ''}>${d}</button>`;
         }
         g += `</div>`;
         cal.innerHTML = g;
         cal.querySelector('[data-prev]')?.addEventListener('click', () => { this.calMonth = new Date(y, m - 1, 1); renderCal(); });
         cal.querySelector('[data-nextm]')?.addEventListener('click', () => { this.calMonth = new Date(y, m + 1, 1); renderCal(); });
-        cal.querySelectorAll('[data-day]').forEach((b) => b.addEventListener('click', () => { st.appt.date = b.dataset.day; this.setError(''); renderCal(); renderSlots(); }));
+        cal.querySelectorAll('[data-day]').forEach((b) => b.addEventListener('click', () => { st.appt.date = b.dataset.day; st.appt.slot = null; this.setError(''); renderCal(); renderSlots(); }));
       };
       const renderSlots = () => {
         const wrap = node.querySelector('[data-slots]');
         if (!st.appt.date) { wrap.innerHTML = ''; return; }
         const dt = new Date(st.appt.date + 'T00:00:00');
-        let g = `<div style="text-align:center;font-weight:700;margin:16px 0 4px">${DOW[dt.getDay()]}, ${MONTHS[dt.getMonth()]} ${dt.getDate()} — select a time</div><div class="bw-slots">`;
-        SLOTS.forEach((s) => {
+        const isToday = dt.getTime() === today.getTime();
+        let slots = this.slotsForDate(dt);
+        if (isToday) slots = slots.filter((s) => s.startMin == null || s.startMin > nowMin); // hide passed times
+        let g = `<div style="text-align:center;font-weight:700;margin:16px 0 4px">${DOW[dt.getDay()]}, ${MONTHS[dt.getMonth()]} ${dt.getDate()} — select a time</div>`;
+        if (!slots.length) {
+          g += `<p class="bw-step__sub">No times available on this day — please pick another date.</p>`;
+          wrap.innerHTML = g; return;
+        }
+        g += `<div class="bw-slots">`;
+        slots.forEach((s) => {
           const sel = st.appt.slot === s.id;
           g += `<button class="bw-slot ${sel ? 'is-selected' : ''}" data-slot="${s.id}">${s.label}${s.afterHours ? '<small>+$75 After-Hours Fee</small>' : ''}</button>`;
         });
         g += `</div>`;
         wrap.innerHTML = g;
-        wrap.querySelectorAll('[data-slot]').forEach((b) => b.addEventListener('click', () => { st.appt.slot = b.dataset.slot; this.setError(''); renderSlots(); }));
+        wrap.querySelectorAll('[data-slot]').forEach((b) => b.addEventListener('click', () => {
+          const s = slots.find((x) => x.id === b.dataset.slot);
+          st.appt.slot = s.id; st.appt.start = s.start; st.appt.end = s.end; st.appt.label = s.label; st.appt.afterHoursSel = !!s.afterHours;
+          this.setError(''); renderSlots();
+        }));
       };
       renderCal(); renderSlots();
       return node;
@@ -994,8 +1051,10 @@
     }
 
     afterHours() {
+      if (this.state.appt.afterHoursSel != null) return !!this.state.appt.afterHoursSel;
+      if (this.state.appt.start) return timeToMin(this.state.appt.start) >= AFTER_HOURS_START_MIN;
       const slot = SLOTS.find((s) => s.id === this.state.appt.slot);
-      return slot && slot.afterHours;
+      return !!(slot && slot.afterHours);
     }
 
     tvCount() {
@@ -1045,7 +1104,7 @@
       const jump = (kind) => { const i = this.steps.findIndex((s) => s.kind === kind); if (i >= 0) { this.index = i; this.render(); } };
       const appt = st.appt;
       const dt = appt.date ? new Date(appt.date + 'T00:00:00') : null;
-      const slot = SLOTS.find((s) => s.id === appt.slot);
+      const slot = appt.label ? { label: appt.label } : SLOTS.find((s) => s.id === appt.slot);
       const c = st.customer;
 
       // group items
@@ -1148,7 +1207,7 @@
       base.lineItems = t.items; // each carries step/option/product for server re-pricing & tax
       base.communityDiscount = st.community;
       base.pricing = { subtotal: t.subtotal, afterHoursFee: t.fee, discounts: t.discounts, discountTotal: t.discountTotal, tax: t.tax, taxRate: this.cfg.taxRate || 0, total: t.total };
-      base.appointment = { date: st.appt.date, slot: st.appt.slot, afterHours: this.afterHours() };
+      base.appointment = { date: st.appt.date, slot: st.appt.slot, start: st.appt.start, end: st.appt.end, label: st.appt.label, afterHours: this.afterHours() };
       base.consent = { terms: st.terms, sms: st.sms };
       // NOTE: the raw card number and CVC are intentionally NEVER included.
       // Only non-sensitive metadata (brand, last 4, expiry) goes to the server,
