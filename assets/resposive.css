@@ -108,6 +108,9 @@
   header {
       padding: 5px 20px !important;
   }
+  .menu-drawer-container .header__icon--summary {
+    padding-left: 0 !important;
+}
   .Avada-Faqs_Button.bottom.right {
     bottom: 90px;
   }
