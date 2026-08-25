@@ -50,6 +50,7 @@
       "phone": {{ section.settings.phone | default: '' | json }},
       "termsUrl": {{ section.settings.terms_url | default: '' | json }},
       "logo": {{ logo_url | json }},
+      "sharedSecret": {{ section.settings.shared_secret | default: '' | json }},
       "promoCodes": {{ promo_json }}
     }
   </script>
@@ -87,10 +88,16 @@
       "default": 0
     },
     {
+      "type": "text",
+      "id": "shared_secret",
+      "label": "Shared secret",
+      "info": "Must match SHARED_SECRET in booking-endpoint.php. Sent as a header so only your store can call the endpoint. Leave blank to disable."
+    },
+    {
       "type": "textarea",
       "id": "promo_codes",
-      "label": "Promo codes",
-      "info": "One per line as CODE: amount — e.g. WELCOME25: 25"
+      "label": "Promo codes (unused)",
+      "info": "Deprecated — discounts are automatic now."
     },
     {
       "type": "header",

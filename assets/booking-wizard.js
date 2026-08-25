@@ -242,7 +242,8 @@
         brandName: 'Vegas TV Mounting',
         phone: '',
         termsUrl: '',
-        logo: ''
+        logo: '',
+        sharedSecret: ''      // sent as X-Booking-Secret header to the endpoint
       }, config || {});
 
       this.state = {
@@ -776,8 +777,26 @@
       return node;
     }
 
+    fetchAvailability() {
+      if (this._availTried || !this.cfg.apiEndpoint) return;
+      this._availTried = true;
+      const url = this.cfg.apiEndpoint + (this.cfg.apiEndpoint.includes('?') ? '&' : '?') + 'action=availability';
+      const headers = {};
+      if (this.cfg.sharedSecret) headers['X-Booking-Secret'] = this.cfg.sharedSecret;
+      fetch(url, { headers })
+        .then((r) => r.json())
+        .then((d) => {
+          this.availability = (d && d.availability) || d;
+          // Exposed for inspection while we wire the calendar to the real shape.
+          window.__bwAvailability = this.availability;
+          console.log('[BookingWizard] HCP schedule_availability:', this.availability);
+        })
+        .catch((e) => console.warn('[BookingWizard] availability fetch failed', e));
+    }
+
     view_appointment(step) {
       const st = this.state;
+      this.fetchAvailability();
       const today = new Date(); today.setHours(0, 0, 0, 0);
       if (!this.calMonth) this.calMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const node = el(`<div class="bw-step">${this.head(step)}
@@ -1151,9 +1170,11 @@
       let ok = false, resp = null;
       try {
         if (this.cfg.apiEndpoint) {
+          const headers = { 'Content-Type': 'application/json' };
+          if (this.cfg.sharedSecret) headers['X-Booking-Secret'] = this.cfg.sharedSecret;
           const r = await fetch(this.cfg.apiEndpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify(payload)
           });
           ok = r.ok;
