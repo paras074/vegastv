@@ -23,6 +23,7 @@
     class="header-actions__cart-icon{% if display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
     data-testid="cart-icon"
   >
+
     <span class="{% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}">
       {{ 'content.cart_title' | t }}
     </span>
@@ -62,7 +63,7 @@
     class="header-actions--text"
   {% endif %}
   {{- block.shopify_attributes -}}
->
+>qewqewqeqweqe
   {% if shop.customer_accounts_enabled %}
     {% liquid
       assign account_actions_style = ''
