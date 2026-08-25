@@ -288,7 +288,7 @@
       this.root.classList.add('bw-root');
       this.root.innerHTML = `<div class="bw-loader">
         <div class="bw-loader__spinner"></div>
-        <p class="bw-loader__text">Loading booking wizard...</p>
+        <p class="bw-loader__text">Loading booking Form...</p>
       </div>`;
       setTimeout(() => {
         this.build();

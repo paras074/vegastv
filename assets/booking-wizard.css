@@ -219,7 +219,7 @@ button.bw-btn {
   aspect-ratio: 1; border-radius: 9px; border: 1px solid transparent; background:none;
   font-size: 14px; font-weight: 600; color: var(--bw-ink); cursor: pointer;
 }
-.bw-cal__day:hover:not(:disabled){ background: var(--bw-panel); }
+.bw-cal__day:hover:not(:disabled):not(.is-today) { background: var(--bw-panel); }
 .bw-cal__day:disabled{ color: var(--bw-line-strong); cursor: not-allowed; }
 .bw-cal__day.is-selected{ background: var(--bw-red); color:#fff; }
 .bw-cal__day.is-today{ border-color: var(--bw-red); }
