@@ -54,7 +54,7 @@
   border-radius: 99px; transition: width .35s cubic-bezier(.4,0,.2,1);
 }
 .bw-progress__label {
-  margin: 12px 0 0;
+  margin: 18px 0 0;
   text-align: center;
   font-size: 12px;
   font-weight: 700;
@@ -342,7 +342,7 @@ button.bw-btn {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .bw-shell { border-radius:16px; }
+  .bw-shell { border-radius:0; box-shadow: none; }
   .bw-body, .bw-progress, .bw-foot { padding-left: 22px; padding-right: 22px; }
 }
 @media (max-width: 620px) {
@@ -351,4 +351,13 @@ button.bw-btn {
   .bw-btn { padding: 0 18px; }
   .bw-opt { padding: 12px; gap: 10px; }
   .bw-opt__media { display:none; }
+  .booking-wizard-section {
+    padding: 40px 0 !important;
+  }
+  .bw-progress {
+    padding-top: 40px;
+  }
+}
+div#shopify-section-sections--28879181119854__community_appreciation_Egif7q {
+    display: none;
 }
