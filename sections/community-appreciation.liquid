@@ -13,7 +13,10 @@
     overflow: hidden;
     box-shadow: 0 18px 55px rgba(0, 0, 0, 0.16);
     display: grid;
-    grid-template-columns: 1fr 1fr;
+
+    /* Wider image side */
+    grid-template-columns: 58% 42%;
+
     align-items: stretch;
   }
 
@@ -27,6 +30,7 @@
     min-height: 430px;
     display: block;
     object-fit: cover;
+    object-position: center;
     border-radius: 18px;
   }
 
@@ -37,7 +41,7 @@
   }
 
   #shopify-section-{{ section.id }} .community-appreciation__content {
-    padding: 56px 60px;
+    padding: 52px 46px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -97,7 +101,7 @@
   #shopify-section-{{ section.id }} .community-appreciation__groups {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 13px 28px;
+    gap: 13px 24px;
     margin-bottom: 26px;
   }
 
@@ -187,11 +191,11 @@
     {% if section.settings.image != blank %}
       {{
         section.settings.image
-        | image_url: width: 1400
+        | image_url: width: 1600
         | image_tag:
           loading: 'lazy',
-          widths: '500, 750, 1000, 1400',
-          sizes: '(min-width: 901px) 50vw, 100vw',
+          widths: '500, 750, 1000, 1400, 1600',
+          sizes: '(min-width: 901px) 58vw, 100vw',
           alt: section.settings.image.alt
       }}
     {% else %}
@@ -254,6 +258,11 @@
       <div class="community-appreciation__group">
         <span class="community-appreciation__check">✓</span>
         <span>Seniors 65+</span>
+      </div>
+
+      <div class="community-appreciation__group">
+        <span class="community-appreciation__check">✓</span>
+        <span>Attorneys</span>
       </div>
 
     </div>
