@@ -312,6 +312,18 @@
   .template-service-areas .cta-section .btn-secondary {
     width: 100%;
   }
+  .why-choose-section__card {
+    padding: 15px;
+}
+
+.why-choose-section__title {
+    font-size: 16px;
+}
+
+.why-choose-section__description {
+    font-size: 14px;
+    line-height: 1.2;
+}
 }
 
 @media screen and (max-width: 480px) {
