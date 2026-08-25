@@ -288,9 +288,6 @@
     flex-direction: column;
   }
 
-  .why-choose-section__grid {
-    grid-template-columns: 1fr;
-  }
 
   h2 {
     font-size: 28px !important;
