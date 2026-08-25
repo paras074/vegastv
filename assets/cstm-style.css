@@ -1405,7 +1405,7 @@ nav.details-content ul li a:hover {
 
 .service-areas__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 28px 20px;
 }
 
