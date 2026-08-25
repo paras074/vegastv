@@ -1,5 +1,5 @@
 <section class="service-areas">
-  <div class="service-areas__inner">
+  <div class="page-width">
 
     <div class="service-areas__header">
       {% if section.settings.eyebrow != blank %}
@@ -73,11 +73,6 @@
     box-sizing: border-box;
   }
 
-  .service-areas__inner {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-  }
 
   .service-areas__header {
     max-width: 760px;
@@ -114,7 +109,7 @@
 
   .service-areas__grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 18px;
   }
 
