@@ -287,7 +287,9 @@
     padding: 10px;
     flex-direction: column;
   }
-
+  .why-choose-section__badge {
+    font-size: 10px;
+}
 
   h2 {
     font-size: 28px !important;
