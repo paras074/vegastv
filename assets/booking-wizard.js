@@ -887,7 +887,7 @@
           const iso = date.toISOString().slice(0, 10);
           const sel = st.appt.date === iso;
           const isToday = date.getTime() === today.getTime();
-          g += `<button class="bw-cal__day ${sel ? 'is-selected' : ''} ${isToday ? 'is-today' : ''}" data-day="${iso}" ${disabled ? 'disabled' : ''}>${d}</button>`;
+          g += `<button class="bw-cal__day ${sel ? 'is-selected' : ''} ${isToday ? 'is-today' : ''}" data-day="${iso}" ${disabled ? 'disabled' : ''}><span>${d}</span></button>`;
         }
         g += `</div>`;
         cal.innerHTML = g;
