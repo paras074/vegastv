@@ -309,7 +309,99 @@
     transition: color var(--header-content-transition-timing);
     -webkit-font-smoothing: antialiased;
   }
+  .call-now-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 10px 24px 10px 12px;
 
+  background: linear-gradient(135deg,#f4d477 0%,#c8952e 55%,#f0ca64 100%);
+  border: 1px solid #d6aa42;
+  border-radius: 999px;
+
+  color: #111;
+  text-decoration: none;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.55);
+
+  transition:
+    transform .18s ease,
+    filter .18s ease,
+    box-shadow .18s ease;
+}
+
+.call-now-btn:hover {
+  color:#111;
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+  box-shadow:
+    0 11px 28px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.65);
+}
+
+.call-now-btn__icon{
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#111;
+  color:#e8bd57;
+}
+
+.call-text{
+  white-space:nowrap;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width:768px){
+
+  .call-now-btn{
+    width:42px;
+    height:42px;
+    min-height:42px;
+    padding:0;
+    gap:0;
+    margin-left:12px;
+    border-radius:50%;
+  }
+
+  .call-now-btn__icon{
+    width:24px;
+    height:24px;
+    flex:0 0 24px;
+  }
+
+  .call-now-btn__icon svg{
+    width:16px;
+    height:16px;
+  }
+
+  .call-text{
+    display:none;
+  }
+
+}
+
+@media (max-width:480px){
+
+  .call-now-btn{
+    width:40px;
+    height:40px;
+    min-height:40px;
+  }
+
+}
   shopify-account {
     --shopify-account-font-heading: var(--font-heading--family);
     --shopify-account-font-heading-weight: var(--font-heading--weight);
