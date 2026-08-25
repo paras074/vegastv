@@ -106,7 +106,7 @@
     padding: 10px;
   }
   header {
-      padding: 5px 20px;
+      padding: 5px 20px !important;
   }
   .Avada-Faqs_Button.bottom.right {
     bottom: 90px;
