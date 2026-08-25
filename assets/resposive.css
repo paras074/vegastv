@@ -31,9 +31,9 @@
   .services-section__grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
   .why-choose-section__grid {
-    grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2,1fr);
+      gap: 7px;
   }
 
   .services-section__title a {
