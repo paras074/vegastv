@@ -51,6 +51,7 @@
       "termsUrl": {{ section.settings.terms_url | default: '' | json }},
       "logo": {{ logo_url | json }},
       "sharedSecret": {{ section.settings.shared_secret | default: '' | json }},
+      "stripePk": {{ section.settings.stripe_pk | default: '' | json }},
       "promoCodes": {{ promo_json }}{%- if section.settings.services_json != blank -%}
       ,"services": {{ section.settings.services_json }}{%- endif -%}{%- if section.settings.module_order_json != blank -%}
       ,"moduleOrder": {{ section.settings.module_order_json }}{%- endif -%}
@@ -93,7 +94,13 @@
       "type": "text",
       "id": "shared_secret",
       "label": "Shared secret",
-      "info": "Must match SHARED_SECRET in booking-endpoint.php. Sent as a header so only your store can call the endpoint. Leave blank to disable."
+      "info": "Must match SHARED_SECRET in config.php. Sent as a header so only your store can call the endpoint. Leave blank to disable."
+    },
+    {
+      "type": "text",
+      "id": "stripe_pk",
+      "label": "Stripe publishable key",
+      "info": "Your Stripe pk_… key (test or live). Enables the secure card field with Apple/Google Pay. Leave blank to show the placeholder card fields only."
     },
     {
       "type": "textarea",

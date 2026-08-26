@@ -252,9 +252,14 @@
         termsUrl: '',
         logo: '',
         sharedSecret: '',     // sent as X-Booking-Secret header to the endpoint
+        stripePk: '',         // Stripe publishable key; empty => card fields are a placeholder
+        setupIntentEndpoint: '', // defaults to sibling stripe-setup-intent.php of apiEndpoint
         services: null,       // JSON array of service objects from metafields; null = use defaults
         moduleOrder: null     // JSON array of module IDs from metafields; null = use defaults
       }, config || {});
+      if (!this.cfg.setupIntentEndpoint && this.cfg.apiEndpoint) {
+        this.cfg.setupIntentEndpoint = this.cfg.apiEndpoint.replace(/[^/]*$/, 'stripe-setup-intent.php');
+      }
 
       // Use config-provided services or fall back to hardcoded defaults
       this.services = (Array.isArray(this.cfg.services) && this.cfg.services.length > 0) ? this.cfg.services : DEFAULT_SERVICES;
@@ -271,7 +276,9 @@
         terms: false,
         appt: { date: null, slot: null },
         customer: {},
-        card: {},           // { number, exp, cvc, brand } — never sent raw
+        card: {},           // { number, exp, cvc, brand } — used only in placeholder (no Stripe) mode
+        stripePaymentMethodId: null, // set after SetupIntent confirm
+        stripeSetupIntentId: null,
         community: false,   // Community Appreciation Discount opt-in
         sms: false,
         quoteNotes: ''
@@ -463,7 +470,7 @@
 
     /* ---------- navigation ---------- */
     back() { if (this.index > 0) { this.index--; this.render(); } }
-    next() {
+    async next() {
       const step = this.currentStep();
       const err = this.validateStep(step);
       if (err) {
@@ -471,6 +478,16 @@
         if (step.kind === 'customer' || step.kind === 'quote') this.render();
         this.setError(err);
         return;
+      }
+
+      // On the customer step with Stripe: save the card now (SetupIntent confirm)
+      // before advancing. Blocks with an inline error if the card is declined.
+      if (step.kind === 'customer' && this.cfg.stripePk && !this.state.stripePaymentMethodId) {
+        const btn = this.$foot.querySelector('[data-next]');
+        if (btn) { btn.disabled = true; btn.querySelector('.bw-next-label').textContent = 'Saving card'; }
+        const ok = await this.confirmStripeCard();
+        if (btn) { btn.disabled = false; btn.querySelector('.bw-next-label').textContent = 'Continue'; }
+        if (!ok) { this.setError('Please check your card details and try again.'); return; }
       }
 
       // routing decision after service selection
@@ -562,14 +579,17 @@
       else if (String(c.phone).replace(/\D/g, '').length < 10) e.phone = 'Enter a valid 10-digit phone number.';
       if (!c.zip || !/^\d{5}$/.test(String(c.zip).trim())) e.zip = 'Enter a valid 5-digit ZIP.';
 
-      // card (client-side format validation only — never transmitted raw)
-      const num = (cd.number || '').replace(/\s/g, '');
-      if (!num) e.cardNumber = 'Card number is required.';
-      else if (!luhn(num) || num.length < 13) e.cardNumber = 'That card number doesn’t look valid.';
-      if (!validExpiry(cd.exp || '')) e.cardExp = 'Enter a valid future expiry (MM/YY).';
-      const brand = detectBrand(num);
-      const cvcLen = brand === 'amex' ? 4 : 3;
-      if (!/^\d+$/.test(cd.cvc || '') || (cd.cvc || '').length !== cvcLen) e.cardCvc = 'Enter the ' + cvcLen + '-digit code.';
+      // Card: with Stripe, the Payment Element validates the card itself on confirm.
+      // Only the placeholder (no-Stripe) mode does client-side card checks here.
+      if (!this.cfg.stripePk) {
+        const num = (cd.number || '').replace(/\s/g, '');
+        if (!num) e.cardNumber = 'Card number is required.';
+        else if (!luhn(num) || num.length < 13) e.cardNumber = 'That card number doesn’t look valid.';
+        if (!validExpiry(cd.exp || '')) e.cardExp = 'Enter a valid future expiry (MM/YY).';
+        const brand = detectBrand(num);
+        const cvcLen = brand === 'amex' ? 4 : 3;
+        if (!/^\d+$/.test(cd.cvc || '') || (cd.cvc || '').length !== cvcLen) e.cardCvc = 'Enter the ' + cvcLen + '-digit code.';
+      }
 
       this.fieldErrors = e;
       const keys = Object.keys(e);
@@ -948,23 +968,27 @@
         </div>
 
         <div class="bw-group-label" style="margin-top:18px">Card to hold appointment</div>
-        <div class="bw-cardbox">
-          <div class="bw-cardbox__row bw-cardbox__number ${fe.cardNumber ? 'is-error' : ''}">
-            <span class="bw-cardbox__brand" data-brand>${cardBrandSvg(brand)}</span>
-            <input class="bw-cardbox__input" inputmode="numeric" autocomplete="cc-number" placeholder="1234 1234 1234 1234" data-card="number" value="${esc(cd.number || '')}">
-          </div>
-          <div class="bw-cardbox__split">
-            <div class="bw-cardbox__row ${fe.cardExp ? 'is-error' : ''}">
-              <input class="bw-cardbox__input" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" data-card="exp" value="${esc(cd.exp || '')}">
+        ${this.cfg.stripePk
+          ? `<div class="bw-stripe-mount" data-stripe-mount></div>
+             <div class="bw-field__err" data-stripe-error></div>
+             <div class="bw-secure-line">${lock()} Secured by Stripe. Your card is saved to hold your appointment and never touches our servers.</div>`
+          : `<div class="bw-cardbox">
+              <div class="bw-cardbox__row bw-cardbox__number ${fe.cardNumber ? 'is-error' : ''}">
+                <span class="bw-cardbox__brand" data-brand>${cardBrandSvg(brand)}</span>
+                <input class="bw-cardbox__input" inputmode="numeric" autocomplete="cc-number" placeholder="1234 1234 1234 1234" data-card="number" value="${esc(cd.number || '')}">
+              </div>
+              <div class="bw-cardbox__split">
+                <div class="bw-cardbox__row ${fe.cardExp ? 'is-error' : ''}">
+                  <input class="bw-cardbox__input" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" data-card="exp" value="${esc(cd.exp || '')}">
+                </div>
+                <div class="bw-cardbox__row ${fe.cardCvc ? 'is-error' : ''}">
+                  <input class="bw-cardbox__input" inputmode="numeric" autocomplete="cc-csc" placeholder="CVC" maxlength="4" data-card="cvc" value="${esc(cd.cvc || '')}">
+                  <span class="bw-cardbox__cvc">${cvcSvg()}</span>
+                </div>
+              </div>
             </div>
-            <div class="bw-cardbox__row ${fe.cardCvc ? 'is-error' : ''}">
-              <input class="bw-cardbox__input" inputmode="numeric" autocomplete="cc-csc" placeholder="CVC" maxlength="4" data-card="cvc" value="${esc(cd.cvc || '')}">
-              <span class="bw-cardbox__cvc">${cvcSvg()}</span>
-            </div>
-          </div>
-        </div>
-        <div class="bw-field__err" data-carderr>${esc(fe.cardNumber || fe.cardExp || fe.cardCvc || '')}</div>
-        <div class="bw-secure-line">${lock()} Secured &amp; encrypted. We never store your full card number.</div>
+            <div class="bw-field__err" data-carderr>${esc(fe.cardNumber || fe.cardExp || fe.cardCvc || '')}</div>
+            <div class="bw-secure-line">${lock()} Secured &amp; encrypted. We never store your full card number.</div>`}
       </div>`);
 
       node.querySelectorAll('[data-field]').forEach((inp) => {
@@ -973,34 +997,91 @@
         inp.addEventListener('change', handler);
       });
 
-      const numInp = node.querySelector('[data-card="number"]');
-      const expInp = node.querySelector('[data-card="exp"]');
-      const cvcInp = node.querySelector('[data-card="cvc"]');
-      const brandEl = node.querySelector('[data-brand]');
-      const cardErr = node.querySelector('[data-carderr]');
-
-      numInp.addEventListener('input', (ev) => {
-        const b = detectBrand(ev.target.value.replace(/\D/g, ''));
-        const f = formatCardNumber(ev.target.value, b);
-        ev.target.value = f; cd.number = f;
-        brandEl.innerHTML = cardBrandSvg(b);
-        cvcInp.maxLength = b === 'amex' ? 4 : 3;
-        ev.target.closest('.bw-cardbox__row').classList.remove('is-error');
-        cardErr.textContent = ''; this.setError('');
-      });
-      expInp.addEventListener('input', (ev) => {
-        const f = formatExpiry(ev.target.value);
-        ev.target.value = f; cd.exp = f;
-        ev.target.closest('.bw-cardbox__row').classList.remove('is-error');
-        cardErr.textContent = ''; this.setError('');
-      });
-      cvcInp.addEventListener('input', (ev) => {
-        const f = ev.target.value.replace(/\D/g, '').slice(0, cvcInp.maxLength);
-        ev.target.value = f; cd.cvc = f;
-        ev.target.closest('.bw-cardbox__row').classList.remove('is-error');
-        cardErr.textContent = ''; this.setError('');
-      });
+      if (this.cfg.stripePk) {
+        this.setupStripe(node);
+      } else {
+        const numInp = node.querySelector('[data-card="number"]');
+        const expInp = node.querySelector('[data-card="exp"]');
+        const cvcInp = node.querySelector('[data-card="cvc"]');
+        const brandEl = node.querySelector('[data-brand]');
+        const cardErr = node.querySelector('[data-carderr]');
+        numInp.addEventListener('input', (ev) => {
+          const b = detectBrand(ev.target.value.replace(/\D/g, ''));
+          const f = formatCardNumber(ev.target.value, b);
+          ev.target.value = f; cd.number = f;
+          brandEl.innerHTML = cardBrandSvg(b);
+          cvcInp.maxLength = b === 'amex' ? 4 : 3;
+          ev.target.closest('.bw-cardbox__row').classList.remove('is-error');
+          cardErr.textContent = ''; this.setError('');
+        });
+        expInp.addEventListener('input', (ev) => {
+          const f = formatExpiry(ev.target.value);
+          ev.target.value = f; cd.exp = f;
+          ev.target.closest('.bw-cardbox__row').classList.remove('is-error');
+          cardErr.textContent = ''; this.setError('');
+        });
+        cvcInp.addEventListener('input', (ev) => {
+          const f = ev.target.value.replace(/\D/g, '').slice(0, cvcInp.maxLength);
+          ev.target.value = f; cd.cvc = f;
+          ev.target.closest('.bw-cardbox__row').classList.remove('is-error');
+          cardErr.textContent = ''; this.setError('');
+        });
+      }
       return node;
+    }
+
+    /* ---------- Stripe: load SDK, create SetupIntent, mount Payment Element ---------- */
+    ensureStripe() {
+      if (this._stripePromise) return this._stripePromise;
+      this._stripePromise = new Promise((resolve, reject) => {
+        if (window.Stripe) return resolve(window.Stripe(this.cfg.stripePk));
+        const s = document.createElement('script');
+        s.src = 'https://js.stripe.com/v3/';
+        s.onload = () => resolve(window.Stripe(this.cfg.stripePk));
+        s.onerror = () => reject(new Error('Stripe.js failed to load'));
+        document.head.appendChild(s);
+      });
+      return this._stripePromise;
+    }
+
+    async setupStripe(node) {
+      const mount = node.querySelector('[data-stripe-mount]');
+      const errEl = node.querySelector('[data-stripe-error]');
+      mount.innerHTML = '<div class="bw-secure-line">Loading secure payment…</div>';
+      try {
+        const stripe = await this.ensureStripe();
+        const headers = { 'Content-Type': 'application/json' };
+        if (this.cfg.sharedSecret) headers['X-Booking-Secret'] = this.cfg.sharedSecret;
+        const res = await fetch(this.cfg.setupIntentEndpoint, { method: 'POST', headers, body: '{}' }).then((r) => r.json());
+        if (!res || !res.clientSecret) throw new Error((res && res.detail) || 'Could not start payment');
+        this._stripe = stripe;
+        this._stripeSetupIntentId = res.setupIntentId;
+        const elements = stripe.elements({ clientSecret: res.clientSecret, appearance: { theme: 'stripe', variables: { colorPrimary: '#E0161C', borderRadius: '10px' } } });
+        this._stripeElements = elements;
+        mount.innerHTML = '';
+        const pe = elements.create('payment', { layout: 'tabs' });
+        pe.mount(mount);
+        pe.on('change', () => { errEl.textContent = ''; this.setError(''); });
+      } catch (e) {
+        console.error('[BookingWizard] Stripe setup failed', e);
+        mount.innerHTML = '';
+        errEl.textContent = 'Payment could not load. Please refresh and try again.';
+      }
+    }
+
+    /* Confirm + save the card via Stripe. Resolves true on success. */
+    async confirmStripeCard() {
+      if (!this._stripe || !this._stripeElements) return false;
+      const errEl = this.$body.querySelector('[data-stripe-error]');
+      const { error, setupIntent } = await this._stripe.confirmSetup({
+        elements: this._stripeElements,
+        redirect: 'if_required',
+        confirmParams: { return_url: window.location.href }
+      });
+      if (error) { if (errEl) errEl.textContent = error.message || 'Please check your card details.'; return false; }
+      this.state.stripePaymentMethodId = setupIntent.payment_method;
+      this.state.stripeSetupIntentId = setupIntent.id;
+      return true;
     }
 
     view_quote(step) {
@@ -1234,8 +1315,15 @@
       // Only non-sensitive metadata (brand, last 4, expiry) goes to the server,
       // which is PCI-safe. A processor token from a secure-field integration
       // (Stripe Elements etc.) is attached here when available.
-      const cardNum = (st.card.number || '').replace(/\D/g, '');
-      base.card = cardNum ? { brand: detectBrand(cardNum), last4: cardNum.slice(-4), exp: st.card.exp || '' } : null;
+      if (this.cfg.stripePk) {
+        // Stripe path: card saved via SetupIntent; server attaches it & charges after service.
+        base.stripePaymentMethodId = st.stripePaymentMethodId;
+        base.stripeSetupIntentId = st.stripeSetupIntentId;
+        base.card = null;
+      } else {
+        const cardNum = (st.card.number || '').replace(/\D/g, '');
+        base.card = cardNum ? { brand: detectBrand(cardNum), last4: cardNum.slice(-4), exp: st.card.exp || '' } : null;
+      }
       base.paymentToken = (window.BookingWizardCardToken && window.BookingWizardCardToken()) || null;
       return base;
     }

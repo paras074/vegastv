@@ -20,6 +20,7 @@
         "phone": "(702) 720-1109",
         "terms_url": "https://vegastvmounting.com/policies/terms-of-service",
         "shared_secret": "9DhTRhCNpU",
+        "stripe_pk": "pk_test_51U8KYWBmlJXMukHgJCdaL7ZQSDGzdeQbgf8lx6EFSlv9rzlF655M0m8HbDSMLeGOSnrXb65QKAGLQss5v0yqEANu00HiePVptW",
         "padding_top": 80,
         "padding_bottom": 80
       }
