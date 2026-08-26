@@ -1059,7 +1059,10 @@
         const elements = stripe.elements({ clientSecret: res.clientSecret, appearance: { theme: 'stripe', variables: { colorPrimary: '#E0161C', borderRadius: '10px' } } });
         this._stripeElements = elements;
         mount.innerHTML = '';
-        const pe = elements.create('payment', { layout: 'tabs' });
+        const pe = elements.create('payment', {
+          layout: 'tabs',
+          wallets: { applePay: 'auto', googlePay: 'auto' } // shown on supported devices
+        });
         pe.mount(mount);
         pe.on('change', () => { errEl.textContent = ''; this.setError(''); });
       } catch (e) {
@@ -1416,7 +1419,7 @@
     ['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']
   ];
   function stateSelect(val, err) {
-    const opts = US_STATES.map(([code, name]) => `<option value="${code}" ${val === code ? 'selected' : ''}>${code} — ${name}</option>`).join('');
+    const opts = US_STATES.map(([code, name]) => `<option value="${code}" ${val === code ? 'selected' : ''}>${name}</option>`).join('');
     return `<div class="bw-field">
       <label>State</label>
       <select class="bw-input ${err ? 'bw-input--error' : ''}" data-field="region">
