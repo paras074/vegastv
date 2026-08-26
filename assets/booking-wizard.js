@@ -32,13 +32,13 @@
   const DEFAULT_SERVICES = [
     { group: 'TV & Entertainment', id: 'tv-mounting',        name: 'TV Mounting',                 booking: 'instant', ready: true },
     { group: 'TV & Entertainment', id: 'soundbar',           name: 'Soundbar Installation',       booking: 'instant', ready: true },
-    { group: 'TV & Entertainment', id: 'wire-concealment',   name: 'Wire Concealment',            booking: 'instant', ready: false, ownedBy: 'tv-mounting' },
-    { group: 'TV & Entertainment', id: 'smart-tv-setup',     name: 'Smart TV & Device Setup',     booking: 'instant', ready: false, ownedBy: 'tv-mounting' },
-    { group: 'TV & Entertainment', id: 'tv-dismount',        name: 'TV Dismount',                 booking: 'instant', ready: false },
-    { group: 'Smart Home',         id: 'video-doorbell',     name: 'Video Doorbell Installation', booking: 'instant', ready: false },
-    { group: 'Smart Home',         id: 'smart-lock',         name: 'Smart Lock Installation',     booking: 'instant', ready: false },
-    { group: 'Smart Home',         id: 'smart-thermostat',   name: 'Smart Thermostat Installation', booking: 'instant', ready: false },
-    { group: 'Home Décor',         id: 'art-mirror',         name: 'Art & Mirror Hanging',        booking: 'instant', ready: false },
+    { group: 'TV & Entertainment', id: 'wire-concealment',   name: 'Wire Concealment',            booking: 'instant', ready: true, ownedBy: 'tv-mounting' },
+    { group: 'TV & Entertainment', id: 'smart-tv-setup',     name: 'Smart TV & Device Setup',     booking: 'instant', ready: true, ownedBy: 'tv-mounting' },
+    { group: 'TV & Entertainment', id: 'tv-dismount',        name: 'TV Dismount',                 booking: 'instant', ready: true },
+    { group: 'Smart Home',         id: 'video-doorbell',     name: 'Video Doorbell Installation', booking: 'instant', ready: true },
+    { group: 'Smart Home',         id: 'smart-lock',         name: 'Smart Lock Installation',     booking: 'instant', ready: true },
+    { group: 'Smart Home',         id: 'smart-thermostat',   name: 'Smart Thermostat Installation', booking: 'instant', ready: true },
+    { group: 'Home Décor',         id: 'art-mirror',         name: 'Art & Mirror Hanging',        booking: 'instant', ready: true },
     { group: 'Custom Projects',    id: 'home-theater',       name: 'Home Theater Installation',   booking: 'quote' },
     { group: 'Custom Projects',    id: 'surround-sound',     name: 'Surround Sound Installation', booking: 'quote' },
     { group: 'Custom Projects',    id: 'home-security',      name: 'Home Security Camera Installation', booking: 'quote' },
@@ -47,7 +47,7 @@
   ];
 
   // Default module order (master spec §5). Only modules present here render.
-  const DEFAULT_MODULE_ORDER = ['tv-mounting', 'wire-concealment', 'smart-tv-setup', 'soundbar'];
+  const DEFAULT_MODULE_ORDER = ['tv-mounting', 'wire-concealment', 'smart-tv-setup', 'soundbar', 'tv-dismount', 'video-doorbell', 'smart-thermostat', 'smart-lock', 'art-mirror'];
 
   /* ---------- TV MOUNTING module (spec v1.0, steps 4–10) ---------- */
   const MOD_TV = {
@@ -197,9 +197,203 @@
     ]
   };
 
+  /* ---------- Wire Concealment (standalone; owned by TV Mounting) ---------- */
+  const MOD_WC = {
+    id: 'wire-concealment', label: 'Wire Concealment', ownedBy: 'tv-mounting',
+    steps: [
+      {
+        id: 'wc-areas', kind: 'qty', anchorPrimary: true,
+        included: '<b>What’s included:</b> Professional routing, securing, and concealment of cables using the method selected — in-wall concealment, paintable surface cable covers, or desk/furniture cable management as applicable — plus cleanup of the immediate work area.',
+        title: 'Where do you need wires concealed?', sub: 'Tap + to add each area that needs wire concealment.',
+        validate: { mode: 'min', value: 1 },
+        options: [
+          { id: 'tv', name: 'TV / Entertainment Area', price: 0, priceHidden: true },
+          { id: 'office', name: 'Office / Desk Area', price: 0, priceHidden: true },
+          { id: 'network', name: 'Internet / Network Area', price: 0, priceHidden: true },
+          { id: 'general', name: 'General Wall / Room Area', price: 0, priceHidden: true }
+        ]
+      },
+      {
+        id: 'wc-method', kind: 'qty', showIfPrimary: true,
+        title: 'How would you like the wires concealed?', sub: 'Tap + to select one concealment method for each area.',
+        help: { label: 'Not sure what to pick? See examples.', title: 'Concealment Methods' },
+        validate: { mode: 'equal', ref: 'primary' },
+        options: [
+          { id: 'behind', name: 'Hide Wires Behind the Wall', price: 179, desc: 'Behind-wall concealment is subject to wall construction and accessibility. If standard in-wall concealment is not feasible, we’ll contact you before service to discuss available options.' },
+          { id: 'outside', name: 'Hide Wires Outside the Wall / Paintable Wall Cover', price: 79 },
+          { id: 'desk', name: 'Desk / Furniture Cable Management', price: 79 }
+        ]
+      },
+      {
+        id: 'wc-surface', kind: 'qty', showIfPrimary: true,
+        title: 'What type of surface will the wires be concealed on or behind?', sub: 'Tap + to select the wall type for each applicable area.',
+        help: { label: 'Not sure what your wall is? See examples.', title: 'Wall / Surface Types' },
+        validate: { mode: 'equal', ref: 'primary' },
+        options: [
+          { id: 'drywall', name: 'Drywall / Wood / Siding', price: 0 },
+          { id: 'metal', name: 'Metal Studs / Metal', price: 19 },
+          { id: 'brick', name: 'Brick / Smooth Stone / Stucco', price: 29 },
+          { id: 'tile', name: 'Tile / Porcelain / Marble', price: 49 },
+          { id: 'stone', name: 'Natural / Uneven Stacked Stone', price: 49 },
+          { id: 'na', name: 'Not Applicable — Desk / Furniture Cable Management', price: 0 }
+        ]
+      }
+    ]
+  };
+
+  /* ---------- Smart TV & Device Setup (standalone; owned by TV Mounting) ---------- */
+  const MOD_STV = {
+    id: 'smart-tv-setup', label: 'Smart TV & Device Setup', ownedBy: 'tv-mounting',
+    steps: [
+      {
+        id: 'stv-count', kind: 'qty', anchorPrimary: true,
+        included: '<b>What’s included:</b> Unboxing when needed, connection of the selected device and compatible peripherals, Wi-Fi/network connection, first-time setup and configuration, app/account sign-in using customer-provided credentials, testing, basic operation walkthrough, and cleanup.',
+        title: 'How many devices would you like us to set up?', sub: 'Tap + to add the number of devices that need setup.',
+        validate: { mode: 'min', value: 1 },
+        options: [{ id: 'device', name: 'Smart TV & Device Setup', price: 79, desc: 'Smart TVs, Streaming Devices, Apple TV, Roku, Fire TV, Gaming Consoles, Cable Boxes, Media Players, etc.' }]
+      }
+    ]
+  };
+
+  /* ---------- TV Dismount ---------- */
+  const MOD_TD = {
+    id: 'tv-dismount', label: 'TV Dismount',
+    steps: [
+      {
+        id: 'td-count', kind: 'qty', anchorPrimary: true,
+        included: '<b>What’s included:</b> Safe removal of the TV from its wall mount, removal of the existing TV mounting bracket, disconnecting basic attached cables, careful handling of the TV during removal, and cleanup.',
+        title: 'How many TVs would you like us to take down?', sub: 'Tap + to add each TV you need professionally removed.',
+        validate: { mode: 'min', value: 1 },
+        options: [{ id: 'tv', name: 'TV Dismount', price: 79 }]
+      },
+      {
+        id: 'td-oversized', kind: 'qty',
+        title: 'Are any of the TVs 75" or larger?', sub: 'Tap + to add the number of TVs that are 75" or larger.',
+        validate: { mode: 'max', ref: 'primary' }, none: { id: 'none', name: 'None' },
+        options: [{ id: 'big', name: '75" or Larger', price: 49 }]
+      },
+      {
+        id: 'td-fireplace', kind: 'qty',
+        title: 'Are any TVs mounted above a fireplace?', sub: 'Tap + to add the number of TVs mounted above a fireplace.',
+        validate: { mode: 'max', ref: 'primary' }, none: { id: 'none', name: 'None' },
+        options: [{ id: 'fp', name: 'Above Fireplace', price: 29 }]
+      }
+    ]
+  };
+
+  /* ---------- Video Doorbell Installation ---------- */
+  const MOD_VD = {
+    id: 'video-doorbell', label: 'Video Doorbell Installation',
+    steps: [
+      {
+        id: 'vd-count', kind: 'qty', anchorPrimary: true,
+        included: '<b>What’s included:</b> Professional video doorbell installation, removal of an existing doorbell when applicable, Wi-Fi and app connection, first-time setup and configuration, testing, basic customer walkthrough, and cleanup. <em>Customer must provide the video doorbell.</em>',
+        title: 'How many video doorbells would you like us to install?', sub: 'Tap + to add each video doorbell you need installed.',
+        validate: { mode: 'min', value: 1 },
+        options: [{ id: 'doorbell', name: 'Video Doorbell Installation', price: 0, priceHidden: true }]
+      },
+      {
+        id: 'vd-power', kind: 'qty', showIfPrimary: true,
+        title: 'How will each video doorbell be powered?', sub: 'Tap + to select one power option for each video doorbell.',
+        validate: { mode: 'equal', ref: 'primary' },
+        options: [
+          { id: 'wireless', name: 'Wireless / Battery-Powered Video Doorbell', price: 99 },
+          { id: 'wired', name: 'Wired Video Doorbell — I Have Existing Doorbell Wiring', price: 99, desc: 'Hardwired installation requires existing compatible doorbell wiring at the installation location. New electrical wiring is not included.' }
+        ]
+      },
+      {
+        id: 'vd-surface', kind: 'qty', showIfPrimary: true,
+        title: 'What type of surface will each video doorbell be installed on?', sub: 'Tap + to select the mounting surface for each video doorbell.',
+        help: { label: 'Not sure what your wall is? See examples.', title: 'Mounting Surface' },
+        validate: { mode: 'equal', ref: 'primary' },
+        options: [
+          { id: 'drywall', name: 'Drywall / Wood / Siding', price: 0 },
+          { id: 'metal', name: 'Metal Studs / Metal', price: 0 },
+          { id: 'brick', name: 'Brick / Smooth Stone / Stucco', price: 0 },
+          { id: 'tile', name: 'Tile / Porcelain / Marble', price: 0 },
+          { id: 'stone', name: 'Natural / Uneven Stacked Stone', price: 0 }
+        ]
+      },
+      {
+        id: 'vd-upgrade', kind: 'qty', showIfPrimary: true,
+        title: 'Does your wired video doorbell need a transformer replacement?', sub: 'A doorbell transformer supplies low-voltage power to a wired video doorbell. Not sure? Your technician can confirm during service.',
+        validate: { mode: 'max', refOption: { step: 'vd-power', option: 'wired' } }, none: { id: 'none', name: 'No Thanks' },
+        options: [
+          { id: 'customer', name: 'Doorbell Transformer Replacement — Customer Provides', price: 49 },
+          { id: 'vtm', name: 'Doorbell Transformer Replacement — Vegas TV Mounting Provides', price: 79, product: true }
+        ]
+      }
+    ]
+  };
+
+  /* ---------- Smart Lock Installation ---------- */
+  const MOD_SL = {
+    id: 'smart-lock', label: 'Smart Lock Installation',
+    steps: [
+      {
+        id: 'sl-count', kind: 'qty', anchorPrimary: true,
+        included: '<b>What’s included:</b> Removal of the existing compatible lock, professional smart lock installation, app/device connection, first-time setup and configuration, testing, basic customer walkthrough, and cleanup. <em>Replaces an existing compatible lock using the existing opening. Customer must provide the smart lock.</em>',
+        title: 'How many smart locks would you like us to install?', sub: 'Tap + to add each smart lock you need installed.',
+        validate: { mode: 'min', value: 1 },
+        options: [{ id: 'lock', name: 'Smart Lock Installation', price: 99 }]
+      }
+    ]
+  };
+
+  /* ---------- Smart Thermostat Installation ---------- */
+  const MOD_ST = {
+    id: 'smart-thermostat', label: 'Smart Thermostat Installation',
+    steps: [
+      {
+        id: 'st-count', kind: 'qty', anchorPrimary: true,
+        included: '<b>What’s included:</b> Removal of the existing compatible thermostat, professional smart thermostat installation, connection to existing compatible HVAC wiring, Wi-Fi and app connection, first-time setup and configuration, system testing, basic customer walkthrough, and cleanup. <em>Replaces an existing functioning thermostat using the existing location and compatible wiring. Customer must provide the smart thermostat.</em>',
+        title: 'How many smart thermostats would you like us to install?', sub: 'Tap + to add each smart thermostat you need installed.',
+        validate: { mode: 'min', value: 1 },
+        options: [{ id: 'thermostat', name: 'Smart Thermostat Installation', price: 119 }]
+      },
+      {
+        id: 'st-power', kind: 'qty', showIfPrimary: true,
+        title: 'Do you know if your smart thermostat needs a C-wire or power adapter?', sub: 'Tap + to select one power option for each thermostat. Not sure? Your technician can confirm during service before any additional charge.',
+        validate: { mode: 'equal', ref: 'primary' },
+        options: [
+          { id: 'existing', name: 'Existing Power — No Adapter Needed', price: 0 },
+          { id: 'customer', name: 'Power Adapter Needed — Customer Provides', price: 49 },
+          { id: 'vtm', name: 'Power Adapter Needed — Vegas TV Mounting Provides', price: 79, product: true },
+          { id: 'notsure', name: 'Not Sure', price: 0 }
+        ]
+      }
+    ]
+  };
+
+  /* ---------- Art & Mirror Hanging (special pricing: $99 first, +$19 each) ---------- */
+  const MOD_AM = {
+    id: 'art-mirror', label: 'Art & Mirror Hanging',
+    steps: [
+      {
+        id: 'am-items', kind: 'qty', anchorPrimary: true, special: 'artMirror',
+        included: '<b>What’s included:</b> Professional measuring and placement, wall assessment, leveling, secure mounting of artwork or mirrors, standard installation hardware when applicable, and cleanup. <b>Base price is $99 for the first item, then +$19 for each additional item.</b>',
+        title: 'What would you like us to hang?', sub: 'Tap + to add each item you need installed.',
+        validate: { mode: 'min', value: 1 },
+        options: [
+          { id: 'artwork', name: 'Artwork / Framed Art', price: 19, priceHidden: true },
+          { id: 'mirror', name: 'Mirror', price: 19, priceHidden: true }
+        ]
+      },
+      {
+        id: 'am-oversized', kind: 'qty',
+        title: 'Are any of your items oversized?', sub: 'Tap + to add the number of oversized items (≈4 feet or larger in either dimension).',
+        validate: { mode: 'max', ref: 'primary' }, none: { id: 'none', name: 'None' },
+        options: [{ id: 'big', name: 'Oversized Item', price: 19, desc: 'Approximately 4 feet or larger in either width or height' }]
+      }
+    ]
+  };
+
   // Default module definitions — used when no custom modules are provided via config.
   // Keys match service IDs. Only services with a module entry here can use instant booking.
-  const DEFAULT_MODULES = { 'tv-mounting': MOD_TV, 'soundbar': MOD_SB };
+  const DEFAULT_MODULES = {
+    'tv-mounting': MOD_TV, 'wire-concealment': MOD_WC, 'smart-tv-setup': MOD_STV, 'soundbar': MOD_SB,
+    'tv-dismount': MOD_TD, 'video-doorbell': MOD_VD, 'smart-thermostat': MOD_ST, 'smart-lock': MOD_SL, 'art-mirror': MOD_AM
+  };
 
   /* ---------- Shared ending screens (master spec §9) ---------- */
   const COVERAGE_STEP = {
@@ -370,6 +564,7 @@
         this.activeModules().forEach((mod) => {
           mod.steps.forEach((s) => {
             if (s.showIfMounted && this.moduleMounted(mod) <= 0) return;
+            if (s.showIfPrimary && this.modulePrimary(mod) <= 0) return;
             S.push(Object.assign({ belongsTo: mod.id, _mod: mod }, s));
           });
         });
@@ -560,9 +755,18 @@
       }
       if (step.none && this.state.none[step.id]) return ''; // explicit none is valid
       const v = step.validate || {};
-      if (v.mode === 'min') { if (total < v.value) return 'Please select at least ' + v.value + ' to continue.'; }
+      if (v.mode === 'min') {
+        // Owned modules (e.g. Wire Concealment / Smart TV Setup) require 0 when their
+        // owner (TV Mounting) is also selected — standalone flow is for ADDITIONAL work only.
+        let need = v.value;
+        if (step.anchorPrimary && mod && mod.ownedBy && this.state.services.includes(mod.ownedBy)) need = 0;
+        if (total < need) return 'Please select at least ' + need + ' to continue.';
+      }
       if (v.mode === 'equal') { const a = this.anchorValue(mod, v.ref); if (total !== a) return 'Please select exactly ' + a + ' (you’ve selected ' + total + ').'; }
-      if (v.mode === 'max') { const a = this.anchorValue(mod, v.ref); if (total > a) return 'You can select up to ' + a + ' (you’ve selected ' + total + ').'; }
+      if (v.mode === 'max') {
+        const a = v.refOption ? this.q(v.refOption.step, v.refOption.option) : this.anchorValue(mod, v.ref);
+        if (total > a) return 'You can select up to ' + a + ' (you’ve selected ' + total + ').';
+      }
       if (step.none && total === 0) return 'Please make a selection or choose “' + step.none.name + '”.';
       return '';
     }
@@ -1137,6 +1341,16 @@
         const header = mod.label;
         mod.steps.forEach((step) => {
           if (step.showIfMounted && this.moduleMounted(mod) <= 0) return;
+          if (step.showIfPrimary && this.modulePrimary(mod) <= 0) return;
+          // Art & Mirror: $99 base for the first item, +$19 for each additional item.
+          if (step.special === 'artMirror') {
+            const n = this.stepTotal(step);
+            if (n > 0) {
+              items.push({ group: header, step: step.id, option: 'first', label: 'First Art or Mirror Item (base)', qty: 1, unit: 99, amount: 99, product: false });
+              if (n > 1) items.push({ group: header, step: step.id, option: 'additional', label: 'Each Additional Item', qty: n - 1, unit: 19, amount: (n - 1) * 19, product: false });
+            }
+            return;
+          }
           step.options.forEach((o) => {
             const qn = this.q(step.id, o.id);
             if (qn > 0 && !(o.price === 0 && o.priceHidden)) {
