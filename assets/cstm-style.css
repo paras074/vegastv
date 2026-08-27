@@ -3129,3 +3129,7 @@ h2.blog-post-toc__title {
 .shopify-policy__container h1 {
     font-weight: 600;
 }
+.shopify-policy__container h2 {
+    font-weight: 600;
+    font-size: 36px;
+}
