@@ -448,11 +448,13 @@
         sharedSecret: '',     // sent as X-Booking-Secret header to the endpoint
         stripePk: '',         // Stripe publishable key; empty => card fields are a placeholder
         setupIntentEndpoint: '', // defaults to sibling stripe-setup-intent.php of apiEndpoint
+        uploadEndpoint: '',   // defaults to sibling upload.php of apiEndpoint
         services: null,       // JSON array of service objects from metafields; null = use defaults
         moduleOrder: null     // JSON array of module IDs from metafields; null = use defaults
       }, config || {});
-      if (!this.cfg.setupIntentEndpoint && this.cfg.apiEndpoint) {
-        this.cfg.setupIntentEndpoint = this.cfg.apiEndpoint.replace(/[^/]*$/, 'stripe-setup-intent.php');
+      if (this.cfg.apiEndpoint) {
+        if (!this.cfg.setupIntentEndpoint) this.cfg.setupIntentEndpoint = this.cfg.apiEndpoint.replace(/[^/]*$/, 'stripe-setup-intent.php');
+        if (!this.cfg.uploadEndpoint) this.cfg.uploadEndpoint = this.cfg.apiEndpoint.replace(/[^/]*$/, 'upload.php');
       }
 
       // Use config-provided services or fall back to hardcoded defaults
@@ -475,7 +477,8 @@
         stripeSetupIntentId: null,
         community: false,   // Community Appreciation Discount opt-in
         sms: false,
-        quoteNotes: ''
+        projectNotes: '',   // "describe your project" text (both flows)
+        photos: []          // [{ url, name }] uploaded project photos
       };
       this.fieldErrors = {}; // field id -> message (customer/quote steps)
       this.index = 0;
@@ -569,6 +572,7 @@
           });
         });
         S.push(COVERAGE_STEP);
+        S.push({ id: 'extras', kind: 'extras', belongsTo: 'shared', title: 'Anything else?', sub: 'Add a note or photos to help our technician prepare. Optional — you can skip this.' });
         S.push({ id: 'terms', kind: 'terms', belongsTo: 'shared', title: 'Terms of Service', sub: 'Please review and accept our Terms of Service to continue.' });
         S.push({ id: 'appointment', kind: 'appointment', belongsTo: 'shared', title: 'What day and time works best for you?', sub: 'Choose an available appointment time. Appointments starting at 8:00 PM or later include a $75 after-hours fee.' });
         S.push({ id: 'customer', kind: 'customer', belongsTo: 'shared', title: 'Almost done! Last step…', sub: 'Your card will only hold your appointment and will not be charged until your service is complete.' });
@@ -1305,13 +1309,87 @@
           ${field('phone', 'Phone number', c.phone, 'tel', fe.phone)}
         </div>
         ${field('address', 'Service address (optional)', c.address)}
-        <div class="bw-field">
-          <label>Tell us about your project (optional)</label>
-          <textarea class="bw-input" style="height:110px;padding:12px 16px;resize:vertical" data-notes placeholder="Rooms, number of items, timeline, anything else that helps us quote accurately…">${esc(st.quoteNotes)}</textarea>
-        </div>
+        ${this.projectFieldsHtml('Rooms, number of items, timeline, anything else that helps us quote accurately…')}
       </div>`);
       node.querySelectorAll('[data-field]').forEach((inp) => inp.addEventListener('input', (e) => { c[inp.dataset.field] = e.target.value; clearFieldErr(inp); this.setError(''); }));
-      node.querySelector('[data-notes]').addEventListener('input', (e) => { st.quoteNotes = e.target.value; });
+      this.wireProjectFields(node);
+      return node;
+    }
+
+    /* ---------- shared: project description + photo upload ---------- */
+    projectFieldsHtml(placeholder) {
+      const st = this.state;
+      const thumbs = (st.photos || []).map((p, i) =>
+        `<div class="bw-thumb"><img src="${esc(p.url)}" alt=""><button type="button" class="bw-thumb__x" data-rmphoto="${i}">×</button></div>`).join('');
+      return `<div class="bw-field">
+        <label>Tell us about your project (optional)</label>
+        <textarea class="bw-input" style="height:110px;padding:12px 16px;resize:vertical" data-notes placeholder="${esc(placeholder || 'Anything that helps us prepare — rooms, items, access, timeline…')}">${esc(st.projectNotes || '')}</textarea>
+      </div>
+      <div class="bw-field">
+        <label>Add photos (optional)</label>
+        <div class="bw-uploader" data-uploader>
+          <div class="bw-thumbs" data-thumbs>${thumbs}</div>
+          <label class="bw-upload-btn">
+            <input type="file" accept="image/*" multiple data-photoinput hidden>
+            <span data-uploadlabel>${(st.photos && st.photos.length) ? 'Add more photos' : '📷 Upload photos'}</span>
+          </label>
+          <div class="bw-field__err" data-uploaderr></div>
+        </div>
+      </div>`;
+    }
+
+    wireProjectFields(node) {
+      const st = this.state;
+      const notes = node.querySelector('[data-notes]');
+      if (notes) notes.addEventListener('input', (e) => { st.projectNotes = e.target.value; });
+      const input = node.querySelector('[data-photoinput]');
+      const errEl = node.querySelector('[data-uploaderr]');
+      const label = node.querySelector('[data-uploadlabel]');
+      if (!input) return;
+      input.addEventListener('change', async () => {
+        const files = Array.from(input.files || []);
+        if (!files.length) return;
+        if ((st.photos.length + files.length) > 8) { if (errEl) errEl.textContent = 'You can add up to 8 photos.'; return; }
+        if (!this.cfg.uploadEndpoint) { if (errEl) errEl.textContent = 'Uploads aren’t available in preview.'; return; }
+        if (label) label.textContent = 'Uploading…';
+        if (errEl) errEl.textContent = '';
+        try {
+          const fd = new FormData();
+          files.forEach((f) => fd.append('file[]', f));
+          const headers = {};
+          if (this.cfg.sharedSecret) headers['X-Booking-Secret'] = this.cfg.sharedSecret;
+          const res = await fetch(this.cfg.uploadEndpoint, { method: 'POST', headers, body: fd }).then((r) => r.json());
+          if (res && res.ok && Array.isArray(res.files)) { st.photos = st.photos.concat(res.files); }
+          else throw new Error((res && (res.error || res.detail)) || 'Upload failed');
+        } catch (e) {
+          if (errEl) errEl.textContent = 'Some photos couldn’t be uploaded. Please try again.';
+          console.error('[BookingWizard] upload failed', e);
+        }
+        input.value = '';
+        this.refreshThumbs(node);
+      });
+      this.refreshThumbs(node);
+    }
+
+    refreshThumbs(node) {
+      const st = this.state;
+      const wrap = node.querySelector('[data-thumbs]');
+      const label = node.querySelector('[data-uploadlabel]');
+      if (label) label.textContent = st.photos.length ? 'Add more photos' : '📷 Upload photos';
+      if (!wrap) return;
+      wrap.innerHTML = (st.photos || []).map((p, i) =>
+        `<div class="bw-thumb"><img src="${esc(p.url)}" alt=""><button type="button" class="bw-thumb__x" data-rmphoto="${i}">×</button></div>`).join('');
+      wrap.querySelectorAll('[data-rmphoto]').forEach((b) => b.addEventListener('click', () => {
+        st.photos.splice(+b.dataset.rmphoto, 1); this.refreshThumbs(node);
+      }));
+    }
+
+    /* ---------- "Anything else?" step (instant flow): note + photos ---------- */
+    view_extras(step) {
+      const node = el(`<div class="bw-step">${this.head(step)}
+        ${this.projectFieldsHtml('Access notes, parking, gate codes, pets, specific placement, anything else that helps…')}
+      </div>`);
+      this.wireProjectFields(node);
       return node;
     }
 
@@ -1328,7 +1406,8 @@
           <div class="bw-line"><span class="bw-line__label">Name</span><span class="bw-line__val">${esc((c.firstName || '') + ' ' + (c.lastName || ''))}</span></div>
           <div class="bw-line"><span class="bw-line__label">Email</span><span class="bw-line__val">${esc(c.email)}</span></div>
           <div class="bw-line"><span class="bw-line__label">Phone</span><span class="bw-line__val">${esc(c.phone)}</span></div>
-          ${st.quoteNotes ? `<div class="bw-line"><span class="bw-line__label">Notes</span><span class="bw-line__val" style="white-space:normal;text-align:right">${esc(st.quoteNotes)}</span></div>` : ''}
+          ${st.projectNotes ? `<div class="bw-line"><span class="bw-line__label">Notes</span><span class="bw-line__val" style="white-space:normal;text-align:right">${esc(st.projectNotes)}</span></div>` : ''}
+          ${st.photos && st.photos.length ? `<div class="bw-line"><span class="bw-line__label">Photos</span><span class="bw-line__val">${st.photos.length} attached</span></div>` : ''}
         </div>
         <p class="bw-step__sub">No card or appointment is needed. Our team will review your request and reach out with a personalized quote.</p>
       </div>`);
@@ -1520,7 +1599,9 @@
           city: st.customer.city, region: st.customer.region, zip: st.customer.zip || st.zip
         }
       };
-      if (isQuote) { base.notes = st.quoteNotes; return base; }
+      base.notes = st.projectNotes;
+      base.photos = (st.photos || []).map((p) => p.url);
+      if (isQuote) return base;
 
       const t = this.totals();
       base.lineItems = t.items; // each carries step/option/product for server re-pricing & tax
