@@ -49,6 +49,27 @@
   // Default module order (master spec §5). Only modules present here render.
   const DEFAULT_MODULE_ORDER = ['tv-mounting', 'wire-concealment', 'smart-tv-setup', 'soundbar', 'tv-dismount', 'video-doorbell', 'smart-thermostat', 'smart-lock', 'art-mirror'];
 
+  /* ---------- Help-link example images (shown as a grid in the "See examples" popup) ---------- */
+  const IMG_WALL = [
+    'https://cdn.shopify.com/s/files/1/1004/4280/0494/files/image1.jpg',
+    'https://cdn.shopify.com/s/files/1/1004/4280/0494/files/image3.png',
+    'https://cdn.shopify.com/s/files/1/1004/4280/0494/files/image2.png'
+  ];
+  const IMG_TV_MOUNT = [
+    'https://vegastvmounting.com/cdn/shop/files/Fireplace_TV_Mounting_Installation.png',
+    'https://vegastvmounting.com/cdn/shop/files/TV_Mounting_Installation_15f41079-c84d-4b80-b9f1-dbaf2a43825c.png',
+    'https://vegastvmounting.com/cdn/shop/files/Outdoor_TV_Mounting.png',
+    'https://vegastvmounting.com/cdn/shop/files/TV_Dismount_and_Reinstallation.png',
+    'https://vegastvmounting.com/cdn/shop/files/Smart_TV_Setup.png'
+  ];
+  const IMG_WIRE = [
+    'https://vegastvmounting.com/cdn/shop/files/Wire_Concealment_1061ae51-4a37-4286-8ff6-bba65d97cd72.png',
+    'https://vegastvmounting.com/cdn/shop/files/Commercial_Cable_Management.png'
+  ];
+  const IMG_SB_INSTALL = [
+    'https://vegastvmounting.com/cdn/shop/files/Soundbar_Installation.png'
+  ];
+
   /* ---------- TV MOUNTING module (spec v1.0, steps 4–10) ---------- */
   const MOD_TV = {
     id: 'tv-mounting',
@@ -82,7 +103,7 @@
         id: 'tv-mount', kind: 'qty',
         title: 'Should we bring a TV mount for your TV?',
         sub: 'Tap + to select one TV mount option for each TV.',
-        help: { label: 'Not sure what to pick? See examples.', title: 'TV Mount Types' },
+        help: { label: 'Not sure what to pick? See examples.', title: 'TV Mount Types', images: IMG_TV_MOUNT },
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'own', name: 'I have my own TV Mount', price: 0 },
@@ -102,7 +123,7 @@
         id: 'tv-surface', kind: 'qty',
         title: 'What type of surface will each TV be mounted to?',
         sub: 'Tap + to select the wall type for each TV.',
-        help: { label: 'Not sure what your wall is? See examples.', title: 'Wall / Surface Types' },
+        help: { label: 'Not sure what your wall is? See examples.', title: 'Wall / Surface Types', images: IMG_WALL },
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'drywall', name: 'Drywall / Wood / Siding', price: 0 },
@@ -116,7 +137,7 @@
         id: 'tv-wire', kind: 'qty',
         title: 'Would you like to hide your TV wires?',
         sub: 'Tap + to select one wire option for each TV.',
-        help: { label: 'Not sure which to pick? See examples.', title: 'Wire Concealment Options' },
+        help: { label: 'Not sure which to pick? See examples.', title: 'Wire Concealment Options', images: IMG_WIRE },
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'behind', name: 'Hide Wires Behind the Wall', price: 149, desc: 'Behind-wall concealment is subject to wall construction and accessibility. If standard in-wall concealment is not feasible, we’ll contact you before service to discuss available options.' },
@@ -155,7 +176,7 @@
         id: 'sb-install', kind: 'qty',
         title: 'How would you like each soundbar installed?',
         sub: 'Tap + to select one installation option for each soundbar.',
-        help: { label: 'Not sure what to pick? See examples.', title: 'Installation Types' },
+        help: { label: 'Not sure what to pick? See examples.', title: 'Installation Types', images: IMG_SB_INSTALL },
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'mount', name: 'Mount Soundbar to Wall or TV + Setup', price: 99, countsAsMounted: true },
@@ -176,7 +197,7 @@
         id: 'sb-surface', kind: 'qty', showIfMounted: true,
         title: 'Where will each soundbar be mounted?',
         sub: 'Tap + to select one mounting location or surface for each soundbar.',
-        help: { label: 'Not sure what to pick? See examples.', title: 'Mounting Location / Surface' },
+        help: { label: 'Not sure what to pick? See examples.', title: 'Mounting Location / Surface', images: IMG_WALL },
         validate: { mode: 'equal', ref: 'mounted' },
         options: [
           { id: 'drywall', name: 'Drywall / Wood / Siding', price: 0 },
@@ -216,7 +237,7 @@
       {
         id: 'wc-method', kind: 'qty', showIfPrimary: true,
         title: 'How would you like the wires concealed?', sub: 'Tap + to select one concealment method for each area.',
-        help: { label: 'Not sure what to pick? See examples.', title: 'Concealment Methods' },
+        help: { label: 'Not sure what to pick? See examples.', title: 'Concealment Methods', images: IMG_WIRE },
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'behind', name: 'Hide Wires Behind the Wall', price: 179, desc: 'Behind-wall concealment is subject to wall construction and accessibility. If standard in-wall concealment is not feasible, we’ll contact you before service to discuss available options.' },
@@ -227,7 +248,7 @@
       {
         id: 'wc-surface', kind: 'qty', showIfPrimary: true,
         title: 'What type of surface will the wires be concealed on or behind?', sub: 'Tap + to select the wall type for each applicable area.',
-        help: { label: 'Not sure what your wall is? See examples.', title: 'Wall / Surface Types' },
+        help: { label: 'Not sure what your wall is? See examples.', title: 'Wall / Surface Types', images: IMG_WALL },
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'drywall', name: 'Drywall / Wood / Siding', price: 0 },
@@ -304,7 +325,7 @@
       {
         id: 'vd-surface', kind: 'qty', showIfPrimary: true,
         title: 'What type of surface will each video doorbell be installed on?', sub: 'Tap + to select the mounting surface for each video doorbell.',
-        help: { label: 'Not sure what your wall is? See examples.', title: 'Mounting Surface' },
+        help: { label: 'Not sure what your wall is? See examples.', title: 'Mounting Surface', images: IMG_WALL },
         validate: { mode: 'equal', ref: 'primary' },
         options: [
           { id: 'drywall', name: 'Drywall / Wood / Siding', price: 0 },
@@ -1568,15 +1589,23 @@
 
     /* ---------- help / examples modal ---------- */
     openHelp(help) {
+      let body;
+      if (help.images && help.images.length) {
+        body = `<div class="bw-help-grid">${help.images.map((u) => `<a class="bw-help-cell" href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="" loading="lazy"></a>`).join('')}</div>`;
+      } else if (help.url) {
+        body = `<iframe src="${esc(help.url)}" style="width:100%;height:50vh;border:0;border-radius:10px"></iframe>`;
+      } else {
+        body = `<p style="color:var(--bw-muted);line-height:1.6">Reference photos for this option will appear here.</p>`;
+      }
       const back = el(`<div class="bw-modal-backdrop"><div class="bw-modal">
-        <button class="bw-modal__x" data-x>×</button>
+        <button class="bw-modal__x" data-x aria-label="Close">×</button>
         <h3>${esc(help.title || 'Examples')}</h3>
-        ${help.url ? `<iframe src="${esc(help.url)}" style="width:100%;height:50vh;border:0;border-radius:10px"></iframe>` :
-          `<p style="color:var(--bw-muted);line-height:1.6">Reference photos and examples for this option will appear here. Upload example images in the theme editor / metaobject to display them.</p>`}
+        ${body}
       </div></div>`);
       const close = () => back.remove();
       back.addEventListener('click', (e) => { if (e.target === back) close(); });
       back.querySelector('[data-x]').addEventListener('click', close);
+      document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
       document.body.appendChild(back);
     }
 
