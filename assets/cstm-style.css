@@ -3120,3 +3120,12 @@ h2.blog-post-toc__title {
     background: #fff !important;
     box-shadow: 0 0 7px 0px #ccc !important;
 }
+
+.shopify-policy__container {
+    max-width: 1000px;
+    padding: 50px 20px !important;
+}
+
+.shopify-policy__container h1 {
+    font-weight: 600;
+}
