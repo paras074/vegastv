@@ -491,10 +491,12 @@
         if (!this.cfg.uploadEndpoint) this.cfg.uploadEndpoint = this.cfg.apiEndpoint.replace(/[^/]*$/, 'upload.php');
       }
 
-      // Use config-provided services or fall back to hardcoded defaults
-      this.services = (Array.isArray(this.cfg.services) && this.cfg.services.length > 0) ? this.cfg.services : DEFAULT_SERVICES;
-      this.commercialServices = (Array.isArray(this.cfg.commercialServices) && this.cfg.commercialServices.length > 0) ? this.cfg.commercialServices : DEFAULT_COMMERCIAL_SERVICES;
-      this.moduleOrder = (Array.isArray(this.cfg.moduleOrder) && this.cfg.moduleOrder.length > 0) ? this.cfg.moduleOrder : DEFAULT_MODULE_ORDER;
+      // Service lists come from the Shopify metaobject when provided, else built-in defaults.
+      this.services = this.normalizeServices((Array.isArray(this.cfg.services) && this.cfg.services.length > 0) ? this.cfg.services : DEFAULT_SERVICES);
+      this.commercialServices = this.normalizeServices((Array.isArray(this.cfg.commercialServices) && this.cfg.commercialServices.length > 0) ? this.cfg.commercialServices : DEFAULT_COMMERCIAL_SERVICES);
+      this.moduleOrder = (Array.isArray(this.cfg.moduleOrder) && this.cfg.moduleOrder.length > 0) ? this.cfg.moduleOrder : this.deriveModuleOrder();
+      // Price overrides from the Shopify "booking_price" metaobject ("step:option" -> price).
+      this.priceOverrides = (this.cfg.prices && typeof this.cfg.prices === 'object') ? this.cfg.prices : {};
 
       this.state = {
         zip: '', zipValid: false,
@@ -555,6 +557,30 @@
     /* Look up a service by id across both lists. */
     findService(id) {
       return this.services.find((s) => s.id === id) || this.commercialServices.find((s) => s.id === id) || null;
+    }
+    /* Normalize a service list (metaobject or default): sort by `sort`, coerce
+       flags, and re-apply the code-owned dedup ownership map. */
+    normalizeServices(list) {
+      const OWNED = { 'wire-concealment': 'tv-mounting', 'smart-tv-setup': 'tv-mounting' };
+      return (list || []).map((s) => {
+        const o = {
+          id: s.id, name: s.name, group: s.group || '',
+          booking: s.booking || 'quote',
+          ready: (s.ready === true || s.ready === 'true'),
+          sort: (s.sort != null ? +s.sort : 0)
+        };
+        if (OWNED[o.id]) o.ownedBy = OWNED[o.id];
+        return o;
+      }).sort((a, b) => a.sort - b.sort);
+    }
+    /* Instant-bookable services that have a module, in sort order. */
+    deriveModuleOrder() {
+      return this.services.filter((s) => s.ready && DEFAULT_MODULES[s.id]).map((s) => s.id);
+    }
+    /* Authoritative price for an option — metaobject override wins over the catalog. */
+    priceOf(stepId, o) {
+      const key = stepId + ':' + o.id;
+      return (this.priceOverrides && this.priceOverrides[key] != null) ? +this.priceOverrides[key] : o.price;
     }
     modulePrimary(mod) {
       const anchor = mod.steps.find((s) => s.anchorPrimary);
@@ -989,7 +1015,8 @@
 
     optRow(step, o) {
       const val = this.q(step.id, o.id);
-      const priceTxt = o.priceHidden ? '' : (o.price === 0 ? 'Included' : '+' + money(o.price));
+      const price = this.priceOf(step.id, o);
+      const priceTxt = o.priceHidden ? '' : (price === 0 ? 'Included' : '+' + money(price));
       return `<div class="bw-opt ${val > 0 ? 'is-active' : ''}" data-opt="${o.id}">
         <div class="bw-opt__text">
           <div class="bw-opt__name">${esc(o.name)}</div>
@@ -1480,10 +1507,11 @@
           }
           step.options.forEach((o) => {
             const qn = this.q(step.id, o.id);
-            if (qn > 0 && !(o.price === 0 && o.priceHidden)) {
+            const price = this.priceOf(step.id, o);
+            if (qn > 0 && !(price === 0 && o.priceHidden)) {
               // include $0 lines that represent a real choice, but skip hidden $0 count rows
-              if (o.price === 0 && !o.priceHidden && step.anchorPrimary) return;
-              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: o.price, amount: o.price * qn, product: !!o.product });
+              if (price === 0 && !o.priceHidden && step.anchorPrimary) return;
+              items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: price, amount: price * qn, product: !!o.product });
             } else if (qn > 0 && o.priceHidden) {
               items.push({ group: header, step: step.id, option: o.id, label: o.name, qty: qn, unit: 0, amount: 0, product: !!o.product });
             }

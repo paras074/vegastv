@@ -41,6 +41,36 @@
     {%- assign logo_url = section.settings.logo | image_url: width: 200 -%}
   {%- endif -%}
 
+  {%- comment -%} Services from the "booking_service" metaobject (falls back to built-in defaults if empty). {%- endcomment -%}
+  {%- capture services_meta -%}[
+    {%- assign _first = true -%}
+    {%- for s in shop.metaobjects.booking_service.values -%}
+      {%- if s.property.value == 'residential' -%}
+        {%- unless _first %},{% endunless -%}{"id":{{ s.service_id.value | json }},"name":{{ s.display_name.value | json }},"group":{{ s.group.value | json }},"booking":{{ s.booking_type.value | json }},"ready":{{ s.bookable.value | default: false }},"sort":{{ s.sort_order.value | default: 0 }}}
+        {%- assign _first = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]{%- endcapture -%}
+  {%- capture commercial_meta -%}[
+    {%- assign _first2 = true -%}
+    {%- for s in shop.metaobjects.booking_service.values -%}
+      {%- if s.property.value == 'commercial' -%}
+        {%- unless _first2 %},{% endunless -%}{"id":{{ s.service_id.value | json }},"name":{{ s.display_name.value | json }},"group":{{ s.group.value | json }},"booking":{{ s.booking_type.value | json }},"ready":{{ s.bookable.value | default: false }},"sort":{{ s.sort_order.value | default: 0 }}}
+        {%- assign _first2 = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]{%- endcapture -%}
+  {%- comment -%} Prices from the "booking_price" metaobject: { "step:option": price }. {%- endcomment -%}
+  {%- capture prices_meta -%}{
+    {%- assign _firstp = true -%}
+    {%- for p in shop.metaobjects.booking_price.values -%}
+      {%- if p.price_key.value != blank -%}
+        {%- unless _firstp %},{% endunless -%}{{ p.price_key.value | json }}: {{ p.price.value | default: 0 }}
+        {%- assign _firstp = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  }{%- endcapture -%}
+
   <script type="application/json" id="bw-config-{{ section.id }}" data-booking-config>
     {
       "apiEndpoint": {{ section.settings.api_endpoint | default: '' | json }},
@@ -52,8 +82,10 @@
       "logo": {{ logo_url | json }},
       "sharedSecret": {{ section.settings.shared_secret | default: '' | json }},
       "stripePk": {{ section.settings.stripe_pk | default: '' | json }},
-      "promoCodes": {{ promo_json }}{%- if section.settings.services_json != blank -%}
-      ,"services": {{ section.settings.services_json }}{%- endif -%}{%- if section.settings.module_order_json != blank -%}
+      "promoCodes": {{ promo_json }},
+      "services": {{ services_meta }},
+      "commercialServices": {{ commercial_meta }},
+      "prices": {{ prices_meta }}{%- if section.settings.module_order_json != blank -%}
       ,"moduleOrder": {{ section.settings.module_order_json }}{%- endif -%}
     }
   </script>
