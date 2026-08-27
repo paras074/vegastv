@@ -683,6 +683,24 @@
       this.$bar = this.root.querySelector('[data-bar]');
       this.$plabel = this.root.querySelector('[data-plabel]');
       this.$progress = this.root.querySelector('[data-progress]');
+
+      // Press Enter to advance to the next step (bound once). Excluded on the
+      // card/payment step and the final submit steps so a booking or a card
+      // save always needs a deliberate button click, never a stray Enter.
+      this.root.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' || e.shiftKey) return;
+        const t = e.target;
+        // Let textareas (project notes, quote message) take the newline.
+        if (t && t.tagName === 'TEXTAREA') return;
+        // Don't hijack Enter while the help modal is open.
+        if (document.querySelector('.bw-modal-backdrop')) return;
+        const step = this.currentStep();
+        if (!step) return;
+        const noEnter = { customer: 1, review: 1, quoteReview: 1, done: 1 };
+        if (noEnter[step.kind]) return;
+        e.preventDefault();
+        this.next();
+      });
     }
 
     /* ============================================================
