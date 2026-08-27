@@ -3122,7 +3122,7 @@ h2.blog-post-toc__title {
 }
 
 .shopify-policy__container {
-    max-width: 1000px;
+    max-width: 1000px !important;
     padding: 50px 20px !important;
 }
 
