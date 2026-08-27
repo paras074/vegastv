@@ -41,9 +41,22 @@
     { group: 'Home Décor',         id: 'art-mirror',         name: 'Art & Mirror Hanging',        booking: 'instant', ready: true },
     { group: 'Custom Projects',    id: 'home-theater',       name: 'Home Theater Installation',   booking: 'quote' },
     { group: 'Custom Projects',    id: 'surround-sound',     name: 'Surround Sound Installation', booking: 'quote' },
-    { group: 'Custom Projects',    id: 'home-security',      name: 'Home Security Camera Installation', booking: 'quote' },
+    { group: 'Custom Projects',    id: 'home-security',      name: 'Home Security Cameras',       booking: 'quote' },
     { group: 'Custom Projects',    id: 'smart-lighting',     name: 'Smart Lighting Installation', booking: 'quote' },
     { group: 'Custom Projects',    id: 'led-accent',         name: 'LED Accent Lighting Installation', booking: 'quote' }
+  ];
+
+  // Commercial services — shown only when the customer picks "Commercial".
+  // Commercial is always a quote request (master architecture), so all are 'quote'.
+  const DEFAULT_COMMERCIAL_SERVICES = [
+    { group: 'Commercial Services', id: 'commercial-tv',       name: 'Standard Commercial TV Mounting',        booking: 'quote' },
+    { group: 'Commercial Services', id: 'video-wall',          name: 'Video Wall & Multi-Display Installation', booking: 'quote' },
+    { group: 'Commercial Services', id: 'conference-display',  name: 'Conference Room Display',                booking: 'quote' },
+    { group: 'Commercial Services', id: 'digital-signage',     name: 'Digital Signage Installation',           booking: 'quote' },
+    { group: 'Commercial Services', id: 'commercial-sound',    name: 'Commercial Sound Systems',               booking: 'quote' },
+    { group: 'Commercial Services', id: 'commercial-cable',    name: 'Commercial Cable Management',             booking: 'quote' },
+    { group: 'Commercial Services', id: 'commercial-access',   name: 'Commercial Access Control Installation',  booking: 'quote' },
+    { group: 'Commercial Services', id: 'commercial-lighting', name: 'Commercial Smart Lighting Installation',  booking: 'quote' }
   ];
 
   // Default module order (master spec §5). Only modules present here render.
@@ -480,6 +493,7 @@
 
       // Use config-provided services or fall back to hardcoded defaults
       this.services = (Array.isArray(this.cfg.services) && this.cfg.services.length > 0) ? this.cfg.services : DEFAULT_SERVICES;
+      this.commercialServices = (Array.isArray(this.cfg.commercialServices) && this.cfg.commercialServices.length > 0) ? this.cfg.commercialServices : DEFAULT_COMMERCIAL_SERVICES;
       this.moduleOrder = (Array.isArray(this.cfg.moduleOrder) && this.cfg.moduleOrder.length > 0) ? this.cfg.moduleOrder : DEFAULT_MODULE_ORDER;
 
       this.state = {
@@ -533,6 +547,14 @@
     }
     getModule(id) {
       return DEFAULT_MODULES[id] || null;
+    }
+    /* Which service list to show — commercial or residential — based on property type. */
+    currentServiceList() {
+      return this.state.propertyType === 'commercial' ? this.commercialServices : this.services;
+    }
+    /* Look up a service by id across both lists. */
+    findService(id) {
+      return this.services.find((s) => s.id === id) || this.commercialServices.find((s) => s.id === id) || null;
     }
     modulePrimary(mod) {
       const anchor = mod.steps.find((s) => s.anchorPrimary);
@@ -900,6 +922,8 @@
           ${opt('commercial', 'Commercial', 'A business, office, or commercial property.')}
         </div></div>`);
       node.querySelectorAll('[data-prop]').forEach((b) => b.addEventListener('click', () => {
+        // Residential and commercial have different service lists — reset selections on switch.
+        if (st.propertyType !== b.dataset.prop) st.services = [];
         st.propertyType = b.dataset.prop; this.setError(''); this.render();
       }));
       return node;
@@ -907,9 +931,12 @@
 
     view_services(step) {
       const st = this.state;
+      const list = this.currentServiceList();
+      const commercialNote = st.propertyType === 'commercial'
+        ? `<div class="bw-included">Commercial projects are quoted individually. Select the services you need and we’ll send a personalized quote — no card or appointment required.</div>` : '';
       const groups = {};
-      this.services.forEach((s) => { (groups[s.group] = groups[s.group] || []).push(s); });
-      let html = `<div class="bw-step">${this.head(step)}<div class="bw-options">`;
+      list.forEach((s) => { (groups[s.group] = groups[s.group] || []).push(s); });
+      let html = `<div class="bw-step">${this.head(step)}${commercialNote}<div class="bw-options">`;
       Object.keys(groups).forEach((g) => {
         html += `<div class="bw-group-label">${esc(g)}</div>`;
         groups[g].forEach((s) => {
@@ -1319,7 +1346,7 @@
     view_quote(step) {
       const st = this.state; const c = st.customer;
       if (!c.zip && st.zip) c.zip = st.zip;
-      const svcNames = st.services.map((id) => (this.services.find((s) => s.id === id) || {}).name).filter(Boolean);
+      const svcNames = st.services.map((id) => (this.findService(id) || {}).name).filter(Boolean);
       const fe = this.fieldErrors || {};
       const node = el(`<div class="bw-step">${this.head(step)}
         <div class="bw-included"><b>Selected services:</b> ${esc(svcNames.join(', ') || '—')}<br><b>Property:</b> ${esc(st.propertyType || '—')} &nbsp;·&nbsp; <b>ZIP:</b> ${esc(st.zip || '—')}</div>
@@ -1417,7 +1444,7 @@
     view_quote_review(step) { return this.view_quoteReview(step); }
     view_quoteReview(step) {
       const st = this.state; const c = st.customer;
-      const svcNames = st.services.map((id) => (this.services.find((s) => s.id === id) || {}).name).filter(Boolean);
+      const svcNames = st.services.map((id) => (this.findService(id) || {}).name).filter(Boolean);
       return el(`<div class="bw-step">${this.head(step)}
         <div class="bw-review-sec">
           <div class="bw-review-sec__h">Request Details</div>
@@ -1620,7 +1647,7 @@
         idempotencyKey: this._idem || (this._idem = 'bw_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10)),
         zip: st.zip,
         propertyType: st.propertyType,
-        services: st.services.map((id) => { const s = this.services.find((x) => x.id === id) || {}; return { id, name: s.name }; }),
+        services: st.services.map((id) => { const s = this.findService(id) || {}; return { id, name: s.name }; }),
         customer: {
           firstName: st.customer.firstName, lastName: st.customer.lastName,
           email: st.customer.email, phone: st.customer.phone,
