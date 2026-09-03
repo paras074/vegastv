@@ -147,6 +147,10 @@
   background: var(--bw-card);
   transition: border-color .15s, box-shadow .15s;
   text-align: left; width: 100%;
+  /* iOS Safari colors <button> text system-blue unless we pin it explicitly */
+  color: var(--bw-ink); -webkit-text-fill-color: currentColor;
+  -webkit-appearance: none; appearance: none;
+  -webkit-tap-highlight-color: transparent; font: inherit;
 }
 .bw-choice:hover { border-color: var(--bw-line-strong); }
 .bw-choice.is-active { border-color: var(--bw-red); box-shadow: 0 0 0 3px rgba(224,22,28,.10); }
@@ -164,6 +168,7 @@
     font-weight: 650;
     font-size: 15px;
     font-family: 'Montserrat';
+    color: var(--bw-ink); -webkit-text-fill-color: var(--bw-ink);
 }
 .bw-choice__desc {
     font-size: 14px;
@@ -420,8 +425,14 @@ button.bw-btn {
   .bw-step__title { font-size: 22px; }
   .bw-foot { padding-bottom: 20px; }
   .bw-btn { padding: 0 18px; }
-  .bw-opt { padding: 12px; gap: 10px; }
+  .bw-opt { padding: 12px; gap: 8px; }
   .bw-opt__media { display:none; }
+  /* tighten the price + stepper cluster so the name gets room and the
+     controls don't float far right (matches the desktop balance) */
+  .bw-opt__price { min-width: auto; font-size: 14px; }
+  .bw-stepper { gap: 4px; }
+  .bw-stepper button { width: 32px; height: 32px; font-size: 17px; }
+  .bw-stepper__val { min-width: 20px; font-size: 15px; }
   .booking-wizard-section {
     padding: 40px 0 !important;
   }
