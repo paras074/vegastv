@@ -520,6 +520,7 @@
       };
       this.fieldErrors = {}; // field id -> message (customer/quote steps)
       this.index = 0;
+      this._lastRenderedIndex = 0; // used to scroll to top only on step changes
       this.calMonth = null; // Date pointing to first of displayed month
       this.submitting = false;
       this.showLoader();
@@ -731,8 +732,20 @@
 
       // footer nav
       this.renderFoot(step);
+
+      // Reset any inner scroll (desktop shell can scroll internally)…
       this.$body.scrollTop = 0;
-      this.root.querySelector('.bw-body').scrollTop = 0;
+      const bodyEl = this.root.querySelector('.bw-body');
+      if (bodyEl) bodyEl.scrollTop = 0;
+      // …and on a STEP CHANGE, bring the wizard back into view. On mobile the
+      // whole page scrolls (not the inner body), so after Continue a short step
+      // would otherwise leave you stranded down at the footer. Only on nav —
+      // not on same-step re-renders (selecting options, +/-), which must not jump.
+      if (this._lastRenderedIndex !== this.index) {
+        try { this.root.scrollIntoView({ block: 'start', behavior: 'auto' }); }
+        catch (e) { window.scrollTo(0, 0); }
+      }
+      this._lastRenderedIndex = this.index;
     }
 
     renderFoot(step) {

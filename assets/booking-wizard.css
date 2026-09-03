@@ -23,6 +23,8 @@
   box-sizing: border-box;
   color: var(--bw-ink);
   -webkit-font-smoothing: antialiased;
+  /* leaves room for the sticky theme header when a new step scrolls into view */
+  scroll-margin-top: 90px;
 }
 .bw-root *,
 .bw-root *::before,
