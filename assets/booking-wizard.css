@@ -363,12 +363,34 @@ button.bw-btn {
 }
 .bw-modal__x { float:right; border:0; background:none; font-size:24px; cursor:pointer; color:var(--bw-muted); line-height:1; }
 .bw-modal h3 { margin:0 0 12px; font-size:22px; font-weight:800; }
-.bw-terms-body { line-height:1.6; color:var(--bw-ink); font-size:15px; }
-.bw-terms-body h1,.bw-terms-body h2,.bw-terms-body h3,.bw-terms-body h4 { font-weight:700; margin:18px 0 8px; line-height:1.25; }
-.bw-terms-body p { margin:0 0 12px; }
-.bw-terms-body ul,.bw-terms-body ol { margin:0 0 12px; padding-left:22px; }
-.bw-terms-body li { margin:4px 0; }
-.bw-terms-body a { color:var(--bw-red); }
+/* Terms popup body — normalize the store's policy HTML so its own oversized
+   theme headings don't blow out inside the modal. Scoped under .bw-modal for
+   specificity over the theme's global h1/h2 styles. */
+.bw-modal .bw-terms-body { line-height:1.65; color:var(--bw-ink); font-size:14.5px; font-family:inherit; }
+.bw-modal .bw-terms-body > :first-child { margin-top:0; }
+.bw-modal .bw-terms-body h1,
+.bw-modal .bw-terms-body h2,
+.bw-modal .bw-terms-body h3,
+.bw-modal .bw-terms-body h4,
+.bw-modal .bw-terms-body h5,
+.bw-modal .bw-terms-body h6 {
+  font-family:inherit; font-weight:700; color:var(--bw-ink);
+  line-height:1.3; letter-spacing:0; margin:22px 0 8px; text-transform:none;
+}
+.bw-modal .bw-terms-body h1 { font-size:19px; }
+.bw-modal .bw-terms-body h2 { font-size:16.5px; padding-bottom:6px; border-bottom:1px solid var(--bw-line); }
+.bw-modal .bw-terms-body h3 { font-size:14.5px; }
+.bw-modal .bw-terms-body h4,
+.bw-modal .bw-terms-body h5,
+.bw-modal .bw-terms-body h6 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--bw-muted); }
+.bw-modal .bw-terms-body p { margin:0 0 12px; }
+.bw-modal .bw-terms-body ul,
+.bw-modal .bw-terms-body ol { margin:0 0 12px; padding-left:20px; }
+.bw-modal .bw-terms-body li { margin:5px 0; }
+.bw-modal .bw-terms-body a { color:var(--bw-red); }
+.bw-modal .bw-terms-body strong,
+.bw-modal .bw-terms-body b { font-weight:700; }
+.bw-modal .bw-terms-body hr { border:0; border-top:1px solid var(--bw-line); margin:18px 0; }
 .bw-modal img { max-width:100%; border-radius:10px; margin-top:8px; }
 
 /* Help "See examples" image grid */
