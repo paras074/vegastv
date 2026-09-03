@@ -79,6 +79,7 @@
       "brandName": {{ section.settings.brand_name | default: shop.name | json }},
       "phone": {{ section.settings.phone | default: '' | json }},
       "termsUrl": {{ section.settings.terms_url | default: '' | json }},
+      "termsHtml": {{ shop.terms_of_service.body | default: '' | json }},
       "logo": {{ logo_url | json }},
       "sharedSecret": {{ section.settings.shared_secret | default: '' | json }},
       "stripePk": {{ section.settings.stripe_pk | default: '' | json }},

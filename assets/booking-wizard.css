@@ -363,6 +363,12 @@ button.bw-btn {
 }
 .bw-modal__x { float:right; border:0; background:none; font-size:24px; cursor:pointer; color:var(--bw-muted); line-height:1; }
 .bw-modal h3 { margin:0 0 12px; font-size:22px; font-weight:800; }
+.bw-terms-body { line-height:1.6; color:var(--bw-ink); font-size:15px; }
+.bw-terms-body h1,.bw-terms-body h2,.bw-terms-body h3,.bw-terms-body h4 { font-weight:700; margin:18px 0 8px; line-height:1.25; }
+.bw-terms-body p { margin:0 0 12px; }
+.bw-terms-body ul,.bw-terms-body ol { margin:0 0 12px; padding-left:22px; }
+.bw-terms-body li { margin:4px 0; }
+.bw-terms-body a { color:var(--bw-red); }
 .bw-modal img { max-width:100%; border-radius:10px; margin-top:8px; }
 
 /* Help "See examples" image grid */

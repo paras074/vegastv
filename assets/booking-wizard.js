@@ -479,6 +479,7 @@
         phone: '',
         termsUrl: '',
         logo: '',
+        termsHtml: '',        // full Terms of Service HTML (from Shopify policy) shown in a popup
         sharedSecret: '',     // sent as X-Booking-Secret header to the endpoint
         stripePk: '',         // Stripe publishable key; empty => card fields are a placeholder
         setupIntentEndpoint: '', // defaults to sibling stripe-setup-intent.php of apiEndpoint
@@ -573,9 +574,14 @@
         return o;
       }).sort((a, b) => a.sort - b.sort);
     }
-    /* Instant-bookable services that have a module, in sort order. */
+    /* Instant-bookable services that have a module. Modules are sequenced by the
+       Master Architecture §5 order (DEFAULT_MODULE_ORDER), independent of how the
+       service-selection menu is sorted; any future/unknown modules follow after. */
     deriveModuleOrder() {
-      return this.services.filter((s) => s.ready && DEFAULT_MODULES[s.id]).map((s) => s.id);
+      const ready = this.services.filter((s) => s.ready && DEFAULT_MODULES[s.id]).map((s) => s.id);
+      const inSpec = DEFAULT_MODULE_ORDER.filter((id) => ready.includes(id));
+      const extras = ready.filter((id) => !DEFAULT_MODULE_ORDER.includes(id));
+      return inSpec.concat(extras);
     }
     /* Authoritative price for an option — metaobject override wins over the catalog. */
     priceOf(stepId, o) {
@@ -811,10 +817,14 @@
           if (!this.state.services.length) return 'Please select at least one service.';
           return '';
         case 'qty': return this.validateQty(step);
-        case 'coverage':
+        case 'coverage': {
+          const cap = this.installedItemCount();
+          if (this.q('coverage', 'today') > cap)
+            return 'You can cover up to ' + cap + ' item(s) being installed today.';
           if (!this.state.none['coverage'] && (this.q('coverage', 'today') + this.q('coverage', 'other')) === 0)
             return 'Please add coverage or choose “No Thanks” to continue.';
           return '';
+        }
         case 'terms':
           if (!this.state.terms) return 'Please accept the Terms of Service to continue.';
           return '';
@@ -922,7 +932,7 @@
       const node = el(`<div class="bw-step">
         ${this.head(step)}
         <div class="bw-field">
-          <input class="bw-input bw-input--zip" inputmode="numeric" maxlength="5" placeholder="00000" value="${esc(st.zip)}" data-zip>
+          <input class="bw-input bw-input--zip" inputmode="numeric" maxlength="5" placeholder="" value="${esc(st.zip)}" data-zip>
         </div>
         <p class="bw-zip-status ${m0.cls}" data-zipstatus>${m0.text}</p>
       </div>`);
@@ -955,15 +965,15 @@
 
     view_property(step) {
       const st = this.state;
-      const opt = (id, name, desc) => `
+      const opt = (id, name) => `
         <button class="bw-choice bw-choice--radio ${st.propertyType === id ? 'is-active' : ''}" data-prop="${id}">
           <span class="bw-choice__box">${ICON_CHECK}</span>
-          <span class="bw-choice__text"><span class="bw-choice__name">${name}</span><span class="bw-choice__desc">${desc}</span></span>
+          <span class="bw-choice__text"><span class="bw-choice__name">${name}</span></span>
         </button>`;
       const node = el(`<div class="bw-step">${this.head(step)}
         <div class="bw-options">
-          ${opt('residential', 'Residential', 'A home, apartment, or condo.')}
-          ${opt('commercial', 'Commercial', 'A business, office, or commercial property.')}
+          ${opt('residential', 'Residential')}
+          ${opt('commercial', 'Commercial')}
         </div></div>`);
       node.querySelectorAll('[data-prop]').forEach((b) => b.addEventListener('click', () => {
         // Residential and commercial have different service lists — reset selections on switch.
@@ -977,7 +987,7 @@
       const st = this.state;
       const list = this.currentServiceList();
       const commercialNote = st.propertyType === 'commercial'
-        ? `<div class="bw-included">Commercial projects are quoted individually. Select the services you need and we’ll send a personalized quote — no card or appointment required.</div>` : '';
+        ? `<div class="bw-included">Select the services you need and we’ll send you a free personalized quote — no card or appointment required.</div>` : '';
       const groups = {};
       list.forEach((s) => { (groups[s.group] = groups[s.group] || []).push(s); });
       let html = `<div class="bw-step">${this.head(step)}${commercialNote}<div class="bw-options">`;
@@ -1069,6 +1079,9 @@
     view_coverage(step) {
       const st = this.state;
       const cap = this.installedItemCount();
+      // Self-heal stale state: if the customer reduced installed items after
+      // choosing "today" coverage, clamp the today qty down to the new cap.
+      if (this.q('coverage', 'today') > cap) this.setQ('coverage', 'today', cap);
       let html = `<div class="bw-step">${this.head(step)}
         <div class="bw-coverage-card">
           <div class="bw-coverage-hero">
@@ -1117,13 +1130,19 @@
         <div class="bw-included" style="max-height:220px;overflow:auto">
           Appointments may be canceled or rescheduled at no charge if you let us know at least <b>24 hours</b> before your appointment. Changes made less than 24 hours before your appointment may be subject to a <b>$25 fee</b>. By continuing, you agree to our Terms of Service.
         </div>
-        ${this.cfg.termsUrl ? `<a class="bw-help-link" href="${esc(this.cfg.termsUrl)}" target="_blank" rel="noopener">View Full Terms of Service</a>` : ''}
+        ${(this.cfg.termsHtml || this.cfg.termsUrl) ? `<button type="button" class="bw-help-link" data-terms-full>View Full Terms of Service</button>` : ''}
         <label class="bw-choice ${st.terms ? 'is-active' : ''}" style="margin-top:14px;cursor:pointer" data-agree>
           <span class="bw-choice__box">${ICON_CHECK}</span>
           <span class="bw-choice__text"><span class="bw-choice__name">I agree to the Terms of Service</span></span>
         </label>
       </div>`);
       node.querySelector('[data-agree]').addEventListener('click', () => { st.terms = !st.terms; this.setError(''); this.render(); });
+      const tf = node.querySelector('[data-terms-full]');
+      if (tf) tf.addEventListener('click', () => this.openHelp(
+        this.cfg.termsHtml
+          ? { title: 'Terms of Service', html: this.cfg.termsHtml }
+          : { title: 'Terms of Service', url: this.cfg.termsUrl }
+      ));
       return node;
     }
 
@@ -1663,7 +1682,10 @@
     /* ---------- help / examples modal ---------- */
     openHelp(help) {
       let body;
-      if (help.images && help.images.length) {
+      if (help.html) {
+        // Trusted first-party HTML (e.g. the store's Terms of Service body from Liquid).
+        body = `<div class="bw-terms-body">${help.html}</div>`;
+      } else if (help.images && help.images.length) {
         body = `<div class="bw-help-grid">${help.images.map((u) => `<a class="bw-help-cell" href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="" loading="lazy"></a>`).join('')}</div>`;
       } else if (help.url) {
         body = `<iframe src="${esc(help.url)}" style="width:100%;height:50vh;border:0;border-radius:10px"></iframe>`;
@@ -1685,12 +1707,23 @@
     /* ============================================================
      * SUBMIT
      * ============================================================ */
+    /* Short, customer-friendly booking reference (e.g. 473-8126). Generated
+       once, sent to the server (added to the HCP note so support can find it),
+       and shown on the confirmation screen. */
+    bookingRef() {
+      if (!this.state.reference) {
+        const n = String(Math.floor(1000000 + Math.random() * 9000000)); // 7 digits
+        this.state.reference = n.slice(0, 3) + '-' + n.slice(3);
+      }
+      return this.state.reference;
+    }
     buildPayload(isQuote) {
       const st = this.state;
       const base = {
         type: isQuote ? (st.mode === 'commercial' ? 'commercial_quote' : 'residential_quote') : 'instant_booking',
         submittedAt: new Date().toISOString(),
         idempotencyKey: this._idem || (this._idem = 'bw_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10)),
+        reference: this.bookingRef(),
         zip: st.zip,
         propertyType: st.propertyType,
         services: st.services.map((id) => { const s = this.findService(id) || {}; return { id, name: s.name }; }),
@@ -1769,7 +1802,9 @@
     showDone(isQuote, resp) {
       this.$progress.style.display = 'none';
       this.$foot.innerHTML = '';
-      const ref = (resp && (resp.reference || resp.id)) ? String(resp.reference || resp.id) : '';
+      // Prefer the short, customer-friendly reference (e.g. 473-8126). Fall back
+      // to whatever the server returned only if the short ref isn't available.
+      const ref = this.state.reference || ((resp && (resp.reference || resp.id)) ? String(resp.reference || resp.id) : '');
       this.$body.innerHTML = `<div class="bw-done">
         <div class="bw-done__check"><svg width="34" height="26" viewBox="0 0 14 12" fill="none"><path d="M12.5 1.5 4.7 9.8 1.5 6.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h2>${isQuote ? 'Request received!' : 'Booking confirmed!'}</h2>
