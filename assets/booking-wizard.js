@@ -237,7 +237,7 @@
     steps: [
       {
         id: 'wc-areas', kind: 'qty', anchorPrimary: true,
-        included: '<b>What’s included:</b> Professional routing, securing, and concealment of cables using the method selected — in-wall concealment, paintable surface cable covers, or desk/furniture cable management as applicable — plus cleanup of the immediate work area.',
+        included: '<b>What’s included:</b> Professional routing, securing, and concealment of cables using the method selected (in-wall concealment, paintable surface cable covers, or desk/furniture cable management as applicable), plus cleanup of the immediate work area.',
         title: 'Where do you need wires concealed?', sub: 'Tap + to add each area that needs wire concealment.',
         validate: { mode: 'min', value: 1 },
         options: [
@@ -1448,7 +1448,7 @@
         `<div class="bw-thumb"><img src="${esc(p.url)}" alt=""><button type="button" class="bw-thumb__x" data-rmphoto="${i}">×</button></div>`).join('');
       return `<div class="bw-field">
         <label>Tell us about your project (optional)</label>
-        <textarea class="bw-input" style="height:110px;padding:12px 16px;resize:vertical" data-notes placeholder="${esc(placeholder || 'Anything that helps us prepare — rooms, items, access, timeline…')}">${esc(st.projectNotes || '')}</textarea>
+        <textarea class="bw-input" style="height:110px;padding:12px 16px;resize:vertical" data-notes placeholder="">${esc(st.projectNotes || '')}</textarea>
       </div>
       <div class="bw-field">
         <label>Add photos (optional)</label>
@@ -1596,19 +1596,14 @@
       const round2 = (n) => Math.round(n * 100) / 100;
 
       // ---- discounts ----
-      const bookOnline = base > 0 ? Math.min(10, base) : 0;         // −$10 automatic
-      const multiTV = this.tvCount() >= 2 ? round2(base * 0.10) : 0; // −10% for 2+ TVs
-      const autoTotal = bookOnline + multiTV;
-      const community = this.state.community ? round2(base * 0.10) : 0; // −10% opt-in
+      // Book Online −$10 (automatic) and Community Appreciation −10% (opt-in) now
+      // STACK — a customer can get both. (Multiple-TV discount removed per client.)
+      const bookOnline = base > 0 ? Math.min(10, base) : 0;              // −$10 automatic
+      const community = this.state.community ? round2(base * 0.10) : 0;  // −10% opt-in, stacks
 
       let discounts = [];
-      if (this.state.community && community >= autoTotal) {
-        // Community is exclusive; wins only when it's the greater discount.
-        discounts = [{ label: 'Community Appreciation Discount (10%)', amount: community }];
-      } else {
-        if (bookOnline) discounts.push({ label: 'Book Online Discount', amount: bookOnline });
-        if (multiTV) discounts.push({ label: 'Multiple TV Discount (10%)', amount: multiTV });
-      }
+      if (bookOnline) discounts.push({ label: 'Book Online Discount', amount: bookOnline });
+      if (community) discounts.push({ label: 'Community Appreciation Discount (10%)', amount: community });
       let discountTotal = round2(discounts.reduce((s, d) => s + d.amount, 0));
       discountTotal = Math.min(discountTotal, base);
 
@@ -1667,7 +1662,7 @@
             <input type="checkbox" data-community ${st.community ? 'checked' : ''}>
             <span><b>Community Appreciation Discount — 10% off</b><br>
             For active-duty military, veterans, teachers &amp; educators, law enforcement, firefighters, EMTs &amp; paramedics, and local/state/federal government employees.<br>
-            <small>Valid employment or agency ID required at time of service. Cannot be combined with other offers.</small></span>
+            <small>Valid employment or agency ID required at time of service.</small></span>
           </label>
         </div>
 
@@ -1699,7 +1694,7 @@
         // Trusted first-party HTML (e.g. the store's Terms of Service body from Liquid).
         body = `<div class="bw-terms-body">${help.html}</div>`;
       } else if (help.images && help.images.length) {
-        body = `<div class="bw-help-grid">${help.images.map((u) => `<a class="bw-help-cell" href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="" loading="lazy"></a>`).join('')}</div>`;
+        body = `<div class="bw-help-grid">${help.images.map((u) => `<div class="bw-help-cell"><img src="${esc(u)}" alt="" loading="lazy"></div>`).join('')}</div>`;
       } else if (help.url) {
         body = `<iframe src="${esc(help.url)}" style="width:100%;height:50vh;border:0;border-radius:10px"></iframe>`;
       } else {
