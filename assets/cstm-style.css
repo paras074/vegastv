@@ -61,7 +61,14 @@ p {
   margin: 10px 0 0;
   padding: 0;
 }
-
+a.cta-bar__phone {
+    background-color: var(--cta-btn-bg);
+    color: var(--cta-btn-text);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 24px;
+    border-radius: 150px;
+}
 .hero-section__trust-item {
   display: flex;
   align-items: center;
