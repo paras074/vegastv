@@ -66,7 +66,7 @@
         "heading": "Ready to Start Your Project?",
         "phone_number": "Call or Text",
         "button_label": "Book Now",
-        "button_link": "/pages/booking-wizard",
+        "button_link": "/pages/book",
         "background_color": "#000000",
         "text_color": "#ffffff",
         "button_background": "#990000",
