@@ -80,6 +80,18 @@
       "phone": {{ section.settings.phone | default: '' | json }},
       "termsUrl": {{ section.settings.terms_url | default: '' | json }},
       "termsHtml": {{ shop.terms_of_service.body | default: '' | json }},
+      "helpImages": {
+        "tvMount": [{{ 'bw-help-tv-mount.jpg' | asset_url | json }}],
+        "wire": [{{ 'bw-help-wire.jpg' | asset_url | json }}],
+        "sbInstall": [{{ 'bw-help-soundbar.jpg' | asset_url | json }}],
+        "wall": [
+          {{ 'bw-help-wall-1.jpg' | asset_url | json }},
+          {{ 'bw-help-wall-2.jpg' | asset_url | json }},
+          {{ 'bw-help-wall-3.jpg' | asset_url | json }},
+          {{ 'bw-help-wall-4.jpg' | asset_url | json }},
+          {{ 'bw-help-wall-5.jpg' | asset_url | json }}
+        ]
+      },
       "logo": {{ logo_url | json }},
       "sharedSecret": {{ section.settings.shared_secret | default: '' | json }},
       "stripePk": {{ section.settings.stripe_pk | default: '' | json }},

@@ -485,8 +485,20 @@
         setupIntentEndpoint: '', // defaults to sibling stripe-setup-intent.php of apiEndpoint
         uploadEndpoint: '',   // defaults to sibling upload.php of apiEndpoint
         services: null,       // JSON array of service objects from metafields; null = use defaults
-        moduleOrder: null     // JSON array of module IDs from metafields; null = use defaults
+        moduleOrder: null,    // JSON array of module IDs from metafields; null = use defaults
+        helpImages: null      // { tvMount:[], wall:[], wire:[], sbInstall:[] } from theme assets
       }, config || {});
+
+      // Help-popup example images come from theme assets via config. Override the
+      // built-in URL arrays IN PLACE so the catalog's help.images references pick
+      // them up (they hold a reference to these same arrays).
+      if (this.cfg.helpImages && typeof this.cfg.helpImages === 'object') {
+        const setImgs = (arr, urls) => { if (Array.isArray(urls) && urls.length) { arr.length = 0; urls.forEach((u) => { if (u) arr.push(u); }); } };
+        setImgs(IMG_TV_MOUNT, this.cfg.helpImages.tvMount);
+        setImgs(IMG_WALL, this.cfg.helpImages.wall);
+        setImgs(IMG_WIRE, this.cfg.helpImages.wire);
+        setImgs(IMG_SB_INSTALL, this.cfg.helpImages.sbInstall);
+      }
       if (this.cfg.apiEndpoint) {
         if (!this.cfg.setupIntentEndpoint) this.cfg.setupIntentEndpoint = this.cfg.apiEndpoint.replace(/[^/]*$/, 'stripe-setup-intent.php');
         if (!this.cfg.uploadEndpoint) this.cfg.uploadEndpoint = this.cfg.apiEndpoint.replace(/[^/]*$/, 'upload.php');
