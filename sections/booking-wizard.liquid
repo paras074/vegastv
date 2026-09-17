@@ -95,6 +95,7 @@
       "logo": {{ logo_url | json }},
       "sharedSecret": {{ section.settings.shared_secret | default: '' | json }},
       "stripePk": {{ section.settings.stripe_pk | default: '' | json }},
+      "googleMapsKey": {{ section.settings.google_maps_key | default: '' | json }},
       "promoCodes": {{ promo_json }},
       "services": {{ services_meta }},
       "commercialServices": {{ commercial_meta }},
@@ -146,6 +147,12 @@
       "id": "stripe_pk",
       "label": "Stripe publishable key",
       "info": "Your Stripe pk_… key (test or live). Enables the secure card field with Apple/Google Pay. Leave blank to show the placeholder card fields only."
+    },
+    {
+      "type": "text",
+      "id": "google_maps_key",
+      "label": "Google Maps API key",
+      "info": "Enables address autocomplete on the Street address field. Needs the 'Maps JavaScript API' and 'Places API (New)' enabled, and an HTTP-referrer restriction for your domain. Leave blank to disable."
     },
     {
       "type": "textarea",

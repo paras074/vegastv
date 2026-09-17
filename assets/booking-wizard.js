@@ -486,7 +486,8 @@
         uploadEndpoint: '',   // defaults to sibling upload.php of apiEndpoint
         services: null,       // JSON array of service objects from metafields; null = use defaults
         moduleOrder: null,    // JSON array of module IDs from metafields; null = use defaults
-        helpImages: null      // { tvMount:[], wall:[], wire:[], sbInstall:[] } from theme assets
+        helpImages: null,     // { tvMount:[], wall:[], wire:[], sbInstall:[] } from theme assets
+        googleMapsKey: ''     // Google Maps JS key; enables Street-address autocomplete
       }, config || {});
 
       // Help-popup example images come from theme assets via config. Override the
@@ -1341,6 +1342,7 @@
         inp.addEventListener('input', handler);
         inp.addEventListener('change', handler);
       });
+      this.setupAddressAutocomplete(node);
 
       if (this.cfg.stripePk) {
         this.setupStripe(node);
@@ -1373,6 +1375,91 @@
         });
       }
       return node;
+    }
+
+    /* ---------- Google address autocomplete (Places API — New) ---------- */
+    ensureGoogleMaps() {
+      if (this._gmapsPromise) return this._gmapsPromise;
+      this._gmapsPromise = new Promise((resolve, reject) => {
+        if (window.google && window.google.maps && window.google.maps.importLibrary) return resolve(window.google.maps);
+        const s = document.createElement('script');
+        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(this.cfg.googleMapsKey) + '&v=weekly&loading=async&libraries=places';
+        s.async = true;
+        s.onload = () => resolve(window.google && window.google.maps);
+        s.onerror = () => reject(new Error('Google Maps failed to load'));
+        document.head.appendChild(s);
+      });
+      return this._gmapsPromise;
+    }
+
+    /* Attach Google-powered suggestions to the Street address field and, on
+       selection, fill street / city / state / ZIP. Uses the new Places
+       Autocomplete Data API with our own styled dropdown so it matches the UI.
+       Silently no-ops (plain text field still works) if the key/API is missing. */
+    async setupAddressAutocomplete(node) {
+      if (!this.cfg.googleMapsKey) return;
+      const input = node.querySelector('[data-field="address"]');
+      if (!input || input._bwAc) return;
+      input._bwAc = true;
+      let places;
+      try {
+        const gmaps = await this.ensureGoogleMaps();
+        places = await gmaps.importLibrary('places');
+      } catch (e) { console.warn('[BookingWizard] address autocomplete unavailable', e); return; }
+      const { AutocompleteSuggestion, AutocompleteSessionToken } = places;
+      if (!AutocompleteSuggestion) return;
+
+      const c = this.state.customer;
+      const wrap = input.closest('.bw-field') || input.parentElement;
+      if (wrap && getComputedStyle(wrap).position === 'static') wrap.style.position = 'relative';
+      const dd = el('<div class="bw-ac-dd" hidden></div>');
+      wrap.appendChild(dd);
+      input.setAttribute('autocomplete', 'off');
+
+      let token = new AutocompleteSessionToken();
+      let items = [];
+      let timer = null;
+      const close = () => { dd.hidden = true; dd.innerHTML = ''; items = []; };
+      const setField = (name, val) => {
+        if (val == null || val === '') return;
+        c[name] = val;
+        const f = node.querySelector('[data-field="' + name + '"]');
+        if (f) { f.value = val; f.classList.remove('bw-input--error'); const er = f.parentElement && f.parentElement.querySelector('.bw-field__err'); if (er) er.textContent = ''; }
+      };
+      const pick = async (i) => {
+        const pred = items[i] && items[i].placePrediction;
+        close();
+        if (!pred) return;
+        const place = pred.toPlace();
+        try { await place.fetchFields({ fields: ['addressComponents', 'formattedAddress'] }); }
+        catch (e) { return; }
+        const comp = {};
+        (place.addressComponents || []).forEach((a) => (a.types || []).forEach((t) => { comp[t] = { long: a.longText, short: a.shortText }; }));
+        const g = (k, f) => (comp[k] ? comp[k][f || 'long'] : '');
+        const street = [g('street_number'), g('route')].filter(Boolean).join(' ');
+        setField('address', street || place.formattedAddress || input.value);
+        setField('city', g('locality') || g('postal_town') || g('sublocality') || g('sublocality_level_1'));
+        setField('region', g('administrative_area_level_1', 'short'));
+        setField('zip', g('postal_code'));
+        token = new AutocompleteSessionToken(); // one session per completed lookup
+        this.setError('');
+      };
+      const fetchSug = async (val) => {
+        if (!val || val.trim().length < 3) return close();
+        try {
+          const res = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
+            input: val, sessionToken: token, includedRegionCodes: ['us']
+          });
+          items = (res.suggestions || []).filter((s) => s.placePrediction);
+          if (!items.length) return close();
+          dd.innerHTML = items.map((s, i) => '<button type="button" class="bw-ac-item" data-i="' + i + '">' + esc(s.placePrediction.text && s.placePrediction.text.text || '') + '</button>').join('');
+          dd.hidden = false;
+        } catch (e) { close(); }
+      };
+
+      input.addEventListener('input', (e) => { const v = e.target.value; clearTimeout(timer); timer = setTimeout(() => fetchSug(v), 250); });
+      dd.addEventListener('mousedown', (e) => { const b = e.target.closest('[data-i]'); if (b) { e.preventDefault(); pick(+b.dataset.i); } });
+      input.addEventListener('blur', () => setTimeout(close, 150));
     }
 
     /* ---------- Stripe: load SDK, create SetupIntent, mount Payment Element ---------- */
@@ -1449,6 +1536,7 @@
         ${this.projectFieldsHtml('Rooms, number of items, timeline, anything else that helps us quote accurately…')}
       </div>`);
       node.querySelectorAll('[data-field]').forEach((inp) => inp.addEventListener('input', (e) => { c[inp.dataset.field] = e.target.value; clearFieldErr(inp); this.setError(''); }));
+      this.setupAddressAutocomplete(node);
       this.wireProjectFields(node);
       return node;
     }

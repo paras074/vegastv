@@ -379,6 +379,16 @@ button.bw-btn {
 /* Terms popup body — normalize the store's policy HTML so its own oversized
    theme headings don't blow out inside the modal. Scoped under .bw-modal for
    specificity over the theme's global h1/h2 styles. */
+/* Google address autocomplete dropdown */
+.bw-ac-dd { position:absolute; left:0; right:0; top:100%; z-index:40; margin-top:4px;
+  background:#fff; border:1.5px solid var(--bw-line-strong); border-radius:12px; overflow:hidden;
+  box-shadow:0 12px 30px rgba(16,18,26,.14); max-height:280px; overflow-y:auto; }
+.bw-ac-item { display:block; width:100%; text-align:left; border:0; background:#fff; cursor:pointer;
+  padding:11px 14px; font-size:14px; color:var(--bw-ink); line-height:1.35;
+  -webkit-appearance:none; appearance:none; -webkit-text-fill-color:var(--bw-ink); }
+.bw-ac-item + .bw-ac-item { border-top:1px solid var(--bw-line); }
+.bw-ac-item:hover { background:var(--bw-panel); }
+
 .bw-modal .bw-terms-body { line-height:1.65; color:var(--bw-ink); font-size:14.5px; font-family:inherit; }
 .bw-modal .bw-terms-body > :first-child { margin-top:0; }
 .bw-modal .bw-terms-body h1,
