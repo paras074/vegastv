@@ -1382,12 +1382,25 @@
       if (this._gmapsPromise) return this._gmapsPromise;
       this._gmapsPromise = new Promise((resolve, reject) => {
         if (window.google && window.google.maps && window.google.maps.importLibrary) return resolve(window.google.maps);
-        const s = document.createElement('script');
-        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(this.cfg.googleMapsKey) + '&v=weekly&loading=async&libraries=places';
-        s.async = true;
-        s.onload = () => resolve(window.google && window.google.maps);
-        s.onerror = () => reject(new Error('Google Maps failed to load'));
-        document.head.appendChild(s);
+        try {
+          // Official Google Maps inline bootstrap loader — reliably defines
+          // google.maps.importLibrary (the plain <script async> tag does not).
+          (function (g) {
+            var h, a, k, p = 'The Google Maps JavaScript API', c = 'google', l = 'importLibrary', q = '__ib__',
+              m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set(),
+              e = new URLSearchParams(), u = function () {
+                return h || (h = new Promise(function (f, n) {
+                  a = m.createElement('script'); e.set('libraries', [...r] + '');
+                  for (k in g) e.set(k.replace(/[A-Z]/g, function (t) { return '_' + t[0].toLowerCase(); }), g[k]);
+                  e.set('callback', c + '.maps.' + q); a.src = 'https://maps.' + c + 'apis.com/maps/api/js?' + e;
+                  d[q] = f; a.onerror = function () { h = n(Error(p + ' could not load.')); };
+                  a.nonce = (m.querySelector('script[nonce]') || {}).nonce || ''; m.head.append(a);
+                }));
+              };
+            d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = function (f) { for (var _len = arguments.length, n = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) { n[_key - 1] = arguments[_key]; } return r.add(f) && u().then(function () { return d[l].apply(d, [f].concat(n)); }); };
+          })({ key: this.cfg.googleMapsKey, v: 'weekly' });
+          resolve(window.google.maps);
+        } catch (e) { reject(e); }
       });
       return this._gmapsPromise;
     }
