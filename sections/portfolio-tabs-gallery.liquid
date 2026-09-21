@@ -104,7 +104,14 @@
                   {%- assign img_val = block.settings[img_key] -%}
                   {%- assign link_val = block.settings[link_key] -%}
                   {%- if img_val != blank -%}
-                    <div class="portfolio-carousel__slide">
+                    <div
+                      class="portfolio-carousel__slide"
+                      data-lightbox-item
+                      data-full="{{ img_val | image_url: width: 1800 }}"
+                      data-alt="{{ img_val.alt | default: block.settings.title | escape }}"
+                      data-link="{{ link_val }}"
+                      {% if link_val == blank %}tabindex="0" role="button" aria-label="Open image in popup"{% endif %}
+                    >
                       {%- if link_val != blank -%}<a href="{{ link_val }}">{%- endif -%}
                         {{ img_val | image_url: width: 700 | image_tag:
                           loading: 'lazy',
@@ -129,6 +136,37 @@
           </div>
         {%- endfor -%}
       </div>
+
+      {%- comment -%} Lightbox popup (ek hi popup, click kiye gaye category ki images dikhata hai) {%- endcomment -%}
+      <div
+        class="portfolio-lightbox"
+        data-lightbox-for="{{ section.id }}"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Image gallery"
+        hidden
+      >
+        <div class="portfolio-lightbox__backdrop" data-lightbox-close></div>
+
+        <button type="button" class="portfolio-lightbox__close" data-lightbox-close aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l14 14M17 3L3 17"/></svg>
+        </button>
+
+        <button type="button" class="portfolio-lightbox__nav portfolio-lightbox__nav--prev" data-lightbox-prev aria-label="Previous image">
+          <svg width="14" height="22" viewBox="0 0 11 18" fill="none"><path d="M9 1L1 9l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <figure class="portfolio-lightbox__figure">
+          <img class="portfolio-lightbox__img" src="" alt="">
+          <a class="portfolio-lightbox__link" href="#" hidden>View details</a>
+        </figure>
+
+        <button type="button" class="portfolio-lightbox__nav portfolio-lightbox__nav--next" data-lightbox-next aria-label="Next image">
+          <svg width="14" height="22" viewBox="0 0 11 18" fill="none"><path d="M2 1l8 8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <div class="portfolio-lightbox__counter"></div>
+      </div>
     {%- else -%}
       <div class="portfolio-tabs__empty">
         {{ 'onboarding_content.svg' | placeholder_svg_tag: 'portfolio-tabs__placeholder' }}
@@ -138,6 +176,116 @@
 
   </div>
 </div>
+
+<style>
+  .portfolio-carousel__slide[data-lightbox-item] {
+    cursor: zoom-in;
+  }
+  .portfolio-carousel__slide[data-lightbox-item] a {
+    cursor: zoom-in;
+  }
+
+  /* Lightbox */
+  .portfolio-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .portfolio-lightbox[hidden] {
+    display: none;
+  }
+  .portfolio-lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+  }
+  .portfolio-lightbox__figure {
+    position: relative;
+    margin: 0;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .portfolio-lightbox__img {
+    display: block;
+    max-width: 90vw;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .portfolio-lightbox__link {
+    color: #fff;
+    font-size: 1.4rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .portfolio-lightbox__link[hidden] {
+    display: none;
+  }
+  .portfolio-lightbox__close,
+  .portfolio-lightbox__nav {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .portfolio-lightbox__close:hover,
+  .portfolio-lightbox__nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .portfolio-lightbox__close {
+    top: 16px;
+    right: 16px;
+  }
+  .portfolio-lightbox__nav {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .portfolio-lightbox__nav--prev {
+    left: 16px;
+  }
+  .portfolio-lightbox__nav--next {
+    right: 16px;
+  }
+  .portfolio-lightbox__counter {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    color: #fff;
+    font-size: 1.4rem;
+    opacity: 0.85;
+  }
+  body.portfolio-lightbox-lock {
+    overflow: hidden;
+  }
+  @media (max-width: 749px) {
+    .portfolio-lightbox__nav--prev { left: 8px; }
+    .portfolio-lightbox__nav--next { right: 8px; }
+    .portfolio-lightbox__close { top: 8px; right: 8px; }
+  }
+</style>
 
 <script>
     (function () {
@@ -247,9 +395,123 @@
     updateActiveDot();
   }
 
+  function initLightbox(section) {
+    var modal = section.querySelector('.portfolio-lightbox');
+    if (!modal) return;
+
+    var modalId = modal.getAttribute('data-lightbox-for');
+
+    // Theme editor re-render me purani copy hata do, phir body me move karo
+    document.querySelectorAll('body > .portfolio-lightbox[data-lightbox-for="' + modalId + '"]').forEach(function (el) {
+      el.remove();
+    });
+    document.body.appendChild(modal);
+
+    var imgEl = modal.querySelector('.portfolio-lightbox__img');
+    var linkEl = modal.querySelector('.portfolio-lightbox__link');
+    var counterEl = modal.querySelector('.portfolio-lightbox__counter');
+    var prevBtn = modal.querySelector('[data-lightbox-prev]');
+    var nextBtn = modal.querySelector('[data-lightbox-next]');
+    var items = [];
+    var current = 0;
+    var lastFocus = null;
+
+    function show(index) {
+      if (!items.length) return;
+      current = (index + items.length) % items.length;
+      var item = items[current];
+      imgEl.src = item.src;
+      imgEl.alt = item.alt;
+
+      if (item.link) {
+        linkEl.href = item.link;
+        linkEl.hidden = false;
+      } else {
+        linkEl.hidden = true;
+      }
+
+      counterEl.textContent = (current + 1) + ' / ' + items.length;
+
+      var single = items.length < 2;
+      prevBtn.hidden = single;
+      nextBtn.hidden = single;
+      counterEl.hidden = single;
+
+      // Aage-peeche wali image preload
+      [current + 1, current - 1].forEach(function (n) {
+        var it = items[(n + items.length) % items.length];
+        if (it) { var pre = new Image(); pre.src = it.src; }
+      });
+    }
+
+    function onKey(e) {
+      if (e.key === 'Escape') closeModal();
+      else if (e.key === 'ArrowLeft') show(current - 1);
+      else if (e.key === 'ArrowRight') show(current + 1);
+    }
+
+    function openModal(slideEls, startIndex) {
+      items = slideEls.map(function (el) {
+        return {
+          src: el.getAttribute('data-full'),
+          alt: el.getAttribute('data-alt') || '',
+          link: el.getAttribute('data-link') || ''
+        };
+      });
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add('portfolio-lightbox-lock');
+      show(startIndex);
+      modal.querySelector('.portfolio-lightbox__close').focus();
+      document.addEventListener('keydown', onKey);
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      imgEl.src = '';
+      document.body.classList.remove('portfolio-lightbox-lock');
+      document.removeEventListener('keydown', onKey);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    // Har category ki slides ke click / Enter handle karo
+    section.querySelectorAll('.portfolio-category').forEach(function (cat) {
+      var slideEls = Array.prototype.slice.call(cat.querySelectorAll('[data-lightbox-item]'));
+      slideEls.forEach(function (slide, i) {
+        slide.addEventListener('click', function (e) {
+          e.preventDefault(); // link ki jagah popup khulega
+          openModal(slideEls, i);
+        });
+        slide.addEventListener('keydown', function (e) {
+          if ((e.key === 'Enter' || e.key === ' ') && e.target === slide) {
+            e.preventDefault();
+            openModal(slideEls, i);
+          }
+        });
+      });
+    });
+
+    prevBtn.addEventListener('click', function () { show(current - 1); });
+    nextBtn.addEventListener('click', function () { show(current + 1); });
+    modal.querySelectorAll('[data-lightbox-close]').forEach(function (el) {
+      el.addEventListener('click', closeModal);
+    });
+
+    // Mobile swipe
+    var startX = 0;
+    modal.addEventListener('touchstart', function (e) {
+      startX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    modal.addEventListener('touchend', function (e) {
+      var diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 50) show(diff > 0 ? current - 1 : current + 1);
+    }, { passive: true });
+  }
+
   function initSection(section) {
     initTabs(section);
     section.querySelectorAll('.portfolio-carousel').forEach(initCarousel);
+    initLightbox(section);
   }
 
   document.querySelectorAll('.portfolio-tabs-section').forEach(initSection);
@@ -380,5 +642,3 @@
   ]
 }
 {% endschema %}
-
-
