@@ -38,16 +38,25 @@
           {%- for block in section.blocks -%}
             <li class="installation-gallery__slide" {{ block.shopify_attributes }}>
               {%- if block.settings.image != blank -%}
-                {{
-                  block.settings.image
-                  | image_url: width: 900
-                  | image_tag:
-                    loading: 'lazy',
-                    sizes: '(min-width: 990px) 33vw, 80vw',
-                    class: 'installation-gallery__image',
-                    alt: section.settings.heading
-                  
-                }}
+                <button
+                  type="button"
+                  class="installation-gallery__zoom"
+                  data-gallery-open
+                  data-full="{{ block.settings.image | image_url: width: 1800 }}"
+                  data-alt="{{ block.settings.caption | default: section.settings.heading | escape }}"
+                  data-caption="{{ block.settings.caption | escape }}"
+                  aria-label="Open image in popup"
+                >
+                  {{
+                    block.settings.image
+                    | image_url: width: 900
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: '(min-width: 990px) 33vw, 80vw',
+                      class: 'installation-gallery__image',
+                      alt: section.settings.heading
+                  }}
+                </button>
               {%- else -%}
                 <div class="installation-gallery__image installation-gallery__image--placeholder">{{ 'image' | placeholder_svg_tag }}</div>
               {%- endif -%}
@@ -66,6 +75,37 @@
         </button>
 
       </div>
+
+      {%- comment -%} Lightbox popup {%- endcomment -%}
+      <div
+        class="installation-gallery__modal"
+        data-modal-for="{{ section_id }}"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Image gallery"
+        hidden
+      >
+        <div class="installation-gallery__modal-backdrop" data-modal-close></div>
+
+        <button type="button" class="installation-gallery__modal-close" data-modal-close aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l14 14M17 3L3 17"/></svg>
+        </button>
+
+        <button type="button" class="installation-gallery__modal-nav installation-gallery__modal-nav--prev" data-modal-prev aria-label="Previous image">
+          <svg width="14" height="22" viewBox="0 0 11 18" fill="none"><path d="M9 1L1 9l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <figure class="installation-gallery__modal-figure">
+          <img class="installation-gallery__modal-img" src="" alt="">
+          <figcaption class="installation-gallery__modal-caption"></figcaption>
+        </figure>
+
+        <button type="button" class="installation-gallery__modal-nav installation-gallery__modal-nav--next" data-modal-next aria-label="Next image">
+          <svg width="14" height="22" viewBox="0 0 11 18" fill="none"><path d="M2 1l8 8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <div class="installation-gallery__modal-counter"></div>
+      </div>
     {%- endif -%}
 
     {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
@@ -80,19 +120,132 @@
 </div>
 
 <style>
-  
+  /* Thumbnail click button reset */
+  .installation-gallery__zoom {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    font: inherit;
+    color: inherit;
+  }
+  .installation-gallery__zoom .installation-gallery__image {
+    display: block;
+    width: 100%;
+  }
 
-
+  /* Lightbox */
+  .installation-gallery__modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .installation-gallery__modal[hidden] {
+    display: none;
+  }
+  .installation-gallery__modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+  }
+  .installation-gallery__modal-figure {
+    position: relative;
+    margin: 0;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .installation-gallery__modal-img {
+    display: block;
+    max-width: 90vw;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .installation-gallery__modal-caption {
+    color: #fff;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+  .installation-gallery__modal-caption:empty {
+    display: none;
+  }
+  .installation-gallery__modal-close,
+  .installation-gallery__modal-nav {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .installation-gallery__modal-close:hover,
+  .installation-gallery__modal-nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .installation-gallery__modal-close {
+    top: 16px;
+    right: 16px;
+  }
+  .installation-gallery__modal-nav {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .installation-gallery__modal-nav--prev {
+    left: 16px;
+  }
+  .installation-gallery__modal-nav--next {
+    right: 16px;
+  }
+  .installation-gallery__modal-counter {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    color: #fff;
+    font-size: 1.4rem;
+    opacity: 0.85;
+  }
+  body.installation-gallery-lock {
+    overflow: hidden;
+  }
+  @media (max-width: 749px) {
+    .installation-gallery__modal-nav--prev { left: 8px; }
+    .installation-gallery__modal-nav--next { right: 8px; }
+    .installation-gallery__modal-close { top: 8px; right: 8px; }
+  }
 </style>
 
 <script>
   (function () {
-    var trackId = 'gallery-track-{{ section_id }}';
-    var track = document.getElementById(trackId);
+    var sectionId = '{{ section_id }}';
+    var track = document.getElementById('gallery-track-' + sectionId);
     if (!track) return;
 
-    var prevBtn = document.querySelector('[data-gallery-prev="{{ section_id }}"]');
-    var nextBtn = document.querySelector('[data-gallery-next="{{ section_id }}"]');
+    var prevBtn = document.querySelector('[data-gallery-prev="' + sectionId + '"]');
+    var nextBtn = document.querySelector('[data-gallery-next="' + sectionId + '"]');
 
     function scrollByAmount(direction) {
       var slide = track.querySelector('.installation-gallery__slide');
@@ -101,17 +254,91 @@
       track.scrollBy({ left: direction * amount, behavior: 'smooth' });
     }
 
-    if (prevBtn) {
-      prevBtn.addEventListener('click', function () {
-        scrollByAmount(-1);
+    if (prevBtn) prevBtn.addEventListener('click', function () { scrollByAmount(-1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { scrollByAmount(1); });
+
+    /* ---------- Lightbox ---------- */
+    var root = track.closest('.installation-gallery');
+    var modal = root.querySelector('.installation-gallery__modal');
+    if (!modal) return;
+
+    // Purani copy (theme editor re-render) hata do, phir body me move karo
+    document.querySelectorAll('body > .installation-gallery__modal[data-modal-for="' + sectionId + '"]').forEach(function (el) {
+      el.remove();
+    });
+    document.body.appendChild(modal);
+
+    var imgEl = modal.querySelector('.installation-gallery__modal-img');
+    var captionEl = modal.querySelector('.installation-gallery__modal-caption');
+    var counterEl = modal.querySelector('.installation-gallery__modal-counter');
+    var triggers = track.querySelectorAll('[data-gallery-open]');
+    var items = [];
+    var current = 0;
+    var lastFocus = null;
+
+    triggers.forEach(function (btn, i) {
+      items.push({
+        src: btn.getAttribute('data-full'),
+        alt: btn.getAttribute('data-alt') || '',
+        caption: btn.getAttribute('data-caption') || ''
+      });
+      btn.addEventListener('click', function () { openModal(i); });
+    });
+
+    function show(index) {
+      if (!items.length) return;
+      current = (index + items.length) % items.length;
+      var item = items[current];
+      imgEl.src = item.src;
+      imgEl.alt = item.alt;
+      captionEl.textContent = item.caption;
+      counterEl.textContent = (current + 1) + ' / ' + items.length;
+
+      // Aage-peeche wali image preload
+      [current + 1, current - 1].forEach(function (n) {
+        var it = items[(n + items.length) % items.length];
+        if (it) { var pre = new Image(); pre.src = it.src; }
       });
     }
 
-    if (nextBtn) {
-      nextBtn.addEventListener('click', function () {
-        scrollByAmount(1);
-      });
+    function openModal(index) {
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add('installation-gallery-lock');
+      show(index);
+      modal.querySelector('.installation-gallery__modal-close').focus();
+      document.addEventListener('keydown', onKey);
     }
+
+    function closeModal() {
+      modal.hidden = true;
+      imgEl.src = '';
+      document.body.classList.remove('installation-gallery-lock');
+      document.removeEventListener('keydown', onKey);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    function onKey(e) {
+      if (e.key === 'Escape') closeModal();
+      else if (e.key === 'ArrowLeft') show(current - 1);
+      else if (e.key === 'ArrowRight') show(current + 1);
+    }
+
+    modal.querySelector('[data-modal-prev]').addEventListener('click', function () { show(current - 1); });
+    modal.querySelector('[data-modal-next]').addEventListener('click', function () { show(current + 1); });
+    modal.querySelectorAll('[data-modal-close]').forEach(function (el) {
+      el.addEventListener('click', closeModal);
+    });
+
+    // Mobile swipe
+    var startX = 0;
+    modal.addEventListener('touchstart', function (e) {
+      startX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    modal.addEventListener('touchend', function (e) {
+      var diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 50) show(diff > 0 ? current - 1 : current + 1);
+    }, { passive: true });
   })();
 </script>
 
