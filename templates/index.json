@@ -582,6 +582,22 @@
         "padding_bottom_mobile": 40
       }
     },
+    "before_after_gJMt3n": {
+      "type": "before-after",
+      "name": "Before After",
+      "settings": {
+        "background_color": "#ffffff",
+        "text_color": "#111111",
+        "before_text": "Before",
+        "before_image": "shopify://shop_images/Wire_Concealment_1061ae51-4a37-4286-8ff6-bba65d97cd72.png",
+        "after_text": "After",
+        "after_image": "shopify://shop_images/TV_Mounting_Installation_2b3f9114-a3f0-4206-8b2b-59b5f60f15ef.png",
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "padding_top_mobile": 30,
+        "padding_bottom_mobile": 30
+      }
+    },
     "faq_section_6aYUCC": {
       "type": "faq-section",
       "blocks": {
@@ -702,6 +718,7 @@
     "animated_brands_banner_njFzFb",
     "cta_section_HfLjrN",
     "service_areas_page_igmLn8",
+    "before_after_gJMt3n",
     "faq_section_6aYUCC",
     "cta_footer_bar_PwFMKi"
   ]
