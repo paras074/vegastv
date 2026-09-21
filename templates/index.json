@@ -589,7 +589,7 @@
         "background_color": "#ffffff",
         "text_color": "#111111",
         "before_text": "Before",
-        "before_image": "shopify://shop_images/Wire_Concealment_1061ae51-4a37-4286-8ff6-bba65d97cd72.png",
+        "before_image": "shopify://shop_images/after.png",
         "after_text": "After",
         "after_image": "shopify://shop_images/before.png",
         "padding_top": 60,
