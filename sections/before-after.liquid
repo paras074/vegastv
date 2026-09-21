@@ -1,0 +1,235 @@
+<div
+  class="before-after"
+  style="
+    --ba-bg: {{ section.settings.background_color }};
+    --ba-text: {{ section.settings.text_color }};
+    --ba-pt-desktop: {{ section.settings.padding_top }}px;
+    --ba-pb-desktop: {{ section.settings.padding_bottom }}px;
+    --ba-pt-mobile: {{ section.settings.padding_top_mobile }}px;
+    --ba-pb-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="before-after__container page-width">
+    <div class="before-after__grid">
+
+      <div class="before-after__item before-after__item--before">
+        <div class="before-after__media">
+          {%- if section.settings.before_image != blank -%}
+            {{
+              section.settings.before_image
+              | image_url: width: 1200
+              | image_tag:
+                loading: 'lazy',
+                sizes: '(min-width: 750px) 50vw, 100vw',
+                class: 'before-after__image',
+                alt: section.settings.before_text
+            }}
+          {%- else -%}
+            <div class="before-after__image before-after__image--placeholder">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.before_text != blank -%}
+            <span class="before-after__label">{{ section.settings.before_text }}</span>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="before-after__item before-after__item--after">
+        <div class="before-after__media">
+          {%- if section.settings.after_image != blank -%}
+            {{
+              section.settings.after_image
+              | image_url: width: 1200
+              | image_tag:
+                loading: 'lazy',
+                sizes: '(min-width: 750px) 50vw, 100vw',
+                class: 'before-after__image',
+                alt: section.settings.after_text
+            }}
+          {%- else -%}
+            <div class="before-after__image before-after__image--placeholder">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.after_text != blank -%}
+            <span class="before-after__label">{{ section.settings.after_text }}</span>
+          {%- endif -%}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .before-after {
+    background-color: var(--ba-bg);
+    color: var(--ba-text);
+    padding-top: var(--ba-pt-mobile);
+    padding-bottom: var(--ba-pb-mobile);
+  }
+  .before-after__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .before-after__media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+  .before-after__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .before-after__image--placeholder {
+    background: rgba(128, 128, 128, 0.15);
+  }
+  .before-after__image--placeholder svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .before-after__label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 6px 14px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 4px;
+  }
+  @media (min-width: 750px) {
+    .before-after {
+      padding-top: var(--ba-pt-desktop);
+      padding-bottom: var(--ba-pb-desktop);
+    }
+    .before-after__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Before After",
+  "tag": "section",
+  "class": "section-before-after",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#111111"
+    },
+    {
+      "type": "header",
+      "content": "Before"
+    },
+    {
+      "type": "text",
+      "id": "before_text",
+      "label": "Before text",
+      "default": "Before"
+    },
+    {
+      "type": "image_picker",
+      "id": "before_image",
+      "label": "Before image"
+    },
+    {
+      "type": "header",
+      "content": "After"
+    },
+    {
+      "type": "text",
+      "id": "after_text",
+      "label": "After text",
+      "default": "After"
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image",
+      "label": "After image"
+    },
+    {
+      "type": "header",
+      "content": "Padding (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Padding (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before After",
+      "settings": {
+        "before_text": "Before",
+        "after_text": "After"
+      }
+    }
+  ]
+}
+{% endschema %}
