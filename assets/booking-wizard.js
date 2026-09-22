@@ -1111,7 +1111,7 @@
       let html = `<div class="bw-step">${this.head(step)}
         <div class="bw-coverage-card">
           <div class="bw-coverage-hero">
-            <div style="font-weight:800;color:var(--bw-red);letter-spacing:.5px">⛨ TV REMOVAL COVERAGE</div>
+            <div style="font-weight:800;color:var(--bw-red);letter-spacing:.5px">⛨ REMOVAL COVERAGE</div>
             <div class="bw-free">100% FREE</div>
             <div style="font-size:13px;color:var(--bw-ink-soft)">We come back to your home anytime, even years from now, and take your item down.</div>
             <div class="bw-coverage-pay">
