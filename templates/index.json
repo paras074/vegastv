@@ -396,6 +396,7 @@
         "testimonial_DPh8hN",
         "testimonial_ydQ6Vc"
       ],
+      "disabled": true,
       "name": "Testimonials",
       "settings": {
         "heading": "What Customers in Las Vegas Say",
@@ -404,6 +405,17 @@
         "padding_bottom": 60,
         "padding_top_mobile": 36,
         "padding_bottom_mobile": 36
+      }
+    },
+    "custom_liquid_HyJaCb": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<script src=\"https://elfsightcdn.com/platform.js\" async></script> <div class=\"elfsight-app-f7cf1bea-b652-409c-805a-9e894f151602\" data-elfsight-app-lazy></div>",
+        "color_scheme": "",
+        "section_width": "page-width",
+        "padding-block-start": 40,
+        "padding-block-end": 40
       }
     },
     "animated_brands_banner_njFzFb": {
@@ -586,6 +598,9 @@
       "type": "before-after",
       "name": "Before After",
       "settings": {
+        "layout": "slider",
+        "direction": "horizontal",
+        "start_position": 50,
         "background_color": "#ffffff",
         "text_color": "#111111",
         "before_text": "Before",
@@ -715,6 +730,7 @@
     "home_types_cards_kwbr6D",
     "why_choose_us_F7dJej",
     "testimonials_tV64b6",
+    "custom_liquid_HyJaCb",
     "animated_brands_banner_njFzFb",
     "cta_section_HfLjrN",
     "service_areas_page_igmLn8",
