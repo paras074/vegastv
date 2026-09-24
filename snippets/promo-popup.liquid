@@ -1,0 +1,546 @@
+{%- liquid
+  assign promo_popup_disabled = false
+  if request.page_type == 'cart' or request.page_type == 'checkout'
+    assign promo_popup_disabled = true
+  elsif request.path == '/pages/book'
+    assign promo_popup_disabled = true
+  endif
+-%}
+
+{%- unless promo_popup_disabled -%}
+  <div id="promo-popup" class="pp-overlay" aria-hidden="true">
+    <div class="pp-modal" role="dialog" aria-modal="true" aria-labelledby="pp-title" tabindex="-1">
+      <button type="button" class="pp-close" id="pp-close" aria-label="Close offer popup">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+
+      <div class="pp-media" aria-hidden="true"></div>
+      <div class="pp-shade" aria-hidden="true"></div>
+
+      <div class="pp-content">
+        <span class="pp-eyebrow">Exclusive Online Offer</span>
+
+        <h2 id="pp-title" class="pp-title">
+          <span class="pp-title-save">SAVE</span>
+          <span class="pp-title-amount">$10</span>
+        </h2>
+
+        <h3 class="pp-subtitle">Book Online &amp; Save $10</h3>
+        <p class="pp-copy">Book your TV mounting service online and automatically save $10.</p>
+
+        <a href="/pages/book" id="pp-cta" class="pp-cta">BOOK NOW &amp; SAVE $10</a>
+        <p class="pp-note">Online bookings only.</p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .pp-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    }
+
+    .pp-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .pp-modal {
+      position: relative;
+      width: min(780px, 94vw);
+      height: clamp(460px, 62vh, 560px);
+      border-radius: 22px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.06),
+        0 30px 60px -12px rgba(0, 0, 0, 0.35);
+      transform: translateY(24px) scale(0.96);
+      opacity: 0;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      will-change: transform, opacity;
+    }
+
+    .pp-overlay.is-open .pp-modal {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .pp-overlay.is-closing {
+      opacity: 0;
+      visibility: visible;
+      transition: opacity 0.25s ease-in, visibility 0.25s ease-in;
+    }
+
+    .pp-overlay.is-closing .pp-modal {
+      transform: translateY(12px) scale(0.97);
+      opacity: 0;
+      transition: transform 0.25s ease-in, opacity 0.25s ease-in;
+    }
+
+    .pp-media {
+      position: absolute;
+      inset: 0;
+      background-image: url('{{ 'popup-bg.webp' | asset_url }}');
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+    }
+
+    .pp-shade {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 58%;
+      pointer-events: none;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.97) 0%,
+        rgba(255, 255, 255, 0.92) 48%,
+        rgba(255, 255, 255, 0) 100%
+      );
+    }
+
+    .pp-content {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 52%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 36px 34px;
+      box-sizing: border-box;
+      color: #1f1f1f;
+      font-family: var(--font-body--family, Jost, sans-serif);
+      text-align: left;
+      overflow-y: auto;
+    }
+
+    .pp-eyebrow {
+      display: inline-block;
+      font-family: var(--font-subheading--family, Montserrat, sans-serif);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #b10000;
+      margin: 0 0 16px;
+    }
+
+    .pp-title {
+      margin: 0 0 12px;
+      font-family: var(--font-heading--family, Montserrat, sans-serif);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-transform: none;
+      line-height: 0.92;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .pp-title-save {
+      font-size: clamp(2rem, 5.5vw, 2.6rem);
+      color: #1f1f1f;
+    }
+
+    .pp-title-amount {
+      font-size: clamp(4rem, 10vw, 5.4rem);
+      line-height: 1;
+      color: #b10000;
+      margin-top: 2px;
+    }
+
+    .pp-subtitle {
+      margin: 0 0 10px;
+      font-family: var(--font-heading--family, Montserrat, sans-serif);
+      font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+      font-weight: 600;
+      color: #2b2b2b;
+    }
+
+    .pp-copy {
+      margin: 0 0 24px;
+      font-size: clamp(0.9rem, 2vw, 1rem);
+      line-height: 1.55;
+      color: #555555;
+      max-width: 320px;
+    }
+
+    .pp-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 54px;
+      padding: 14px 30px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #b10000, #900000 55%, #b10000);
+      color: #fff;
+      font-family: var(--font-body--family, Jost, sans-serif);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      text-decoration: none;
+      box-shadow: 0 10px 22px -6px rgba(144, 0, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, background 0.25s ease-out;
+    }
+
+    .pp-cta:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 16px 30px -8px rgba(144, 0, 0, 0.55);
+      background: linear-gradient(135deg, #c20000, #9c0000 55%, #c20000);
+    }
+
+    .pp-cta:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .pp-cta:focus-visible {
+      outline: 3px solid #1f1f1f;
+      outline-offset: 3px;
+    }
+
+    .pp-note {
+      margin: 16px 0 0;
+      font-size: 0.76rem;
+      letter-spacing: 0.04em;
+      color: #878787;
+    }
+
+    .pp-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 5;
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.96);
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .pp-close:hover {
+      background: #ffffff;
+      transform: scale(1.06);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+    }
+
+    .pp-close:focus-visible {
+      outline: 3px solid #1a1a1a;
+      outline-offset: 2px;
+    }
+
+    .pp-close svg {
+      display: block;
+    }
+
+    @media (max-width: 767.98px) {
+      .pp-overlay {
+        padding: 10px;
+      }
+
+      .pp-modal {
+        display: flex;
+        flex-direction: column;
+        width: min(92vw, 420px);
+        height: auto;
+        max-height: 94vh;
+        border-radius: 18px;
+      }
+
+      .pp-media {
+        position: relative;
+        inset: auto;
+        flex: 0 0 auto;
+        height: clamp(132px, 38vw, 168px);
+        margin: 0;
+        background-position: center 18%;
+      }
+
+      .pp-shade {
+        display: none;
+      }
+
+      .pp-content {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+        background: #fff;
+        padding: 18px 20px 22px;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .pp-eyebrow {
+        display: block;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        margin: 0 0 10px;
+      }
+
+      .pp-title {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 8px;
+        margin: 0 0 8px;
+      }
+
+      .pp-title-save {
+        font-size: 1.7rem;
+      }
+
+      .pp-title-amount {
+        font-size: 2.2rem;
+        line-height: 1.05;
+      }
+
+      .pp-subtitle {
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0 0 10px;
+      }
+
+      .pp-copy {
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin: 0 auto 16px;
+        max-width: 290px;
+      }
+
+      .pp-cta {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 22px;
+        font-size: 0.9rem;
+        margin: 0 0 12px;
+      }
+
+      .pp-note {
+        margin: 0;
+        font-size: 0.7rem;
+      }
+
+      .pp-close {
+        top: 12px;
+        right: 12px;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .pp-overlay {
+        padding: 8px;
+      }
+
+      .pp-modal {
+        max-height: 95vh;
+      }
+
+      .pp-content {
+        padding: 14px 16px 18px;
+      }
+
+      .pp-eyebrow {
+        font-size: 0.68rem;
+        margin-bottom: 8px;
+      }
+
+      .pp-title-save {
+        font-size: 1.6rem;
+      }
+
+      .pp-title-amount {
+        font-size: 2.05rem;
+      }
+
+      .pp-subtitle {
+        font-size: 0.95rem;
+      }
+
+      .pp-copy {
+        font-size: 0.84rem;
+        margin-bottom: 20px;
+      }
+
+      .pp-cta {
+        font-size: 0.86rem;
+        padding: 12px 18px;
+      }
+    }
+
+    @media (max-height: 560px) and (min-width: 768px) {
+      .pp-modal {
+        height: 500px;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = 'vstm_promo_popup_expires';
+      var SUPPRESS_MS = 24 * 60 * 60 * 1000;
+      var DELAY = 4000;
+
+      var overlay = document.getElementById('promo-popup');
+      var modal = overlay ? overlay.querySelector('.pp-modal') : null;
+      var closeBtn = document.getElementById('pp-close');
+      var cta = document.getElementById('pp-cta');
+
+      if (!overlay || !closeBtn || !cta) return;
+
+      var previousOverflow = document.body.style.overflow;
+      var opened = false;
+      var closing = false;
+
+      function isSuppressed() {
+        try {
+          var expiry = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+          return !isNaN(expiry) && Date.now() < expiry;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function suppress() {
+        try {
+          localStorage.setItem(STORAGE_KEY, String(Date.now() + SUPPRESS_MS));
+        } catch (e) {}
+      }
+
+      function isExcludedPath() {
+        var p = window.location.pathname;
+        return (
+          p === '/cart' ||
+          p === '/checkout' ||
+          p === '/pages/book' ||
+          p.indexOf('/cart/') === 0 ||
+          p.indexOf('/checkout/') === 0 ||
+          p.indexOf('/pages/book') !== -1
+        );
+      }
+
+      function getFocusable() {
+        if (!modal) return [];
+        return Array.prototype.slice.call(
+          modal.querySelectorAll('a[href], button, [tabindex]:not([tabindex="-1"])')
+        ).filter(function (el) {
+          return !el.hasAttribute('disabled') && el.offsetParent !== null;
+        });
+      }
+
+      function trapFocus(e) {
+        if (e.key !== 'Tab') return;
+        var items = getFocusable();
+        if (!items.length) return;
+        var first = items[0];
+        var last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+
+      function openPopup() {
+        if (opened || closing) return;
+        opened = true;
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', trapFocus);
+        if (closeBtn.focus) {
+          try {
+            closeBtn.focus();
+          } catch (e) {}
+        }
+      }
+
+      function closePopup(after) {
+        if (closing) return;
+        closing = true;
+        overlay.classList.remove('is-open');
+        overlay.classList.add('is-closing');
+        document.body.style.overflow = previousOverflow;
+        document.removeEventListener('keydown', trapFocus);
+        setTimeout(function () {
+          overlay.classList.remove('is-closing');
+          overlay.setAttribute('aria-hidden', 'true');
+          closing = false;
+          opened = false;
+          if (after) after();
+        }, 280);
+      }
+
+      function maybeShow() {
+        if (isSuppressed() || isExcludedPath()) return;
+        setTimeout(function () {
+          if (!isSuppressed()) openPopup();
+        }, DELAY);
+      }
+
+      cta.addEventListener('click', function (e) {
+        e.preventDefault();
+        suppress();
+        closePopup(function () {
+          window.location.href = '/pages/book';
+        });
+      });
+
+      closeBtn.addEventListener('click', function () {
+        suppress();
+        closePopup();
+      });
+
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+          suppress();
+          closePopup();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && opened) {
+          suppress();
+          closePopup();
+        }
+      });
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', maybeShow);
+      } else {
+        maybeShow();
+      }
+    })();
+  </script>
+{%- endunless -%}
