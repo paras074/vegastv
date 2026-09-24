@@ -88,6 +88,12 @@
 </div>
 
 <style>
+  /* Review page stays focused: hide the footer-area contact form and discount banner */
+  footer .shopify-section:has(shopify-forms-embed),
+  footer .shopify-section:has(.community-appreciation) {
+    display: none !important;
+  }
+
   .vtm-review {
     padding: var(--pt-desktop) 16px var(--pb-desktop);
     background:

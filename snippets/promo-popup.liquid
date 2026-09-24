@@ -4,6 +4,8 @@
     assign promo_popup_disabled = true
   elsif request.path == '/pages/book'
     assign promo_popup_disabled = true
+  elsif template.suffix == 'review'
+    assign promo_popup_disabled = true
   endif
 -%}
 
