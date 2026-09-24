@@ -1,0 +1,54 @@
+{% comment %}
+  Desktop mega menu panels for the Residential / Commercial header links.
+  Each panel is attached by vtm-premium.js to the header link whose href matches data-for.
+{% endcomment %}
+
+{%- liquid
+  assign panels = 'residential|/pages/residential-services|Residential Services|Book online in minutes – upfront pricing, same-day availability.~commercial|/pages/commercial-services|Commercial Services|Free on-site quotes for offices, bars, casinos, retail and more.' | split: '~'
+-%}
+
+{%- for panel in panels -%}
+  {%- liquid
+    assign parts = panel | split: '|'
+    assign handle = parts[0]
+    assign page_url = parts[1]
+    assign title = parts[2]
+    assign tagline = parts[3]
+    assign panel_collection = collections[handle]
+  -%}
+  {%- if panel_collection != blank and panel_collection.products_count > 0 -%}
+    <div class="vtm-mega" data-for="{{ page_url }}" id="vtm-mega-{{ handle }}" hidden>
+      <div class="vtm-mega__inner page-width">
+        <div class="vtm-mega__intro">
+          <p class="vtm-mega__eyebrow">{{ handle | capitalize }}</p>
+          <p class="vtm-mega__title">{{ title }}</p>
+          <p class="vtm-mega__tagline">{{ tagline }}</p>
+          <div class="vtm-mega__actions">
+            {%- if handle == 'commercial' -%}
+              <a href="/pages/contact" class="btn-primary"><span>Get a Free Quote</span></a>
+            {%- else -%}
+              <a href="/pages/book" class="btn-primary"><span>Book Now</span></a>
+            {%- endif -%}
+            <a href="{{ page_url }}" class="vtm-mega__all">View all services →</a>
+          </div>
+        </div>
+        <ul class="vtm-mega__grid" role="list">
+          {%- for product in panel_collection.products limit: 8 -%}
+            <li>
+              <a href="{{ product.url }}" class="vtm-mega__item">
+                {%- if product.featured_image != blank -%}
+                  {{
+                    product.featured_image
+                    | image_url: width: 160, height: 160, crop: 'center'
+                    | image_tag: loading: 'lazy', class: 'vtm-mega__img', alt: ''
+                  }}
+                {%- endif -%}
+                <span class="vtm-mega__name">{{ product.title }}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endfor -%}

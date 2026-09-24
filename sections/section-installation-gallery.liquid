@@ -149,6 +149,29 @@
   .installation-gallery__modal[hidden] {
     display: none;
   }
+  .installation-gallery__modal {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .installation-gallery__modal.is-open {
+    opacity: 1;
+  }
+  .installation-gallery__modal .installation-gallery__modal-figure {
+    transform: scale(0.94);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .installation-gallery__modal.is-open .installation-gallery__modal-figure {
+    transform: none;
+  }
+  .installation-gallery__modal-img {
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .installation-gallery__modal,
+    .installation-gallery__modal .installation-gallery__modal-figure {
+      transition: none;
+    }
+  }
   .installation-gallery__modal-backdrop {
     position: absolute;
     inset: 0;
@@ -285,14 +308,45 @@
       btn.addEventListener('click', function () { openModal(i); });
     });
 
-    function show(index) {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var switching = null;
+
+    function applyItem(item) {
+      imgEl.src = item.src;
+      imgEl.alt = item.alt;
+    }
+
+    function show(index, direction) {
       if (!items.length) return;
       current = (index + items.length) % items.length;
       var item = items[current];
-      imgEl.src = item.src;
-      imgEl.alt = item.alt;
       captionEl.textContent = item.caption;
       counterEl.textContent = (current + 1) + ' / ' + items.length;
+
+      if (!direction || reduceMotion || !imgEl.animate) {
+        applyItem(item);
+      } else {
+        // Slide the current image out, swap once the next one is decoded, slide it in
+        var token = {};
+        switching = token;
+        var out = imgEl.animate(
+          [{ transform: 'none', opacity: 1 }, { transform: 'translateX(' + (-direction * 60) + 'px)', opacity: 0 }],
+          { duration: 180, easing: 'ease-in', fill: 'forwards' }
+        );
+        out.onfinish = function () {
+          if (switching !== token) return;
+          applyItem(item);
+          var ready = imgEl.decode ? imgEl.decode().catch(function () {}) : Promise.resolve();
+          ready.then(function () {
+            if (switching !== token) return;
+            out.cancel();
+            imgEl.animate(
+              [{ transform: 'translateX(' + (direction * 60) + 'px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+              { duration: 320, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+            );
+          });
+        };
+      }
 
       // Aage-peeche wali image preload
       [current + 1, current - 1].forEach(function (n) {
@@ -301,9 +355,14 @@
       });
     }
 
+    var closeTimer = null;
+
     function openModal(index) {
       lastFocus = document.activeElement;
+      clearTimeout(closeTimer);
       modal.hidden = false;
+      void modal.offsetWidth; // commit the closed state so the fade/zoom-in transition runs
+      modal.classList.add('is-open');
       document.body.classList.add('installation-gallery-lock');
       show(index);
       modal.querySelector('.installation-gallery__modal-close').focus();
@@ -311,8 +370,11 @@
     }
 
     function closeModal() {
-      modal.hidden = true;
-      imgEl.src = '';
+      modal.classList.remove('is-open');
+      closeTimer = setTimeout(function () {
+        modal.hidden = true;
+        imgEl.src = '';
+      }, reduceMotion ? 0 : 300);
       document.body.classList.remove('installation-gallery-lock');
       document.removeEventListener('keydown', onKey);
       if (lastFocus && lastFocus.focus) lastFocus.focus();
@@ -320,12 +382,12 @@
 
     function onKey(e) {
       if (e.key === 'Escape') closeModal();
-      else if (e.key === 'ArrowLeft') show(current - 1);
-      else if (e.key === 'ArrowRight') show(current + 1);
+      else if (e.key === 'ArrowLeft') show(current - 1, -1);
+      else if (e.key === 'ArrowRight') show(current + 1, 1);
     }
 
-    modal.querySelector('[data-modal-prev]').addEventListener('click', function () { show(current - 1); });
-    modal.querySelector('[data-modal-next]').addEventListener('click', function () { show(current + 1); });
+    modal.querySelector('[data-modal-prev]').addEventListener('click', function () { show(current - 1, -1); });
+    modal.querySelector('[data-modal-next]').addEventListener('click', function () { show(current + 1, 1); });
     modal.querySelectorAll('[data-modal-close]').forEach(function (el) {
       el.addEventListener('click', closeModal);
     });
@@ -337,7 +399,7 @@
     }, { passive: true });
     modal.addEventListener('touchend', function (e) {
       var diff = e.changedTouches[0].clientX - startX;
-      if (Math.abs(diff) > 50) show(diff > 0 ? current - 1 : current + 1);
+      if (Math.abs(diff) > 50) show(diff > 0 ? current - 1 : current + 1, diff > 0 ? -1 : 1);
     }, { passive: true });
   })();
 </script>

@@ -54,6 +54,11 @@
                   </a>
                 {%- endif -%}
                 <div class="card-body-srvice">
+                  {%- if product.tags contains 'commercial' or product.tags contains 'Quote' -%}
+                    <span class="vtm-card-chip vtm-card-chip--quote">Free Quote</span>
+                  {%- else -%}
+                    <span class="vtm-card-chip">Book Online</span>
+                  {%- endif -%}
                   <h4 class="services-section__title">
                     <a href="{{ product.url }}">
                       {{ product.title }}

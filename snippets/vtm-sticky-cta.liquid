@@ -1,0 +1,44 @@
+{% comment %}
+  Desktop sticky booking bar for service and service-area pages.
+  Slides up after the hero, hides again over the footer (see vtm-premium.js).
+
+  Accepts:
+  - title {string}
+  - image {image} optional thumbnail
+  - quote {boolean} use "Get a Free Quote" instead of "Book Now"
+{% endcomment %}
+
+{%- liquid
+  if quote
+    assign primary_label = 'Get a Free Quote'
+    assign primary_link = '/pages/contact'
+  else
+    assign primary_label = 'Book Now'
+    assign primary_link = '/pages/book'
+  endif
+-%}
+
+<div class="vtm-sticky-cta" aria-hidden="true" inert>
+  <div class="vtm-sticky-cta__inner page-width">
+    <div class="vtm-sticky-cta__info">
+      {%- if image != blank -%}
+        {{ image | image_url: width: 120 | image_tag: loading: 'lazy', class: 'vtm-sticky-cta__thumb', alt: '' }}
+      {%- endif -%}
+      <div class="vtm-sticky-cta__text">
+        <strong>{{ title }}</strong>
+        <span>
+          <span class="vtm-sticky-cta__stars" aria-hidden="true">★★★★★</span>
+          Licensed &amp; Insured · 5-Year Warranty · Same-Day Service
+        </span>
+      </div>
+    </div>
+    <div class="vtm-sticky-cta__actions">
+      <a href="#" class="btn-secondary js-connect-popup vtm-sticky-cta__call">
+        <span>Call or Text</span>
+      </a>
+      <a href="{{ primary_link }}" class="btn-primary">
+        <span>{{ primary_label }}</span>
+      </a>
+    </div>
+  </div>
+</div>

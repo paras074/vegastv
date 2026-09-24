@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "main": {
+      "type": "review-request",
+      "settings": {
+        "heading": "How did we do?",
+        "text": "<p>Thanks for choosing Vegas TV Mounting! Your review takes less than a minute and helps other Las Vegas homeowners find a team they can trust.</p>",
+        "google_review_url": "",
+        "button_label": "Leave a Google Review",
+        "show_steps": true,
+        "help_text": "Questions about your installation?",
+        "help_link": "/pages/contact",
+        "help_link_label": "Contact us",
+        "padding_top": 64,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": ["main"]
+}

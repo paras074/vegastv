@@ -32,6 +32,11 @@
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
 
+    {%- unless template.suffix == 'booking-wizard' -%}
+      {{ 'vtm-premium.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'vtm-premium.js' | asset_url }}" defer></script>
+    {%- endunless -%}
+
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
     {% endif %}
@@ -47,6 +52,10 @@
     <div id="header-group">
       {% sections 'header-group' %}
     </div>
+
+    {%- unless template.suffix == 'booking-wizard' -%}
+      {%- render 'vtm-mega-menu' -%}
+    {%- endunless -%}
 
     <script>
       // Inline header height and menu style calculations to prevent layout shift
@@ -152,6 +161,20 @@
     }
   });
 </script>
+
+    {%- liquid
+      assign area_templates = 'boulder-city,centennial-hills,enterprise,green-valley,henderson,inspirada,mountains-edge,north-las-vegas,paradise,silverado-ranch,southern-highlands,spring-valley,summerlin,winchester' | split: ','
+      if template.name == 'product'
+        assign is_quote = false
+        if product.tags contains 'commercial' or product.tags contains 'Quote'
+          assign is_quote = true
+        endif
+        render 'vtm-sticky-cta', title: product.title, image: product.featured_image, quote: is_quote
+      elsif template.name == 'page' and area_templates contains template.suffix
+        assign area_title = 'TV Mounting in ' | append: page.title
+        render 'vtm-sticky-cta', title: area_title
+      endif
+    -%}
 
     {%- render 'promo-popup' -%}
   </body>

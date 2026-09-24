@@ -27,8 +27,8 @@
             "form_alignment": "center",
             "padding_top": 25,
             "padding_bottom": 24,
-            "padding_right": 0,
-            "padding_left": 0
+            "padding_right": 16,
+            "padding_left": 16
           }
         }
       },

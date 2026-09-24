@@ -56,6 +56,18 @@
           </div>
         {%- endif -%}
 
+        {%- if section.settings.trust_points != blank -%}
+          {%- assign trust_points = section.settings.trust_points | split: ',' -%}
+          <ul class="vtm-cta-trust" role="list">
+            {%- for point in trust_points -%}
+              <li>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                {{ point | strip }}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
   </div>
 </div>
 
@@ -64,6 +76,13 @@
   "name": "CTA section",
   "tag": "section",
   "settings": [
+    {
+      "type": "text",
+      "id": "trust_points",
+      "label": "Trust points under buttons",
+      "info": "Comma separated. Leave blank to hide.",
+      "default": "Licensed & Insured, 5-Year Warranty, Same-Day Service, Upfront Pricing"
+    },
     {
       "type": "header",
       "content": "Color"

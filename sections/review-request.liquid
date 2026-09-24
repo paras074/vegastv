@@ -1,0 +1,366 @@
+{% comment %}
+  Review request landing page
+  - Short link to send customers after a completed job (SMS, email, QR card)
+  - One big button straight to the Google "write a review" form
+  - Every customer sees the same options (no review gating)
+{% endcomment %}
+
+{%- liquid
+  assign google_url = section.settings.google_review_url
+  if google_url == blank
+    assign google_url = '#'
+  endif
+-%}
+
+<div
+  class="vtm-review color-{{ section.settings.color_scheme }}"
+  style="
+    --pt-desktop: {{ section.settings.padding_top }}px;
+    --pb-desktop: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="vtm-review__card">
+    {%- if section.settings.logo != blank -%}
+      {{
+        section.settings.logo
+        | image_url: width: 240
+        | image_tag: loading: 'eager', class: 'vtm-review__logo', alt: shop.name
+      }}
+    {%- endif -%}
+
+    <div class="vtm-review__stars" aria-hidden="true">
+      {%- for i in (1..5) -%}
+        <svg viewBox="0 0 24 24" style="--d: {{ forloop.index0 }}"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.heading != blank -%}
+      <h1 class="vtm-review__heading">{{ section.settings.heading }}</h1>
+    {%- endif -%}
+
+    {%- if section.settings.text != blank -%}
+      <div class="vtm-review__text">{{ section.settings.text }}</div>
+    {%- endif -%}
+
+    <a
+      href="{{ google_url }}"
+      class="vtm-review__google btn-primary"
+      target="_blank"
+      rel="noopener"
+    >
+      <span class="vtm-review__g" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="22" height="22"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+      </span>
+      <span>{{ section.settings.button_label }}</span>
+    </a>
+
+    {%- if section.settings.show_steps -%}
+      <ol class="vtm-review__steps">
+        <li><span>1</span>Tap the button above</li>
+        <li><span>2</span>Choose your star rating</li>
+        <li><span>3</span>Share a few words about your install</li>
+      </ol>
+    {%- endif -%}
+
+    {%- if section.settings.yelp_url != blank or section.settings.facebook_url != blank -%}
+      <div class="vtm-review__alt">
+        <p>Also on</p>
+        <div class="vtm-review__alt-links">
+          {%- if section.settings.yelp_url != blank -%}
+            <a href="{{ section.settings.yelp_url }}" target="_blank" rel="noopener">Yelp</a>
+          {%- endif -%}
+          {%- if section.settings.facebook_url != blank -%}
+            <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener">Facebook</a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.help_text != blank -%}
+      <p class="vtm-review__help">
+        {{ section.settings.help_text }}
+        {%- if section.settings.help_link != blank %}
+          <a href="{{ section.settings.help_link }}">{{ section.settings.help_link_label }}</a>
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .vtm-review {
+    padding: var(--pt-desktop) 16px var(--pb-desktop);
+    background:
+      radial-gradient(900px 400px at 50% -10%, rgba(224, 43, 43, 0.12), transparent 70%),
+      linear-gradient(180deg, #fff, #f7f7f7);
+  }
+
+  .vtm-review__card {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 44px 32px 36px;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 30px 60px -30px rgba(17, 17, 17, 0.25);
+    text-align: center;
+  }
+
+  .vtm-review__logo {
+    width: 120px;
+    height: auto;
+    margin: 0 auto 18px;
+    display: block;
+  }
+
+  .vtm-review__stars {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+
+  .vtm-review__stars svg {
+    width: 34px;
+    height: 34px;
+    fill: #fbbc04;
+    animation: vtm-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: calc(var(--d) * 90ms + 150ms);
+  }
+
+  @keyframes vtm-star-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.3) rotate(-30deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .vtm-review__heading {
+    margin: 0 0 10px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .vtm-review__text {
+    color: #444;
+    font-size: 16px;
+    margin-bottom: 26px;
+  }
+
+  .vtm-review__text p {
+    margin: 0;
+  }
+
+  .vtm-review__google.btn-primary {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 56px;
+    padding: 10px 24px 10px 10px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .vtm-review__g {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .vtm-review__steps {
+    list-style: none;
+    padding: 0;
+    margin: 26px 0 0;
+    display: grid;
+    gap: 10px;
+    text-align: left;
+  }
+
+  .vtm-review__steps li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    color: #333;
+  }
+
+  .vtm-review__steps span {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(224, 43, 43, 0.1);
+    color: #ac0000;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .vtm-review__alt {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .vtm-review__alt p {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .vtm-review__alt-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .vtm-review__alt-links a {
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #111;
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color 0.3s ease, color 0.3s ease;
+  }
+
+  .vtm-review__alt-links a:hover {
+    border-color: #ac0000;
+    color: #ac0000;
+  }
+
+  .vtm-review__help {
+    margin: 22px 0 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .vtm-review__help a {
+    color: #ac0000;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .vtm-review {
+      padding-top: 32px;
+      padding-bottom: 48px;
+    }
+
+    .vtm-review__card {
+      padding: 34px 20px 28px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Review request",
+  "tag": "section",
+  "class": "section-review-request",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How did we do?"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Thanks for choosing Vegas TV Mounting! Your review takes less than a minute and helps other Las Vegas homeowners find a team they can trust.</p>"
+    },
+    {
+      "type": "url",
+      "id": "google_review_url",
+      "label": "Google review link",
+      "info": "Google Business Profile → Ask for reviews → copy the link (g.page/r/…/review)"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Leave a Google Review"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_steps",
+      "label": "Show 3-step guide",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "yelp_url",
+      "label": "Yelp review link"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook review link"
+    },
+    {
+      "type": "text",
+      "id": "help_text",
+      "label": "Help text",
+      "default": "Questions about your installation?"
+    },
+    {
+      "type": "url",
+      "id": "help_link",
+      "label": "Help link"
+    },
+    {
+      "type": "text",
+      "id": "help_link_label",
+      "label": "Help link label",
+      "default": "Contact us"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Review request"
+    }
+  ]
+}
+{% endschema %}
