@@ -1,0 +1,19 @@
+{% comment %}
+  Frosted "live" badge floating over a hero image.
+
+  Accepts:
+  - badge {string} main line (renders nothing when blank)
+  - sub {string} optional second line
+{% endcomment %}
+
+{%- if badge != blank -%}
+  <div class="vtm-hero-float">
+    <span class="vtm-hero-float__dot" aria-hidden="true"></span>
+    <span class="vtm-hero-float__text">
+      <strong>{{ badge }}</strong>
+      {%- if sub != blank -%}
+        <small>{{ sub }}</small>
+      {%- endif -%}
+    </span>
+  </div>
+{%- endif -%}

@@ -1,3 +1,12 @@
+{%- liquid
+  if section.index == 1
+    assign vtm_hero_loading = 'eager'
+    assign vtm_hero_priority = 'high'
+  else
+    assign vtm_hero_loading = 'lazy'
+    assign vtm_hero_priority = 'auto'
+  endif
+-%}
 <style>
     .hero-section {
   position: relative;
@@ -46,8 +55,9 @@
           {{
             section.settings.image
             | image_url: width: 1500
-            | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 50vw, 100vw', class: 'hero-section__media-img'
+            | image_tag: loading: vtm_hero_loading, fetchpriority: vtm_hero_priority, sizes: '(min-width: 990px) 50vw, 100vw', class: 'hero-section__media-img'
           }}
+          {%- render 'vtm-hero-float', badge: section.settings.media_badge, sub: section.settings.media_badge_sub -%}
         </div>
       {%- endif -%}
 
@@ -275,6 +285,23 @@
       "unit": "px",
       "label": "Padding bottom (mobile)",
       "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Image badge"
+    },
+    {
+      "type": "text",
+      "id": "media_badge",
+      "label": "Floating badge on image",
+      "default": "Same-Day Service Available",
+      "info": "Leave blank to hide"
+    },
+    {
+      "type": "text",
+      "id": "media_badge_sub",
+      "label": "Badge sub-text",
+      "default": "Book online in 60 seconds"
     }
   ],
   "blocks": [

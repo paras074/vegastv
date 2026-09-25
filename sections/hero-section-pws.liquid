@@ -58,17 +58,7 @@
             | image_url: width: 1500
             | image_tag: loading: hero_loading, fetchpriority: hero_priority, sizes: '(min-width: 990px) 50vw, 100vw', class: 'hero-section__media-img'
           }}
-          {%- if section.settings.media_badge != blank -%}
-            <div class="vtm-hero-float">
-              <span class="vtm-hero-float__dot" aria-hidden="true"></span>
-              <span class="vtm-hero-float__text">
-                <strong>{{ section.settings.media_badge }}</strong>
-                {%- if section.settings.media_badge_sub != blank -%}
-                  <small>{{ section.settings.media_badge_sub }}</small>
-                {%- endif -%}
-              </span>
-            </div>
-          {%- endif -%}
+          {%- render 'vtm-hero-float', badge: section.settings.media_badge, sub: section.settings.media_badge_sub -%}
         </div>
       {%- endif -%}
 

@@ -169,7 +169,7 @@
             "icon": "quote",
             "label": "Book Now",
             "phone": "",
-            "link": ""
+            "link": "/pages/book"
           }
         }
       },

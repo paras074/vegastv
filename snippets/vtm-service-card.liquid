@@ -1,0 +1,31 @@
+{% comment %}
+  Shared pieces for service cards, so every card on the site is consistent.
+
+  Accepts:
+  - product {product}
+  - part {string} 'chip' (Book Online / Free Quote pill) or 'actions' (primary + Call or Text buttons)
+{% endcomment %}
+
+{%- liquid
+  assign is_quote = false
+  if product.tags contains 'commercial' or product.tags contains 'Quote'
+    assign is_quote = true
+  endif
+-%}
+
+{%- if part == 'chip' -%}
+  {%- if is_quote -%}
+    <span class="vtm-card-chip vtm-card-chip--quote">Free Quote</span>
+  {%- else -%}
+    <span class="vtm-card-chip">Book Online</span>
+  {%- endif -%}
+{%- else -%}
+  <div class="vtm-card-actions">
+    {%- if is_quote -%}
+      <a href="/pages/contact" class="vtm-card-btn vtm-card-btn--primary">Get a Free Quote</a>
+    {%- else -%}
+      <a href="{{ product.url }}" class="vtm-card-btn vtm-card-btn--primary">Book Now</a>
+    {%- endif -%}
+    <a href="#" class="vtm-card-btn vtm-card-btn--secondary js-connect-popup">Call or Text</a>
+  </div>
+{%- endif -%}

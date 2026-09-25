@@ -95,7 +95,7 @@
         sub: 'Tap + to add each TV you want mounted.',
         validate: { mode: 'min', value: 1 },
         options: [
-          { id: 's', name: '31" or smaller (Small)', price: 69 },
+          { id: 's', name: '31" or smaller (Small)', price: 59 },
           { id: 'm', name: '32"–60" (Standard)', price: 119 },
           { id: 'l', name: '61"–80" (Large)', price: 139 },
           { id: 'xl', name: '81"+ (Extra Large)', price: 249 }

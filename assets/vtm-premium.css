@@ -279,7 +279,9 @@ body.vtm-scrolled #header-component {
     .related-services__heading,
     .tv-projects__heading,
     .portfolio-tabs__heading,
-    .trust-badges__heading
+    .trust-badges__heading,
+    .hts-heading,
+    .wi-heading
   )::after {
   content: '';
   display: block;
@@ -311,7 +313,9 @@ body.vtm-scrolled #header-component {
     .process-steps__card,
     .tv-projects__card,
     .wi-card,
-    .vtm-service-card
+    .vtm-service-card,
+    .hts-item,
+    .bts-card
   ) {
   transition: transform 0.45s var(--vtm-ease), box-shadow 0.45s var(--vtm-ease), border-color 0.3s ease,
     opacity 0.8s var(--vtm-ease) !important;
@@ -330,7 +334,8 @@ body.vtm-scrolled #header-component {
       .process-steps__card,
       .tv-projects__card,
       .wi-card,
-      .vtm-service-card
+      .vtm-service-card,
+      .hts-item
     ):hover {
     transform: translateY(-6px);
     box-shadow: var(--vtm-shadow-lg);
@@ -1650,5 +1655,123 @@ a.cta-bar__phone:active {
     min-height: 48px;
     width: 100%;
     padding-inline: 12px !important;
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Service-page hero (service-location-hero) gets the same intro as the main hero
+---------------------------------------------------------------- */
+.service-hero-section__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.service-hero-section__media-img {
+  animation: vtm-hero-zoom 1.6s var(--vtm-ease) both;
+}
+
+.service-hero-section__content > * {
+  animation: vtm-rise 0.9s var(--vtm-ease) both;
+}
+
+.service-hero-section__content > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+.service-hero-section__content > :nth-child(3) {
+  animation-delay: 0.16s;
+}
+.service-hero-section__content > :nth-child(4) {
+  animation-delay: 0.24s;
+}
+.service-hero-section__content > :nth-child(n + 5) {
+  animation-delay: 0.32s;
+}
+
+.service-hero-section__trust-item {
+  transition: transform 0.3s var(--vtm-ease);
+}
+
+.service-hero-section__trust-item:hover {
+  transform: translateY(-2px);
+}
+
+/* icon tiles on service pages */
+:is(.hts-icon, .wi-icon, .git-method-icon) {
+  transition: background-color 0.35s ease, color 0.35s ease, transform 0.5s var(--vtm-ease);
+}
+
+:is(.hts-item, .wi-card, .git-method-card):hover :is(.hts-icon, .wi-icon, .git-method-icon) {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+/* ---------------------------------------------------------------
+   Service card buttons (Book Now / Get a Free Quote + Call or Text)
+---------------------------------------------------------------- */
+.vtm-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.vtm-card-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.3s var(--vtm-ease), box-shadow 0.3s var(--vtm-ease), background-color 0.25s ease,
+    color 0.25s ease, border-color 0.25s ease;
+}
+
+.vtm-card-btn--primary {
+  color: #fff !important;
+  background: linear-gradient(135deg, #b10000, #900000);
+  border: 1.5px solid #900000;
+  box-shadow: 0 6px 14px -8px rgba(172, 0, 0, 0.7);
+}
+
+.vtm-card-btn--secondary {
+  color: #900000 !important;
+  background: #fff;
+  border: 1.5px solid #900000;
+}
+
+.vtm-card-btn:hover {
+  transform: translateY(-2px);
+}
+
+.vtm-card-btn--primary:hover {
+  box-shadow: var(--vtm-shadow-red);
+}
+
+.vtm-card-btn--secondary:hover {
+  background: #900000;
+  color: #fff !important;
+}
+
+.vtm-card-btn:active {
+  transform: scale(0.97);
+}
+
+@media screen and (max-width: 749px) {
+  .vtm-card-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .vtm-card-btn {
+    width: 100%;
+    min-height: 42px;
+    font-size: 13.5px;
   }
 }

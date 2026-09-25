@@ -1,279 +1,157 @@
+{% comment %}
+  Community Appreciation Discount: slim full-width strip above the footer.
+{% endcomment %}
+
+{%- assign groups = 'Active-Duty Military & Veterans|Law Enforcement|Teachers & Educators|Firefighters|Local, State & Federal Government Employees|EMTs & Paramedics|Seniors 65+|Attorneys' | split: '|' -%}
+
+<div class="vtm-community">
+  <div class="vtm-community__inner page-width">
+    <div class="vtm-community__lead">
+      <span class="vtm-community__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </span>
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="vtm-community__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="vtm-community__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="vtm-community__details">
+      <ul class="vtm-community__groups" role="list">
+        {%- for group in groups -%}
+          <li>{{ group }}</li>
+        {%- endfor -%}
+      </ul>
+      {%- if section.settings.note != blank -%}
+        <p class="vtm-community__note">{{ section.settings.note }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
 {% style %}
-  #shopify-section-{{ section.id }} {
-    padding: 18px 20px 28px;
+  .vtm-community {
+    position: relative;
+    background:
+      radial-gradient(500px 160px at 0% 50%, rgba(224, 43, 43, 0.22), transparent 70%),
+      linear-gradient(90deg, #120404, #0a0a0a 45%);
+    border-top: 1px solid rgba(224, 43, 43, 0.45);
+    color: #fff;
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation {
-    max-width: 1280px;
-    margin: 0 auto;
-    background: #0a0a0a;
-    border: 1px solid #2a2a2a;
-    border-top: 4px solid #d71920;
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.16);
+  .vtm-community__inner {
     display: grid;
-
-    /* Wider image side */
-    grid-template-columns: 58% 42%;
-
-    align-items: stretch;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 36px;
+    padding-top: 18px;
+    padding-bottom: 18px;
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation__image {
-    padding: 0;
-  }
-
-  #shopify-section-{{ section.id }} .community-appreciation__image img {
-    width: 100%;
-    height: 100%;
-    min-height: 100%;
-    display: block;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 0;
-  }
-
-  #shopify-section-{{ section.id }} .community-appreciation__placeholder {
-    min-height: 430px;
-    background: #161616;
-    border-radius: 18px;
-  }
-
-  #shopify-section-{{ section.id }} .community-appreciation__content {
-    padding: 52px 46px;
+  .vtm-community__lead {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    padding-right: 36px;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation__eyebrow {
-    color: #d71920;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 1.6px;
+  .vtm-community__icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(224, 43, 43, 0.16);
+    color: #ff5a5a;
+  }
+
+  .vtm-community__eyebrow {
+    margin: 0 0 2px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin: 0 0 14px;
+    color: #ff5a5a;
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation__heading {
-    color: #ffffff;
-    font-size: clamp(36px, 4vw, 52px);
-    line-height: 1.04;
-    font-weight: 800;
-    letter-spacing: -1.2px;
-    margin: 0 0 18px;
-  }
-
-  #shopify-section-{{ section.id }} .community-appreciation__heading strong {
-  color: #22c55e !important;
-}
-
-  #shopify-section-{{ section.id }} .community-appreciation__text {
-    margin: 0 0 28px;
-  }
-
-  #shopify-section-{{ section.id }} .community-appreciation__text p {
+  .vtm-community__heading {
     margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 23px;
-    line-height: 1.42;
-    font-weight: 500;
-    font-style: italic;
-    letter-spacing: 0.1px;
-
-    background: linear-gradient(
-      90deg,
-      #bcbcbc 0%,
-      #f7f7f7 30%,
-      #ffffff 50%,
-      #d2d2d2 72%,
-      #a9a9a9 100%
-    );
-
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.18));
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation__groups {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 13px 24px;
-    margin-bottom: 26px;
+  .vtm-community__heading::after {
+    display: none !important;
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation__group {
+  .vtm-community__heading strong {
+    color: #4ade80;
+  }
+
+  .vtm-community__groups {
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    color: #ffffff;
-    font-size: 14px;
-    line-height: 1.4;
-    font-weight: 600;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation__check {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    border-radius: 50%;
-    background: #d71920;
-    color: #ffffff;
+  .vtm-community__groups li {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 900;
-    margin-top: 1px;
+    gap: 6px;
   }
 
-  #shopify-section-{{ section.id }} .community-appreciation__note {
-    color: #999999;
-    font-size: 12px;
-    line-height: 1.55;
-    margin: 0;
-    padding-top: 18px;
-    border-top: 1px solid #252525;
+  .vtm-community__groups li::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4ade80;
   }
 
-  @media screen and (max-width: 900px) {
-    #shopify-section-{{ section.id }} {
-      padding: 16px 16px 24px;
-    }
+  .vtm-community__note {
+    margin: 6px 0 0;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.5);
+  }
 
-    #shopify-section-{{ section.id }} .community-appreciation {
-      grid-template-columns: 1fr;
-      border-radius: 20px;
-    }
-
-    #shopify-section-{{ section.id }} .community-appreciation__image {
-      padding: 0;
-    }
-
-    #shopify-section-{{ section.id }} .community-appreciation__image img {
-      width: 100%;
-      height: 240px;
-      min-height: 0;
-      object-fit: cover;
-      object-position: center;
-    }
-
-    #shopify-section-{{ section.id }} .community-appreciation__placeholder {
-      min-height: 300px;
-    }
-
-    #shopify-section-{{ section.id }} .community-appreciation__content {
-      padding: 34px 28px 40px;
-    }
-
-    #shopify-section-{{ section.id }} .community-appreciation__heading {
-      font-size: 36px;
-    }
-
-    #shopify-section-{{ section.id }} .community-appreciation__text p {
-      font-size: 21px;
-    }
-
-    #shopify-section-{{ section.id }} .community-appreciation__groups {
+  @media screen and (max-width: 749px) {
+    .vtm-community__inner {
       grid-template-columns: 1fr;
       gap: 12px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+    .vtm-community__lead {
+      padding-right: 0;
+      border-right: 0;
+    }
+
+    .vtm-community__heading {
+      font-size: 18px;
+      white-space: normal;
+    }
+
+    .vtm-community__groups {
+      gap: 4px 14px;
+      font-size: 12.5px;
     }
   }
 {% endstyle %}
-
-<div class="community-appreciation">
-
-  <div class="community-appreciation__image">
-    {% if section.settings.image != blank %}
-      {{
-        section.settings.image
-        | image_url: width: 1600
-        | image_tag:
-          loading: 'lazy',
-          widths: '500, 750, 1000, 1400, 1600',
-          sizes: '(min-width: 901px) 58vw, 100vw',
-          alt: section.settings.image.alt
-      }}
-    {% else %}
-      <div class="community-appreciation__placeholder"></div>
-    {% endif %}
-  </div>
-
-  <div class="community-appreciation__content">
-
-    {% if section.settings.eyebrow != blank %}
-      <p class="community-appreciation__eyebrow">
-        {{ section.settings.eyebrow }}
-      </p>
-    {% endif %}
-
-    {% if section.settings.heading != blank %}
-      <h2 class="community-appreciation__heading">
-        {{ section.settings.heading }}
-      </h2>
-    {% endif %}
-
-    {% if section.settings.text != blank %}
-      <div class="community-appreciation__text">
-        {{ section.settings.text }}
-      </div>
-    {% endif %}
-
-    <div class="community-appreciation__groups">
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>Active-Duty Military & Veterans</span>
-      </div>
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>Law Enforcement</span>
-      </div>
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>Teachers & Educators</span>
-      </div>
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>Firefighters</span>
-      </div>
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>Local, State & Federal Government Employees</span>
-      </div>
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>EMTs & Paramedics</span>
-      </div>
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>Seniors 65+</span>
-      </div>
-
-      <div class="community-appreciation__group">
-        <span class="community-appreciation__check">✓</span>
-        <span>Attorneys</span>
-      </div>
-
-    </div>
-
-    {% if section.settings.note != blank %}
-      <p class="community-appreciation__note">
-        {{ section.settings.note }}
-      </p>
-    {% endif %}
-
-  </div>
-</div>
 
 {% schema %}
 {

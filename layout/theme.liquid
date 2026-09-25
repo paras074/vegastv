@@ -173,6 +173,20 @@
       elsif template.name == 'page' and area_templates contains template.suffix
         assign area_title = 'TV Mounting in ' | append: page.title
         render 'vtm-sticky-cta', title: area_title
+      elsif template.suffix != 'booking-wizard' and template.suffix != 'review' and template.name != 'cart' and template.name != 'password' and template.name != 'gift_card'
+        case template.name
+          when 'index'
+            assign cta_title = 'Professional TV Mounting in Las Vegas'
+          when 'page'
+            assign cta_title = page.title
+          when 'article'
+            assign cta_title = article.title
+          when 'collection'
+            assign cta_title = collection.title
+          else
+            assign cta_title = 'Vegas TV Mounting'
+        endcase
+        render 'vtm-sticky-cta', title: cta_title
       endif
     -%}
 

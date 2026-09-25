@@ -42,6 +42,10 @@
     '.git-methods-grid',
     '.trust-badges__grid',
     '.cta-buttons',
+    '.hts-grid',
+    '.wi-grid',
+    '.bts-grid',
+    '.home-types__list',
   ];
 
   const isBelowFold = (el) => el.getBoundingClientRect().top > window.innerHeight * 0.92;
@@ -470,6 +474,51 @@
     });
   }
 
+  /* ------------------------------------------------------------
+     Google reviews widget (Elfsight): hide the free-plan backlink.
+     It renders inside a shadow root, so page CSS can't reach it.
+  ------------------------------------------------------------- */
+  function hideReviewsBacklink() {
+    // Elfsight pins this link visible with inline !important styles, so it has to be removed.
+    const strip = (root) =>
+      root.querySelectorAll("a[href*='elfsight.com'][href*='free-widget']").forEach((link) => link.remove());
+    const patch = () => {
+      document.querySelectorAll('.es-embed-root').forEach((host) => {
+        const root = host.shadowRoot;
+        if (!root) return;
+        strip(root);
+        if (!host.dataset.vtmWatched) {
+          // Remove it again if the widget re-renders
+          host.dataset.vtmWatched = '1';
+          new MutationObserver(() => strip(root)).observe(root, { childList: true, subtree: true });
+        }
+      });
+    };
+    const apps = document.querySelectorAll('[class*="elfsight-app"]');
+    if (!apps.length) return;
+    // The widget loads lazily (when scrolled near) and attaches its shadow root
+    // without a DOM mutation we can observe, so poll until every widget is patched.
+    const pollFor = (app) => {
+      const timer = setInterval(() => {
+        patch();
+        if (app.querySelector('.es-embed-root[data-vtm-watched]')) clearInterval(timer);
+      }, 400);
+      setTimeout(() => clearInterval(timer), 30000);
+    };
+    // Start polling when a widget nears the viewport, which is when Elfsight loads it
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          io.unobserve(entry.target);
+          pollFor(entry.target);
+        });
+      },
+      { rootMargin: '600px 0px' }
+    );
+    apps.forEach((app) => io.observe(app));
+  }
+
   function init() {
     if (motion) {
       setupReveal();
@@ -484,6 +533,7 @@
     setupMegaMenu();
     setupSwipeRows();
     setupFooterAccordion();
+    hideReviewsBacklink();
   }
 
   if (document.readyState === 'loading') {
