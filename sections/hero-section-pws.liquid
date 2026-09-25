@@ -52,12 +52,33 @@
     <div class="hero-section__grid hero-section__grid--{{ img_pos }}">
 
       {%- if section.settings.image != blank -%}
-        <div class="ggghgh hero-section__media">
+        <div class="ggghgh hero-section__media{% if section.settings.hero_video_url != blank or section.settings.hero_video_asset != blank %} hero-section__media--video{% endif %}">
           {{
             section.settings.image
             | image_url: width: 1500
             | image_tag: loading: hero_loading, fetchpriority: hero_priority, sizes: '(min-width: 990px) 50vw, 100vw', class: 'hero-section__media-img'
           }}
+          {%- liquid
+            assign hero_video_src = blank
+            if section.settings.hero_video_url != blank
+              assign hero_video_src = section.settings.hero_video_url
+            elsif section.settings.hero_video_asset != blank
+              assign hero_video_src = section.settings.hero_video_asset | asset_url
+            endif
+          -%}
+          {%- if hero_video_src != blank -%}
+            <video
+              class="vtm-hero-video"
+              data-src="{{ hero_video_src }}"
+              {% if section.settings.hero_video_mobile %}data-mobile{% endif %}
+              muted
+              loop
+              playsinline
+              preload="none"
+              aria-hidden="true"
+              tabindex="-1"
+            ></video>
+          {%- endif -%}
           {%- render 'vtm-hero-float', badge: section.settings.media_badge, sub: section.settings.media_badge_sub -%}
         </div>
       {%- endif -%}
@@ -337,6 +358,28 @@
       "type": "url",
       "id": "button_2_link",
       "label": "Button 2 link"
+    },
+    {
+      "type": "header",
+      "content": "Animated image (video)"
+    },
+    {
+      "type": "url",
+      "id": "hero_video_url",
+      "label": "Video URL",
+      "info": "Short muted MP4 loop (3-6s) made from this image. Upload it in Content > Files and paste the link. The image stays as the instant fallback."
+    },
+    {
+      "type": "text",
+      "id": "hero_video_asset",
+      "label": "Or theme asset filename",
+      "info": "e.g. my-loop.mp4 (file in the theme's assets folder)"
+    },
+    {
+      "type": "checkbox",
+      "id": "hero_video_mobile",
+      "label": "Play video on mobile",
+      "default": false
     },
     {
       "type": "header",

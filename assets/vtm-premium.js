@@ -519,6 +519,50 @@
     apps.forEach((app) => io.observe(app));
   }
 
+  /* ------------------------------------------------------------
+     Animated hero videos: load only when on screen, fade in once playing,
+     pause off-screen. Mobile / reduced motion / data saver keep the still image.
+  ------------------------------------------------------------- */
+  function setupHeroVideos() {
+    const videos = document.querySelectorAll('video.vtm-hero-video[data-src]');
+    if (!videos.length || reduceMotion || !('IntersectionObserver' in window)) return;
+    if (navigator.connection?.saveData) return;
+    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+    const onScreen = new Set();
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(({ target: video, isIntersecting }) => {
+          if (!isIntersecting) {
+            onScreen.delete(video);
+            video.pause();
+            return;
+          }
+          onScreen.add(video);
+          if (!video.src) {
+            video.src = video.dataset.src;
+            video.addEventListener('playing', () => video.classList.add('is-playing'), { once: true });
+          }
+          video.play().catch(() => {});
+        });
+      },
+      { rootMargin: '200px 0px' }
+    );
+
+    videos.forEach((video) => {
+      if (isMobile && !video.hasAttribute('data-mobile')) return;
+      video.muted = true;
+      io.observe(video);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      onScreen.forEach((video) => {
+        if (document.hidden) video.pause();
+        else video.play().catch(() => {});
+      });
+    });
+  }
+
   function init() {
     if (motion) {
       setupReveal();
@@ -534,6 +578,7 @@
     setupSwipeRows();
     setupFooterAccordion();
     hideReviewsBacklink();
+    setupHeroVideos();
   }
 
   if (document.readyState === 'loading') {
