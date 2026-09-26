@@ -205,7 +205,9 @@
         "padding_top": 80,
         "padding_bottom": 80,
         "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40
+        "padding_bottom_mobile": 40,
+        "media_badge": "Same-Day Service Available",
+        "media_badge_sub": "Book online in 60 seconds"
       }
     },
     "bar_section_he6GgG": {
@@ -303,8 +305,8 @@
           "settings": {
             "icon": "email",
             "title": "Email Us",
-            "link_text": "support@vegastvmounting.com",
-            "link_url": "mailto:support@vegastvmounting.com",
+            "link_text": "customercare@vegastvmounting.com",
+            "link_url": "mailto:customercare@vegastvmounting.com",
             "description": "We typically reply within a few hours.",
             "show_button": false,
             "button_text": "BOOK NOW",
@@ -398,6 +400,12 @@
         "button_1_link": "",
         "button_2_label": "",
         "button_2_link": "",
+        "media_badge": "Same-Day Service Available",
+        "media_badge_sub": "Book online in 60 seconds",
+        "show_rating": true,
+        "rating_score": "",
+        "rating_label": "5-Star Rated on Google",
+        "rating_link": "",
         "padding_top": 80,
         "padding_bottom": 80,
         "padding_top_mobile": 40,
@@ -474,6 +482,12 @@
         "button_1_link": "",
         "button_2_label": "",
         "button_2_link": "",
+        "media_badge": "Same-Day Service Available",
+        "media_badge_sub": "Book online in 60 seconds",
+        "show_rating": true,
+        "rating_score": "",
+        "rating_label": "5-Star Rated on Google",
+        "rating_link": "",
         "padding_top": 80,
         "padding_bottom": 80,
         "padding_top_mobile": 40,
