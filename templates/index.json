@@ -142,6 +142,17 @@
         "padding_bottom_mobile": 20
       }
     },
+    "custom_liquid_HqpWMT": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<script src=\"https://elfsightcdn.com/platform.js\" async></script> <div class=\"elfsight-app-f7cf1bea-b652-409c-805a-9e894f151602\" data-elfsight-app-lazy></div>",
+        "color_scheme": "",
+        "section_width": "page-width",
+        "padding-block-start": 40,
+        "padding-block-end": 40
+      }
+    },
     "services_section_8J7BLF": {
       "type": "services-section",
       "blocks": {
@@ -868,6 +879,7 @@
   "order": [
     "hero_section_pws_Tm4pdG",
     "bar_section_YHPmFA",
+    "custom_liquid_HqpWMT",
     "services_section_8J7BLF",
     "section_installation_gallery_CaEULy",
     "home_types_cards_kwbr6D",
