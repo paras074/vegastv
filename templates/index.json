@@ -179,6 +179,34 @@
     "section_installation_gallery_CaEULy": {
       "type": "section-installation-gallery",
       "blocks": {
+        "image_yHmUzW": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P12.png",
+            "caption": ""
+          }
+        },
+        "image_FpyqTt": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P7.png",
+            "caption": ""
+          }
+        },
+        "image_rVfEVg": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P57.png",
+            "caption": ""
+          }
+        },
+        "image_Uzpr7W": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P49.png",
+            "caption": ""
+          }
+        },
         "image_kADgXJ": {
           "type": "image",
           "settings": {
@@ -269,16 +297,13 @@
             "image": "shopify://shop_images/Vegas_TV_Mounting_P50.png",
             "caption": ""
           }
-        },
-        "image_jQeWFr": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/Vegas_TV_Mounting_P45.png",
-            "caption": ""
-          }
         }
       },
       "block_order": [
+        "image_yHmUzW",
+        "image_FpyqTt",
+        "image_rVfEVg",
+        "image_Uzpr7W",
         "image_kADgXJ",
         "image_cm8kyP",
         "image_4NiWen",
@@ -291,8 +316,7 @@
         "image_QkdbRU",
         "image_yLkwNL",
         "image_LMEj38",
-        "image_heCqNy",
-        "image_jQeWFr"
+        "image_heCqNy"
       ],
       "name": "Installation Gallery",
       "settings": {
