@@ -190,6 +190,13 @@
     "section_installation_gallery_CaEULy": {
       "type": "section-installation-gallery",
       "blocks": {
+        "image_Mnkfqp": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P23.png",
+            "caption": ""
+          }
+        },
         "image_kADgXJ": {
           "type": "image",
           "settings": {
@@ -229,6 +236,13 @@
           "type": "image",
           "settings": {
             "image": "shopify://shop_images/Vegas_TV_Mounting_P15.png",
+            "caption": ""
+          }
+        },
+        "image_QcaPq6": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P47.jpg",
             "caption": ""
           }
         },
@@ -353,12 +367,14 @@
         }
       },
       "block_order": [
+        "image_Mnkfqp",
         "image_kADgXJ",
         "image_P3qTpf",
         "image_69Ad93",
         "image_mi7TDk",
         "image_cgrytw",
         "image_kbfaUz",
+        "image_QcaPq6",
         "image_nxwVAT",
         "image_yHmUzW",
         "image_FpyqTt",
