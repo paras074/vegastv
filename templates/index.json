@@ -179,10 +179,31 @@
     "section_installation_gallery_CaEULy": {
       "type": "section-installation-gallery",
       "blocks": {
-        "image_nxwVAT": {
+        "image_kADgXJ": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Vegas_TV_Mounting_P36.png",
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P14.png",
+            "caption": ""
+          }
+        },
+        "image_P3qTpf": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P20.png",
+            "caption": ""
+          }
+        },
+        "image_69Ad93": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P19.png",
+            "caption": ""
+          }
+        },
+        "image_mi7TDk": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P55.png",
             "caption": ""
           }
         },
@@ -197,6 +218,13 @@
           "type": "image",
           "settings": {
             "image": "shopify://shop_images/Vegas_TV_Mounting_P15.png",
+            "caption": ""
+          }
+        },
+        "image_nxwVAT": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P36.png",
             "caption": ""
           }
         },
@@ -225,13 +253,6 @@
           "type": "image",
           "settings": {
             "image": "shopify://shop_images/Vegas_TV_Mounting_P49.png",
-            "caption": ""
-          }
-        },
-        "image_kADgXJ": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/Vegas_TV_Mounting_P14.png",
             "caption": ""
           }
         },
@@ -321,14 +342,17 @@
         }
       },
       "block_order": [
-        "image_nxwVAT",
+        "image_kADgXJ",
+        "image_P3qTpf",
+        "image_69Ad93",
+        "image_mi7TDk",
         "image_cgrytw",
         "image_kbfaUz",
+        "image_nxwVAT",
         "image_yHmUzW",
         "image_FpyqTt",
         "image_rVfEVg",
         "image_Uzpr7W",
-        "image_kADgXJ",
         "image_cm8kyP",
         "image_4NiWen",
         "image_b3PD8n",
