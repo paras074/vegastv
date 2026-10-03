@@ -69,6 +69,12 @@
         "button_1_link": "/pages/book",
         "button_2_label": "Call or Text",
         "button_2_link": "#",
+        "media_badge": "Same-Day Service Available",
+        "media_badge_sub": "Book online in 60 seconds",
+        "show_rating": true,
+        "rating_score": "",
+        "rating_label": "5-Star Rated on Google",
+        "rating_link": "",
         "padding_top": 80,
         "padding_bottom": 80,
         "padding_top_mobile": 40,
@@ -173,56 +179,120 @@
     "section_installation_gallery_CaEULy": {
       "type": "section-installation-gallery",
       "blocks": {
-        "image_QUbw8h": {
+        "image_kADgXJ": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Vegas_TV_Mounting_P47_watermarked.jpg",
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P14.png",
             "caption": ""
           }
         },
-        "image_pPickq": {
+        "image_cm8kyP": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Multi-Display_Installation.png",
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P26.png",
             "caption": ""
           }
         },
-        "image_Pe8Xte": {
+        "image_4NiWen": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Commercial_TV_Mounting_c41112b2-f329-4fe9-a5f9-ae84479ffeb0.png",
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P27.png",
             "caption": ""
           }
         },
-        "image_fA8gzm": {
+        "image_b3PD8n": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Modern_conference_room.png",
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P59.png",
             "caption": ""
           }
         },
-        "image_jtta6Q": {
+        "image_fRzPbc": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Digital_Signage.png",
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P28.png",
             "caption": ""
           }
         },
-        "image_biFTaK": {
+        "image_XK9f6p": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Art_and_Mirror_Hanging.png",
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P10.png",
+            "caption": ""
+          }
+        },
+        "image_iTQq8r": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P46.png",
+            "caption": ""
+          }
+        },
+        "image_bpcJj9": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P4.png",
+            "caption": ""
+          }
+        },
+        "image_dnVXkt": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P33.png",
+            "caption": ""
+          }
+        },
+        "image_QkdbRU": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P6.png",
+            "caption": ""
+          }
+        },
+        "image_yLkwNL": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P21.png",
+            "caption": ""
+          }
+        },
+        "image_LMEj38": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P52.png",
+            "caption": ""
+          }
+        },
+        "image_heCqNy": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P50.png",
+            "caption": ""
+          }
+        },
+        "image_jQeWFr": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Vegas_TV_Mounting_P45.png",
             "caption": ""
           }
         }
       },
       "block_order": [
-        "image_QUbw8h",
-        "image_pPickq",
-        "image_Pe8Xte",
-        "image_fA8gzm",
-        "image_jtta6Q",
-        "image_biFTaK"
+        "image_kADgXJ",
+        "image_cm8kyP",
+        "image_4NiWen",
+        "image_b3PD8n",
+        "image_fRzPbc",
+        "image_XK9f6p",
+        "image_iTQq8r",
+        "image_bpcJj9",
+        "image_dnVXkt",
+        "image_QkdbRU",
+        "image_yLkwNL",
+        "image_LMEj38",
+        "image_heCqNy",
+        "image_jQeWFr"
       ],
       "name": "Installation Gallery",
       "settings": {
@@ -533,6 +603,7 @@
       "type": "cta-section",
       "name": "CTA section",
       "settings": {
+        "trust_points": "Licensed & Insured, 5-Year Warranty, Same-Day Service, Upfront Pricing",
         "color_scheme": "scheme-5",
         "heading": "Ready to Start Your Project?",
         "sub_heading": "<p>Book residential services online with transparent pricing, or contact us for a custom commercial quote.</p>",
