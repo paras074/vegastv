@@ -142,17 +142,6 @@
         "padding_bottom_mobile": 20
       }
     },
-    "custom_liquid_HqpWMT": {
-      "type": "custom-liquid",
-      "name": "t:names.custom_liquid",
-      "settings": {
-        "custom_liquid": "<script src=\"https://elfsightcdn.com/platform.js\" async></script> <div class=\"elfsight-app-f7cf1bea-b652-409c-805a-9e894f151602\" data-elfsight-app-lazy></div>",
-        "color_scheme": "",
-        "section_width": "page-width",
-        "padding-block-start": 40,
-        "padding-block-end": 40
-      }
-    },
     "services_section_8J7BLF": {
       "type": "services-section",
       "blocks": {
@@ -185,6 +174,17 @@
         "padding_bottom": 80,
         "padding_top_mobile": 40,
         "padding_bottom_mobile": 40
+      }
+    },
+    "custom_liquid_YdBU3N": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<script src=\"https://elfsightcdn.com/platform.js\" async></script> <div class=\"elfsight-app-f7cf1bea-b652-409c-805a-9e894f151602\" data-elfsight-app-lazy></div>",
+        "color_scheme": "",
+        "section_width": "page-width",
+        "padding-block-start": 40,
+        "padding-block-end": 40
       }
     },
     "section_installation_gallery_CaEULy": {
@@ -879,8 +879,8 @@
   "order": [
     "hero_section_pws_Tm4pdG",
     "bar_section_YHPmFA",
-    "custom_liquid_HqpWMT",
     "services_section_8J7BLF",
+    "custom_liquid_YdBU3N",
     "section_installation_gallery_CaEULy",
     "home_types_cards_kwbr6D",
     "why_choose_us_F7dJej",
