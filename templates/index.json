@@ -171,9 +171,9 @@
         "sub_heading": "<p>From TVs to smart homes and commercial AV, we install it all across the Las Vegas Valley.</p>",
         "button_label": "Book Service",
         "padding_top": 80,
-        "padding_bottom": 80,
+        "padding_bottom": 20,
         "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40
+        "padding_bottom_mobile": 20
       }
     },
     "custom_liquid_YdBU3N": {
