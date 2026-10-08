@@ -176,6 +176,25 @@
         "padding_bottom_mobile": 20
       }
     },
+    "before_after_nxBwqd": {
+      "type": "before-after",
+      "name": "Before After",
+      "settings": {
+        "layout": "slider",
+        "direction": "horizontal",
+        "start_position": 50,
+        "background_color": "#ffffff",
+        "text_color": "#111111",
+        "before_text": "Before",
+        "before_image": "shopify://shop_images/after.png",
+        "after_text": "After",
+        "after_image": "shopify://shop_images/before.png",
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "padding_top_mobile": 30,
+        "padding_bottom_mobile": 30
+      }
+    },
     "custom_liquid_YdBU3N": {
       "type": "custom-liquid",
       "name": "t:names.custom_liquid",
@@ -447,6 +466,25 @@
         "padding_bottom": 64,
         "padding_top_mobile": 36,
         "padding_bottom_mobile": 36
+      }
+    },
+    "before_after_WaUmnt": {
+      "type": "before-after",
+      "name": "Before After",
+      "settings": {
+        "layout": "slider",
+        "direction": "horizontal",
+        "start_position": 50,
+        "background_color": "#ffffff",
+        "text_color": "#111111",
+        "before_text": "Before",
+        "before_image": "shopify://shop_images/after.png",
+        "after_text": "After",
+        "after_image": "shopify://shop_images/before.png",
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "padding_top_mobile": 30,
+        "padding_bottom_mobile": 30
       }
     },
     "why_choose_us_F7dJej": {
@@ -896,9 +934,11 @@
     "hero_section_pws_Tm4pdG",
     "bar_section_YHPmFA",
     "services_section_8J7BLF",
+    "before_after_nxBwqd",
     "custom_liquid_YdBU3N",
     "section_installation_gallery_CaEULy",
     "home_types_cards_kwbr6D",
+    "before_after_WaUmnt",
     "why_choose_us_F7dJej",
     "testimonials_tV64b6",
     "custom_liquid_HyJaCb",
