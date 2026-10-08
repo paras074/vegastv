@@ -1925,14 +1925,16 @@
       this.$foot.innerHTML = '';
       // Prefer the short, customer-friendly reference (e.g. 473-8126). Fall back
       // to whatever the server returned only if the short ref isn't available.
-      const ref = this.state.reference || ((resp && (resp.reference || resp.id)) ? String(resp.reference || resp.id) : '');
+      // Bookings show the HCP job number (matches HCP and Stripe) when the server returns it.
+      const jobNo = !isQuote && resp && resp.jobNumber ? String(resp.jobNumber) : '';
+      const ref = jobNo || this.state.reference || ((resp && (resp.reference || resp.id)) ? String(resp.reference || resp.id) : '');
       this.$body.innerHTML = `<div class="bw-done">
         <div class="bw-done__check"><svg width="34" height="26" viewBox="0 0 14 12" fill="none"><path d="M12.5 1.5 4.7 9.8 1.5 6.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h2>${isQuote ? 'Request received!' : 'Booking confirmed!'}</h2>
         <p>${isQuote
           ? 'Thanks! Our team will review your project and reach out shortly with your personalized quote.'
           : 'Your appointment is booked. We’ve sent a confirmation to your email. Remember — your card only holds the appointment and won’t be charged until your service is complete.'}</p>
-        ${ref ? `<p><b>Reference:</b> ${esc(ref)}</p>` : ''}
+        ${ref ? `<p><b>${jobNo ? 'Booking number:' : 'Reference:'}</b> ${esc(ref)}</p>` : ''}
         ${this.cfg.phone ? `<p>Questions? Call or text us at <b>${esc(this.cfg.phone)}</b>.</p>` : ''}
       </div>`;
     }
