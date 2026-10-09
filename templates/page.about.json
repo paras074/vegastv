@@ -86,7 +86,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<p><strong>Built on Experience. Focused on What’s Next.</strong></p>",
+            "text": "<p><em><strong>Smarter Spaces Start Here...</strong></em></p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
