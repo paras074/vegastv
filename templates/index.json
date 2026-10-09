@@ -142,6 +142,17 @@
         "padding_bottom_mobile": 20
       }
     },
+    "community_appreciation_thCHLV": {
+      "type": "community-appreciation",
+      "name": "Community Appreciation",
+      "settings": {
+        "image": "shopify://shop_images/VTM_Community_Appreciation_f6e1ec49-5ec5-40d1-9965-3706c9ee0db9.png",
+        "eyebrow": "Community Appreciation Discount",
+        "heading": "Automatically Save <strong>10%</strong>",
+        "text": "<p>Our way of saying thank you to those who serve our community.</p>",
+        "note": "Proof of eligibility may be required at time of service."
+      }
+    },
     "services_section_8J7BLF": {
       "type": "services-section",
       "blocks": {
@@ -933,6 +944,7 @@
   "order": [
     "hero_section_pws_Tm4pdG",
     "bar_section_YHPmFA",
+    "community_appreciation_thCHLV",
     "services_section_8J7BLF",
     "before_after_nxBwqd",
     "custom_liquid_YdBU3N",
